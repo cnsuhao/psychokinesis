@@ -1,0 +1,22 @@
+{
+	"opr": "add",
+	"list": [
+		{
+			"uris": [
+				"http://download.baiyou100.com/pal5.rar",
+				"http://dl.games.qq.com/201403151952/dc6864fde7c882514e35dfa2e3a09991/demo/pc/201107/PAL5.rar"
+			],
+			"options": [
+				{
+					"name": "max-download-limit",
+					"value": "102400"
+				},
+				{
+					"name": "allow-overwrite",
+					"value": "true"
+				}
+			],
+			"position": -1
+		}
+	]
+}

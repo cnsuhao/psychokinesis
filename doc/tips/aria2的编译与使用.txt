@@ -1,0 +1,6 @@
+aria2官方推荐使用MinGW在Linux上交叉编译Windows版本，编译直接运行make_aria2.sh即可，这里总结如何使用aria2库。
+
+1、编译使用aria2库的代码需要同时链接aria2依赖的库，编译命令格式如下：
+i686-w64-mingw32-g++ test2.cpp -o test.exe -static -I$HOME/mingw32/include -L$HOME/mingw32/lib -laria2 -lexpat -lz -lws2_32 -lwsock32 -lgdi32 -lwinmm -liphlpapi -lpsapi
+
+2、各项下载参数定义位于src/prefs.cc源文件中
