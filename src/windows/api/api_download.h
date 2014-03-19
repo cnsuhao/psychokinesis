@@ -24,9 +24,22 @@ struct download_item {
 		  total_length(dh->getTotalLength()), 
 		  completed_length(dh->getCompletedLength()), upload_length(dh->getUploadLength()),
 		  download_speed(dh->getDownloadSpeed()), upload_speed(dh->getUploadSpeed()),
-		  connections(dh->getConnections()),
-		  options(dh->getOptions())
+		  connections(dh->getConnections())
 	{}
+	
+	boost::shared_ptr<boost::property_tree::ptree> to_ptree() {
+		boost::shared_ptr<boost::property_tree::ptree> ppt(new boost::property_tree::ptree());
+		ppt->put("gid", gid);
+		ppt->put("error_code", error_code);
+		ppt->put("download_status", download_status);
+		ppt->put("total_length", total_length);
+		ppt->put("completed_length", completed_length);
+		ppt->put("upload_length", upload_length);
+		ppt->put("download_speed", download_speed);
+		ppt->put("upload_speed", upload_speed);
+		ppt->put("connections", connections);
+		return ppt;
+	}
 	
 	std::string gid;
 	int error_code;
@@ -37,7 +50,6 @@ struct download_item {
 	int download_speed;
 	int upload_speed;
 	int connections;
-	aria2::KeyVals options;
 };
 
 class api_download : public api {
@@ -61,6 +73,9 @@ private:
 	int list_download_items(std::vector<download_item>& download_items);
 	
 	static void run_aria2(void* handle);
+	
+	static int downloadEventCallback(aria2::Session* session, aria2::DownloadEvent event,
+									 aria2::A2Gid gid, void* user_data);
 	
 	aria2::Session* aria2_session;
 	boost::thread* aria2_thread;

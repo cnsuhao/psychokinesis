@@ -18,6 +18,8 @@ bool api_download::open() {
 		aria2::SessionConfig config;
 		
 		config.keepRunning = true;
+		config.downloadEventCallback = downloadEventCallback;
+		config.userData = this;
 		
 		aria2_session = aria2::sessionNew(aria2::KeyVals(), config);
 		if (aria2_session == NULL)
@@ -30,6 +32,8 @@ bool api_download::open() {
 			break;
 		}
 		
+		debug_print("api_download open");
+
 		is_open = true;
 		return true;
 	} while (0);
@@ -89,28 +93,7 @@ shared_ptr<ptree> api_download::execute(const ptree& args) {
 			ptree item_list;
 			
 			BOOST_FOREACH(download_item i, download_items) {
-				ptree it, options_ptree;
-				
-				it.put("gid", i.gid);
-				it.put("error_code", i.error_code);
-				it.put("download_status", i.download_status);
-				it.put("total_length", i.total_length);
-				it.put("completed_length", i.completed_length);
-				it.put("upload_length", i.upload_length);
-				it.put("download_speed", i.download_speed);
-				it.put("upload_speed", i.upload_speed);
-				it.put("connections", i.connections);
-				
-				for (aria2::KeyVals::iterator option = i.options.begin(); 
-					 option != i.options.end(); ++option) {
-					ptree option_ptree;
-					option_ptree.put("name", option->first);
-					option_ptree.put("value", option->second);
-					options_ptree.push_back(std::make_pair("", option_ptree));
-				}
-				it.add_child("options", options_ptree);
-				
-				item_list.push_back(std::make_pair("", it));
+				item_list.push_back(std::make_pair("", *i.to_ptree()));
 			}
 			
 			resp->put("ret_code", 0);
@@ -162,6 +145,8 @@ void api_download::close() {
 	aria2_session = NULL;
 	
 	aria2::libraryDeinit();
+	
+	debug_print("api_download close");
 }
 
 
@@ -175,6 +160,8 @@ int api_download::add_uri(const vector<string>& uris, const aria2::KeyVals& opti
 		return ret;
 	
 	gid = aria2::gidToHex(a2_gid);
+	
+	debug_print(gid + " added");
 	return ret;
 }
 
@@ -182,7 +169,12 @@ int api_download::add_uri(const vector<string>& uris, const aria2::KeyVals& opti
 int api_download::remove_download(const string& gid) {
 	BOOST_ASSERT(aria2_session != NULL && "aria2_session == NULL");
 	
-	return removeDownload(aria2_session, aria2::hexToGid(gid));
+	int ret = aria2::removeDownload(aria2_session, aria2::hexToGid(gid));
+	
+	if (!ret)
+		debug_print(gid + " deleted");
+		
+	return ret;
 }
 
 
@@ -209,6 +201,41 @@ void api_download::run_aria2(void* handle) {
 	if (h->is_open) {
 		BOOST_ASSERT(0 && "aria2 stopped unexpectedly!");
 	}
+	
+	h->debug_print("api_download thread stopped");
+}
+
+
+int api_download::downloadEventCallback(aria2::Session* session, aria2::DownloadEvent event,
+									 aria2::A2Gid gid, void* user_data) {
+	api_download* h = (api_download*)user_data;
+	ptree event_ptree;
+	
+	switch(event) {
+	case aria2::EVENT_ON_DOWNLOAD_PAUSE:
+		event_ptree.put("event_type", "PAUSE");
+		break;
+	case aria2::EVENT_ON_DOWNLOAD_STOP:
+		event_ptree.put("event_type", "STOP");
+		break;
+	case aria2::EVENT_ON_DOWNLOAD_COMPLETE:
+		event_ptree.put("event_type", "COMPLETE");
+		break;
+	case aria2::EVENT_ON_DOWNLOAD_ERROR:
+		event_ptree.put("event_type", "ERROR");
+		break;
+	default:
+		return 0;
+	}
+	
+	event_ptree.put("gid", aria2::gidToHex(gid));
+	
+	if (event == aria2::EVENT_ON_DOWNLOAD_ERROR)
+		h->warning(event_ptree);
+	else
+		h->info(event_ptree);
+	
+	return 0;
 }
 
 #define TEST
@@ -219,10 +246,45 @@ void api_download::run_aria2(void* handle) {
 #include <boost/property_tree/json_parser.hpp>
 using namespace std;
 
+class api_download_listener : public api_listener {
+public:
+	virtual void debug(const boost::property_tree::ptree& content) {
+		stringstream content_str;
+		write_json(content_str, content);
+		
+		cout << "debug: " << content_str.str() << endl;
+	}
+	
+	virtual void info(const boost::property_tree::ptree& content) {
+		stringstream content_str;
+		write_json(content_str, content);
+		
+		cout << "info: " << content_str.str() << endl;
+	}
+	
+	virtual void warning(const boost::property_tree::ptree& content) {
+		stringstream content_str;
+		write_json(content_str, content);
+		
+		cout << "warning: " << content_str.str() << endl;
+	}
+	
+	virtual void alert(const boost::property_tree::ptree& content) {
+		stringstream content_str;
+		write_json(content_str, content);
+		
+		cout << "alert: " << content_str.str() << endl;
+	}
+};
+
+
 int main() {
 	api_download api;
+	api_download_listener listener;
 	char json_path[260];
 	ptree json;
+	
+	api.attach_listener(&listener);
 	
 	if (api.open() == false) {
 		cout << "open aria2 failed!" << endl;
@@ -231,14 +293,15 @@ int main() {
 	
 	while (true)
 	{
+		cout << "json file's path: ";
 		cin.getline(json_path, 260);
-		cout << "json file's path: " << json_path << endl;
+		cout << json_path << endl;
 		
 		try {
 			boost::property_tree::read_json(json_path, json);
 		} catch (...) {
 			cout << "parse json file failed!" << endl;
-			return 0;
+			continue;
 		}
 		
 		boost::shared_ptr<ptree> result = api.execute(json);
@@ -250,6 +313,9 @@ int main() {
 	}
 	
 	api.close();
+	
+	api.detach_listener(&listener);
+	
 	return 0;
 }
 #endif
