@@ -275,6 +275,9 @@ public:
 		
 		cout << "alert: " << content_str.str() << endl;
 	}
+	
+	virtual void communicate(boost::property_tree::ptree& content) {
+	}
 };
 
 

@@ -1,7 +1,7 @@
 #ifndef _API_H_
 #define _API_H_
 
-#include <set>
+#include <list>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -15,6 +15,8 @@ public:
 	virtual void info(const boost::property_tree::ptree& content) = 0;
 	virtual void warning(const boost::property_tree::ptree& content) = 0;
 	virtual void alert(const boost::property_tree::ptree& content) = 0;
+	
+	virtual void communicate(boost::property_tree::ptree& content) = 0; 
 };
 
 class api {
@@ -29,14 +31,14 @@ public:
 	void attach_listener(api_listener* listener) {
 		BOOST_ASSERT(listener && "listener == NULL!");
 		
-		listeners.insert(listener);
+		listeners.push_back(listener);
 	}
 	
 	// after close
 	void detach_listener(api_listener* listener) {
 		BOOST_ASSERT(listener && "listener == NULL!");
 		
-		listeners.erase(listener);
+		listeners.remove(listener);
 	}
 	
 protected:
@@ -64,6 +66,12 @@ protected:
 		}
 	}
 	
+	void communicate(boost::property_tree::ptree& content) {
+		BOOST_FOREACH(api_listener* l, listeners) {
+			l->communicate(content);
+		}
+	}
+	
 	void debug_print(const std::string& d) {
 #ifdef PSYCHOKINESIS_DEBUG
 		boost::property_tree::ptree debug_ptree;
@@ -73,7 +81,7 @@ protected:
 	}
 	
 private:
-	std::set<api_listener*> listeners;
+	std::list<api_listener*> listeners;
 };
 
 } // namespace psychokinesis
