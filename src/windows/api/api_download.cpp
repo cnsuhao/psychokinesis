@@ -295,6 +295,8 @@ int main() {
 		cout << "json file's path: ";
 		cin.getline(json_path, 260);
 		cout << json_path << endl;
+		if (cin.eof())
+			break;
 		
 		try {
 			boost::property_tree::read_json(json_path, json);
@@ -303,7 +305,7 @@ int main() {
 			continue;
 		}
 		
-		boost::shared_ptr<ptree> result = api.execute(json);
+		shared_ptr<ptree> result = api.execute(json);
 		
 		std::stringstream result_str;
 		write_json(result_str, *result);
