@@ -26,11 +26,6 @@ bool api_download::open() {
 			break;
 			
 		aria2_thread = new thread(run_aria2, this);
-		if (aria2_thread == NULL) {
-			aria2::sessionFinal(aria2_session);
-			aria2_session = NULL;
-			break;
-		}
 		
 		debug_print("api_download open");
 
@@ -140,11 +135,12 @@ void api_download::close() {
 	}
 	
 	aria2_thread->join();
-		
-	aria2::sessionFinal(aria2_session);
-	aria2_session = NULL;
+	delete aria2_thread;
+	aria2_thread = NULL;
 	
+	aria2::sessionFinal(aria2_session);
 	aria2::libraryDeinit();
+	aria2_session = NULL;
 	
 	debug_print("api_download close");
 }
@@ -287,12 +283,12 @@ int main() {
 	char json_path[260];
 	ptree json;
 	
-	api.attach_listener(&listener);
-	
 	if (api.open() == false) {
 		cout << "open aria2 failed!" << endl;
 		return 0;
 	}
+	
+	api.attach_listener(&listener);
 	
 	while (true)
 	{
