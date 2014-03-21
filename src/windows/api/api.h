@@ -4,6 +4,7 @@
 #include <list>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
 
@@ -12,10 +13,10 @@ namespace psychokinesis {
 class api_listener {
 public:
 	virtual void debug(const boost::property_tree::ptree& content) = 0;
-	virtual void info(const boost::property_tree::ptree& content) = 0;
 	virtual void warning(const boost::property_tree::ptree& content) = 0;
 	virtual void alert(const boost::property_tree::ptree& content) = 0;
 	
+	virtual void info(const boost::property_tree::ptree& content) = 0;
 	virtual void communicate(boost::property_tree::ptree& content) = 0; 
 };
 
@@ -27,46 +28,55 @@ public:
 	
 	virtual void close() = 0;
 	
-	// before open
 	void attach_listener(api_listener* listener) {
 		BOOST_ASSERT(listener && "listener == NULL!");
 		
 		listeners.push_back(listener);
 	}
 	
-	// after close
 	void detach_listener(api_listener* listener) {
 		BOOST_ASSERT(listener && "listener == NULL!");
+		boost::unique_lock<boost::shared_mutex> lock(listeners_mutex);
 		
 		listeners.remove(listener);
 	}
 	
 protected:
 	void debug(const boost::property_tree::ptree& content) {
+		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
+		
 		BOOST_FOREACH(api_listener* l, listeners) {
 			l->debug(content);
 		}
 	}
 	
 	void info(const boost::property_tree::ptree& content) {
+		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
+		
 		BOOST_FOREACH(api_listener* l, listeners) {
 			l->info(content);
 		}
 	}
 	
 	void warning(const boost::property_tree::ptree& content) {
+		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
+		
 		BOOST_FOREACH(api_listener* l, listeners) {
 			l->warning(content);
 		}
 	}
 	
 	void alert(const boost::property_tree::ptree& content) {
+		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
+		
 		BOOST_FOREACH(api_listener* l, listeners) {
 			l->alert(content);
 		}
 	}
 	
 	void communicate(boost::property_tree::ptree& content) {
+		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
+		
 		BOOST_FOREACH(api_listener* l, listeners) {
 			l->communicate(content);
 		}
@@ -82,6 +92,7 @@ protected:
 	
 private:
 	std::list<api_listener*> listeners;
+	boost::shared_mutex listeners_mutex;
 };
 
 } // namespace psychokinesis
