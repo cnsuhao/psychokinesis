@@ -10,17 +10,7 @@
 			"upload_length": 56,
 			"download_speed": 20,
 			"upload_speed": 10,
-			"connections": 2,
-			"options": [
-				{
-					"name": "max-download-limit",
-					"value": "102400"
-				},
-				{
-					"name": "allow-overwrite",
-					"value": "true"
-				}
-			]
+			"connections": 2
 		}
 	]
 }
