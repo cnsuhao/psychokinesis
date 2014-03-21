@@ -4,6 +4,7 @@
 #include <list>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
