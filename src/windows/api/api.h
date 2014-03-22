@@ -87,7 +87,9 @@ protected:
 		}
 		
 		std::stringstream resp_sstr;
-		boost::property_tree::write_json(resp_sstr, resp);     // 相应数据格式在这儿指定，独立于具体的API
+		
+		if (!resp.empty())
+			boost::property_tree::write_json(resp_sstr, resp);     // 相应数据格式在这儿指定，独立于具体的API
 		
 		boost::shared_ptr<std::string> resp_str(new std::string(resp_sstr.str()));
 		return resp_str;
