@@ -2,12 +2,15 @@
 #define _API_H_
 
 #include <list>
+#include <string>
+#include <sstream>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 namespace psychokinesis {
 
@@ -75,12 +78,19 @@ protected:
 		}
 	}
 	
-	void communicate(boost::property_tree::ptree& content) {
+	boost::shared_ptr<std::string> communicate(const boost::property_tree::ptree& content) {
 		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
+		boost::property_tree::ptree resp = content;
 		
 		BOOST_FOREACH(api_listener* l, listeners) {
-			l->communicate(content);
+			l->communicate(resp);
 		}
+		
+		std::stringstream resp_sstr;
+		boost::property_tree::write_json(resp_sstr, resp);     // 相应数据格式在这儿指定，独立于具体的API
+		
+		boost::shared_ptr<std::string> resp_str(new std::string(resp_sstr.str()));
+		return resp_str;
 	}
 	
 	void debug_print(const std::string& d) {
