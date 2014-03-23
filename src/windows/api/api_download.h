@@ -52,6 +52,8 @@ struct download_item {
 	int connections;
 };
 
+class adapter_download;
+
 class api_download : public api {
 public:
 	api_download()
@@ -64,6 +66,7 @@ public:
 	
 	virtual void close();
 
+	friend class adapter_download;
 private:
 	int add_uri(const std::vector<std::string>& uris, const aria2::KeyVals& options, int position,
 			   std::string& gid);

@@ -1,24 +1,42 @@
 #ifndef _CONTROL_H_
 #define _CONTROL_H_
 
-#include <string>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/ptr_container/ptr_unordered_map.hpp>
+#include <boost/ptr_container/ptr_container.hpp>
 #include "../api/api.h"
 
 namespace psychokinesis {
 
-class control {
-public:
-	control(boost::shared_ptr<boost::ptr_unordered_map<std::string, api>>& api_list)
-	 : api_list(api_list)
-	{}
+class api_listener_with_control : public api_listener {
+public: 
+	api_listener_with_control(api* m_adapter) {
+		this->m_adapter = m_adapter;
+	}
 	
-	int handle_message(const std::string& req, std::string& resp);
+	virtual void debug(const boost::property_tree::ptree& content) {
+		// 定义专门的监听者处理调试信息
+	}
+	
+	virtual void communicate(boost::property_tree::ptree& content) {
+		content = *m_adapter->execute(content);
+	}
 	
 private:
-	boost::weak_ptr<boost::ptr_unordered_map<std::string, api>> api_list;
+	api* m_adapter;
+};
+
+class control {
+public:
+	control();
+	~control();
+	
+	bool open();
+	void close();
+	
+private:
+	void bind_listener(api* bind_api, api* listen_api);
+	
+	boost::ptr_list<api_listener> api_listener_list;
+	boost::ptr_list<api> adapter_list;
 };
 
 } // namespace psychokinesis

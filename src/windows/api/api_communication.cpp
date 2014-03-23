@@ -77,11 +77,11 @@ shared_ptr<ptree> api_communication::execute(const ptree& args) {
 			resp->put("ret_code", 0);
 			return resp;
 		} else {
-			BOOST_ASSERT(0 && "bad json!");
+			debug_print("bad json!");
 		}
 		
 	} catch (boost::property_tree::ptree_bad_path) {
-		BOOST_ASSERT(0 && "bad json!");
+		debug_print("bad json!");
 	}
 	
 	resp->put("ret_code", 1);
@@ -90,9 +90,13 @@ shared_ptr<ptree> api_communication::execute(const ptree& args) {
 
 
 void api_communication::close() {
-	BOOST_ASSERT(is_open == true && "gloox have closed!");
+	if (!is_open)
+		return;
 	
 	is_open = false;
+	if (!reconnect_semaphore.try_wait())
+		reconnect_semaphore.post();
+	
 	client->disconnect();
 	
 	client_thread->join();
@@ -127,7 +131,7 @@ void api_communication::onConnect() {
 	
 	content.put("info", "connected");
 	
-	info(content);
+	communicate(content);
 
 	debug_print("api_communication connect");
 }
@@ -139,7 +143,7 @@ void api_communication::onDisconnect(gloox::ConnectionError e) {
 	content.put("warning", "disconnect");
 	content.put("error_code", e);
 	
-	warning(content);
+	communicate(content);
 	
 	debug_print("api_communication disconnect");
 }
@@ -194,7 +198,7 @@ void api_communication::run_client_thread(void* handle) {
 
 
 
-#define TEST
+// #define TEST
 #ifdef TEST
 
 #include <iostream>
@@ -211,27 +215,6 @@ public:
 			cout << "bad json!" << endl;
 			BOOST_ASSERT(0 && "");
 		}
-	}
-	
-	virtual void info(const ptree& content) {
-		stringstream content_str;
-		write_json(content_str, content);
-		
-		cout << "info: " << content_str.str() << endl;
-	}
-	
-	virtual void warning(const ptree& content) {
-		stringstream content_str;
-		write_json(content_str, content);
-		
-		cout << "warning: " << content_str.str() << endl;
-	}
-	
-	virtual void alert(const ptree& content) {
-		stringstream content_str;
-		write_json(content_str, content);
-		
-		cout << "alert: " << content_str.str() << endl;
 	}
 	
 	virtual void communicate(ptree& content) {

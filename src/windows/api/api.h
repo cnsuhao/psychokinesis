@@ -17,10 +17,6 @@ namespace psychokinesis {
 class api_listener {
 public:
 	virtual void debug(const boost::property_tree::ptree& content) = 0;
-	virtual void warning(const boost::property_tree::ptree& content) = 0;
-	virtual void alert(const boost::property_tree::ptree& content) = 0;
-	
-	virtual void info(const boost::property_tree::ptree& content) = 0;
 	virtual void communicate(boost::property_tree::ptree& content) = 0; 
 };
 
@@ -51,30 +47,6 @@ protected:
 		
 		BOOST_FOREACH(api_listener* l, listeners) {
 			l->debug(content);
-		}
-	}
-	
-	void info(const boost::property_tree::ptree& content) {
-		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
-		
-		BOOST_FOREACH(api_listener* l, listeners) {
-			l->info(content);
-		}
-	}
-	
-	void warning(const boost::property_tree::ptree& content) {
-		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
-		
-		BOOST_FOREACH(api_listener* l, listeners) {
-			l->warning(content);
-		}
-	}
-	
-	void alert(const boost::property_tree::ptree& content) {
-		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
-		
-		BOOST_FOREACH(api_listener* l, listeners) {
-			l->alert(content);
 		}
 	}
 	

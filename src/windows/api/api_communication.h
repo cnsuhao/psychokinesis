@@ -12,18 +12,21 @@
 
 namespace psychokinesis {
 
+class adapter_communication;
+
 class api_communication : public api, public gloox::MessageSessionHandler, public gloox::ConnectionListener, public gloox::MessageHandler, public gloox::LogHandler {
 public:
 	api_communication()
-		: client(NULL), client_thread(NULL), 
-		  is_open(false), port(-1), reconnect_timeout(10),
-		  reconnect_semaphore(0)
+		: client(NULL), client_thread(NULL), reconnect_semaphore(0), 
+		  is_open(false), port(-1), reconnect_timeout(10)
 	{}
 	virtual bool open();
 	
 	virtual boost::shared_ptr<boost::property_tree::ptree> execute(const boost::property_tree::ptree& args);
 	
 	virtual void close();
+	
+	friend class adapter_communication;
 	
 private:
 	virtual void handleMessage(const gloox::Message& msg, gloox::MessageSession* session = 0);

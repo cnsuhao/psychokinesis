@@ -113,11 +113,11 @@ shared_ptr<ptree> api_download::execute(const ptree& args) {
 			return resp;
 			
 		} else {
-			BOOST_ASSERT(0 && "bad json!");
+			debug_print("bad json!");
 		}
 		
 	} catch (boost::property_tree::ptree_bad_path) {
-		BOOST_ASSERT(0 && "bad json!");
+		debug_print("bad json!");
 	}
 	
 	resp->put("ret_code", 1);
@@ -126,7 +126,8 @@ shared_ptr<ptree> api_download::execute(const ptree& args) {
 
 
 void api_download::close() {
-	BOOST_ASSERT(is_open == true && "aria2 have closed!");
+	if (!is_open)
+		return;
 	
 	is_open = false;
 	
@@ -226,15 +227,12 @@ int api_download::downloadEventCallback(aria2::Session* session, aria2::Download
 	
 	event_ptree.put("gid", aria2::gidToHex(gid));
 	
-	if (event == aria2::EVENT_ON_DOWNLOAD_ERROR)
-		h->warning(event_ptree);
-	else
-		h->info(event_ptree);
+	h->communicate(event_ptree);
 	
 	return 0;
 }
 
-#define TEST
+// #define TEST
 #ifdef TEST
 
 #include <iostream>
@@ -251,28 +249,13 @@ public:
 		cout << "debug: " << content_str.str() << endl;
 	}
 	
-	virtual void info(const boost::property_tree::ptree& content) {
-		stringstream content_str;
-		write_json(content_str, content);
-		
-		cout << "info: " << content_str.str() << endl;
-	}
-	
-	virtual void warning(const boost::property_tree::ptree& content) {
-		stringstream content_str;
-		write_json(content_str, content);
-		
-		cout << "warning: " << content_str.str() << endl;
-	}
-	
-	virtual void alert(const boost::property_tree::ptree& content) {
-		stringstream content_str;
-		write_json(content_str, content);
-		
-		cout << "alert: " << content_str.str() << endl;
-	}
-	
 	virtual void communicate(boost::property_tree::ptree& content) {
+		stringstream content_str;
+		write_json(content_str, content);
+		
+		cout << "communicate: " << content_str.str() << endl;
+		
+		content.clear();
 	}
 };
 
