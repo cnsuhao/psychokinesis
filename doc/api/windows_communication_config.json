@@ -1,0 +1,11 @@
+{
+	"opr": "configure",
+	"parameters": {
+		"server": "127.0.0.1",
+		"port": -1,
+		"account": "test1",
+		"password": "1",
+		"resource": "psychokinesis-pc",
+		"reconnect_timeout": 10
+	}
+}

@@ -1,3 +1,5 @@
 {
-	"opr": "list"
+	"method": "download",
+	"opr": "list",
+	"session_id": 25
 }
