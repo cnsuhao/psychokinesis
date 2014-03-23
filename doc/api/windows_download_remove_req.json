@@ -1,5 +1,7 @@
 {
+	"method": "download",
 	"opr": "remove",
+	"session_id": 12,
 	"list": [
 		"gid0",
 		"gid1"
