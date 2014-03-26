@@ -1,6 +1,7 @@
 #include <sstream>
 #include <boost/property_tree/json_parser.hpp>
 #include "adapter_communication.h"
+#include "../api/api_download.h"
 
 #define LOGIN_SERVER_INFO_FILE "server.json"
 
@@ -32,11 +33,22 @@ bool adapter_communication::open() {
 
 
 shared_ptr<ptree> adapter_communication::execute(const ptree& args, const api* caller) {
+	if (caller == NULL)
+		return m_api->execute(args);
+		
 	ptree req;
 	
-	// TODO 需要填写接收账号
-	req.put("opr", "communicate");
-	req.add_child("content", args);
+	if (typeid(*caller) == typeid(api_download)) {
+		req.put("opr", "communicate");
+		
+		std::stringstream message_sstr;
+		boost::property_tree::write_json(message_sstr, args);
+		
+		req.put("account", m_api->account_get());         // 向自己账号的所有其他在线客户端发送消息
+		req.put("message", message_sstr.str());
+	} else {
+		req = args;
+	}
 	
 	return m_api->execute(req);
 }
