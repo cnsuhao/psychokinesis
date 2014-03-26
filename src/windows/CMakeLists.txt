@@ -7,6 +7,8 @@ LINK_DIRECTORIES(/home/complier/mingw32/lib)
 
 SET(SRC_LIST api/api_communication.cpp
 	api/api_download.cpp
+	adapter/adapter_communication.cpp
+	adapter/adapter_download.cpp
 	process/control.cpp
 	)
 	
