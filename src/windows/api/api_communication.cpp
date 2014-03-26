@@ -41,14 +41,16 @@ shared_ptr<ptree> api_communication::execute(const ptree& args, const api* /*cal
 		string opr = args.get<string>("opr");
 		
 		if (opr == "communicate") {
-			ptree content = args.get_child("content");
-			
-			string account = content.get<string>("account");
-			string resource_name = content.get<string>("resource_name");
-			string message = content.get<string>("message");
-			
+			string account = args.get<string>("account");
 			std::string pa(account);
-			pa = pa + "@" + server + "/" + resource_name;
+			
+			if (args.count("resource_name")) {
+				string resource_name = args.get<string>("resource_name");
+				pa = pa + "@" + server + "/" + resource_name;
+			} else {
+				pa = pa + "@" + server;
+			}
+			
 			gloox::JID jid;
 			if (jid.setJID(pa) == false) {
 				resp->put("ret_code", 2);
@@ -56,7 +58,10 @@ shared_ptr<ptree> api_communication::execute(const ptree& args, const api* /*cal
 			}
 
 			gloox::MessageSession* session = new gloox::MessageSession(client, jid);
+			
+			string message = args.get<string>("message");
 			session->send(message);
+			
 			client->disposeMessageSession(session);
 			
 			resp->put("ret_code", 0);
