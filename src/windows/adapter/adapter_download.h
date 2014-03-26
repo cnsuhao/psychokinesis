@@ -15,7 +15,8 @@ public:
 		return m_api->open();
 	}
 	
-	virtual boost::shared_ptr<boost::property_tree::ptree> execute(const boost::property_tree::ptree& args);
+	virtual boost::shared_ptr<boost::property_tree::ptree> 
+		execute(const boost::property_tree::ptree& args, const api* caller);
 	
 	virtual void close() {
 		m_api->close();

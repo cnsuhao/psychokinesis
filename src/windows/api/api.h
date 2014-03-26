@@ -14,17 +14,20 @@
 
 namespace psychokinesis {
 
+class api;
+
 class api_listener {
 public:
 	virtual void debug(const boost::property_tree::ptree& content) = 0;
-	virtual void communicate(boost::property_tree::ptree& content) = 0; 
+	virtual void communicate(const api& caller, boost::property_tree::ptree& content) = 0; 
 };
 
 class api {
 public:
 	virtual bool open() = 0;
 	
-	virtual boost::shared_ptr<boost::property_tree::ptree> execute(const boost::property_tree::ptree& args) = 0;
+	virtual boost::shared_ptr<boost::property_tree::ptree> 
+		execute(const boost::property_tree::ptree& args, const api* caller = NULL) = 0;
 	
 	virtual void close() = 0;
 	
@@ -50,12 +53,12 @@ protected:
 		}
 	}
 	
-	boost::shared_ptr<std::string> communicate(const boost::property_tree::ptree& content) {
+	boost::shared_ptr<std::string> communicate(const api& caller, const boost::property_tree::ptree& content) {
 		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
 		boost::property_tree::ptree resp = content;
 		
 		BOOST_FOREACH(api_listener* l, listeners) {
-			l->communicate(resp);
+			l->communicate(caller, resp);
 		}
 		
 		std::stringstream resp_sstr;

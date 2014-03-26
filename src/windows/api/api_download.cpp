@@ -38,7 +38,7 @@ bool api_download::open() {
 }
 
 
-shared_ptr<ptree> api_download::execute(const ptree& args) {
+shared_ptr<ptree> api_download::execute(const ptree& args, const api* /*caller*/) {
 	shared_ptr<ptree> resp(new ptree());
 	
 	try {
@@ -227,7 +227,7 @@ int api_download::downloadEventCallback(aria2::Session* session, aria2::Download
 	
 	event_ptree.put("gid", aria2::gidToHex(gid));
 	
-	h->communicate(event_ptree);
+	h->communicate(*h, event_ptree);
 	
 	return 0;
 }
@@ -249,7 +249,7 @@ public:
 		cout << "debug: " << content_str.str() << endl;
 	}
 	
-	virtual void communicate(boost::property_tree::ptree& content) {
+	virtual void communicate(const api& caller, boost::property_tree::ptree& content) {
 		stringstream content_str;
 		write_json(content_str, content);
 		

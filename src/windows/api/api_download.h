@@ -62,7 +62,8 @@ public:
 	
 	virtual bool open();
 	
-	virtual boost::shared_ptr<boost::property_tree::ptree> execute(const boost::property_tree::ptree& args);
+	virtual boost::shared_ptr<boost::property_tree::ptree> 
+		execute(const boost::property_tree::ptree& args, const api* caller = NULL);
 	
 	virtual void close();
 

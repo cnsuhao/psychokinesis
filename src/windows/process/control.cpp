@@ -24,7 +24,7 @@ public:
 		}
 	}
 	
-	virtual void communicate(boost::property_tree::ptree& content) {
+	virtual void communicate(const api& caller, boost::property_tree::ptree& content) {
 	}
 };
 #endif

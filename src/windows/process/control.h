@@ -16,8 +16,8 @@ public:
 		// 定义专门的监听者处理调试信息
 	}
 	
-	virtual void communicate(boost::property_tree::ptree& content) {
-		content = *m_adapter->execute(content);
+	virtual void communicate(const api& caller, boost::property_tree::ptree& content) {
+		content = *m_adapter->execute(content, &caller);
 	}
 	
 private:

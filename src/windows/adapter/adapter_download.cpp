@@ -8,7 +8,7 @@ using boost::shared_ptr;
 using boost::property_tree::ptree;
 using namespace psychokinesis;
 
-shared_ptr<ptree> adapter_download::execute(const ptree& args) {
+shared_ptr<ptree> adapter_download::execute(const ptree& args, const api* caller) {
 	shared_ptr<ptree> resp(new ptree());
 	string method, session_id;
 	ptree message;

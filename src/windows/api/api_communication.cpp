@@ -34,7 +34,7 @@ bool api_communication::open() {
 }
 
 
-shared_ptr<ptree> api_communication::execute(const ptree& args) {
+shared_ptr<ptree> api_communication::execute(const ptree& args, const api* /*caller*/) {
 	shared_ptr<ptree> resp(new ptree());
 	
 	try {
@@ -117,7 +117,7 @@ void api_communication::handleMessage(const gloox::Message& msg, gloox::MessageS
 	content.put("resource_name", msg.from().resource());
 	content.put("message", msg.body());
 	
-	shared_ptr<string> resp = communicate(content);
+	shared_ptr<string> resp = communicate(*this, content);
 	
 	if (resp->length() > 0)
 		session->send(*resp);
@@ -131,7 +131,7 @@ void api_communication::onConnect() {
 	
 	content.put("info", "connected");
 	
-	communicate(content);
+	communicate(*this, content);
 
 	debug_print("api_communication connect");
 }
@@ -143,7 +143,7 @@ void api_communication::onDisconnect(gloox::ConnectionError e) {
 	content.put("warning", "disconnect");
 	content.put("error_code", e);
 	
-	communicate(content);
+	communicate(*this, content);
 	
 	debug_print("api_communication disconnect");
 }
@@ -217,7 +217,7 @@ public:
 		}
 	}
 	
-	virtual void communicate(ptree& content) {
+	virtual void communicate(const api& caller, ptree& content) {
 		ptree resp;
 		stringstream content_str;
 		write_json(content_str, content);

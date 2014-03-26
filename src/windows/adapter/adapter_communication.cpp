@@ -31,7 +31,7 @@ bool adapter_communication::open() {
 }
 
 
-shared_ptr<ptree> adapter_communication::execute(const ptree& args) {
+shared_ptr<ptree> adapter_communication::execute(const ptree& args, const api* caller) {
 	ptree req;
 	
 	// TODO 需要填写接收账号
