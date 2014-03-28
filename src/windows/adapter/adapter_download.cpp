@@ -15,14 +15,18 @@ shared_ptr<ptree> adapter_download::execute(const ptree& args, const api* caller
 	
 	try {
 		std::stringstream message_str(args.get<string>("message"));
-		boost::property_tree::read_json(message_str, message);
 		
 		m_api->debug_print(message_str.str());
 		
+		boost::property_tree::read_json(message_str, message);
 		method = message.get<string>("method");
 		session_id = message.get<string>("session_id");
+	} catch (boost::property_tree::json_parser_error) {
+		return resp;
 	} catch (boost::property_tree::ptree_bad_path) {
 		return resp;
+	}catch (...) {
+		m_api->debug_print("Unexpected error!");
 	}
 	
 	if (method != "download")

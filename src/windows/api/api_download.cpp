@@ -118,6 +118,8 @@ shared_ptr<ptree> api_download::execute(const ptree& args, const api* /*caller*/
 		
 	} catch (boost::property_tree::ptree_bad_path) {
 		debug_print("bad json!");
+	} catch (...) {
+		debug_print("Unexpected error!");
 	}
 	
 	resp->put("ret_code", 1);

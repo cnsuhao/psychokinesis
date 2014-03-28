@@ -1,8 +1,10 @@
 #include <boost/assert.hpp>
-#include <gloox/message.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "api_communication.h"
+#include <gloox/message.h>
+#include <gloox/rostermanager.h>
 
+using std::vector;
 using std::string;
 using boost::thread;
 using boost::shared_ptr;
@@ -87,6 +89,8 @@ shared_ptr<ptree> api_communication::execute(const ptree& args, const api* /*cal
 		
 	} catch (boost::property_tree::ptree_bad_path) {
 		debug_print("bad json!");
+	} catch (...) {
+		debug_print("Unexpected error!");
 	}
 	
 	resp->put("ret_code", 1);
@@ -112,6 +116,31 @@ void api_communication::close() {
 	client = NULL;
 	
 	debug_print("api_communication close");
+}
+
+
+shared_ptr< vector<string> > api_communication::available_resources_get(const string& account) {
+	shared_ptr< vector<string> > resources = shared_ptr< vector<string> >(new vector<string>());
+	
+	gloox::JID jid;
+	if (jid.setJID(account + "@" + server) == false) {
+		return resources;
+	}
+	
+	gloox::RosterItem* roster = client->rosterManager()->getRosterItem(jid);
+	if (roster == NULL) {
+		return resources;
+	}
+	
+	const gloox::RosterItem::ResourceMap& resource_map = roster->resources();
+	for (gloox::RosterItem::ResourceMap::const_iterator it = resource_map.begin();
+		 it != resource_map.end();
+		 ++it) {
+		 if (it->second->presence() == gloox::Presence::Available) {
+			resources->push_back(it->first);
+		 }
+	}
+	return resources;
 }
 
 
@@ -223,15 +252,12 @@ public:
 	}
 	
 	virtual void communicate(const api& caller, ptree& content) {
-		ptree resp;
 		stringstream content_str;
 		write_json(content_str, content);
 		
 		cout << "communicate: " << content_str.str() << endl;
 		
-		resp.put("response", "ok!");
-		
-		content = resp;
+		content.clear();
 	}
 };
 

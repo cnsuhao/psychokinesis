@@ -1,6 +1,7 @@
 #ifndef _API_COMMUNICATION_H_
 #define _API_COMMUNICATION_H_
 
+#include <vector>
 #include <gloox/client.h>
 #include <gloox/loghandler.h>
 #include <gloox/messagehandler.h>
@@ -30,6 +31,13 @@ public:
 	const std::string& account_get() const {
 		return account;
 	}
+	
+	/**
+     * 获取指定账号所有在线的资源名
+     * @param account 账号名
+	 * @return 所有在线的资源名
+    */
+	boost::shared_ptr< std::vector<std::string> > available_resources_get(const std::string& account);
 	
 	friend class adapter_communication;
 	
