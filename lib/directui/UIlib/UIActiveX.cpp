@@ -212,8 +212,8 @@ class CActiveXCtrl :
    public IObjectWithSite,
    public IOleContainer
 {
-friend CActiveXUI;
-friend CActiveXWnd;
+friend class CActiveXUI;
+friend class CActiveXWnd;
 public:
    CActiveXCtrl();
    ~CActiveXCtrl();

@@ -16,7 +16,7 @@ struct IOleObject;
 
 class UILIB_API CActiveXUI : public CControlUI, public IMessageFilterUI
 {
-friend CActiveXCtrl;
+friend class CActiveXCtrl;
 public:
    CActiveXUI();
    virtual ~CActiveXUI();

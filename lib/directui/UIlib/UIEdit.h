@@ -14,7 +14,7 @@ class CSingleLineEditWnd;
 
 class UILIB_API CSingleLineEditUI : public CControlUI
 {
-friend CSingleLineEditWnd;
+friend class CSingleLineEditWnd;
 public:
    CSingleLineEditUI();
 
@@ -48,7 +48,7 @@ class CMultiLineEditWnd;
 
 class UILIB_API CMultiLineEditUI : public CControlUI
 {
-friend CMultiLineEditWnd;
+friend class CMultiLineEditWnd;
 public:
    CMultiLineEditUI();
    ~CMultiLineEditUI();

@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIAnim.h"
 
 #if (_MSC_VER < 1300)

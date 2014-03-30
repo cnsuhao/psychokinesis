@@ -1,6 +1,6 @@
 
 #include "StdAfx.h"
-#include "UIlist.h"
+#include "UIList.h"
 
 #include "UILabel.h"
 #include "UIPanel.h"
