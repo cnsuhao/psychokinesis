@@ -1,0 +1,2 @@
+使用编译参数：
+i686-w64-mingw32-g++ api_communication.cpp -o communication.exe -g -static -DPSYCHOKINESIS_DEBUG -I$HOME/mingw32/include -L$HOME/mingw32/lib -lgloox -lwsock32 -lgdi32 -ldnsapi -lcrypt32 -lsecur32 -lboost_system -lboost_thread_win32
