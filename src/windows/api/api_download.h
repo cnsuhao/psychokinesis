@@ -76,6 +76,8 @@ private:
 	
 	int list_download_items(std::vector<download_item>& download_items);
 	
+	int change_global_option(const aria2::KeyVals& options);
+	
 	static void run_aria2(void* handle);
 	
 	static int downloadEventCallback(aria2::Session* session, aria2::DownloadEvent event,

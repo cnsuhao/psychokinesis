@@ -112,6 +112,22 @@ shared_ptr<ptree> api_download::execute(const ptree& args, const api* /*caller*/
 			resp->add_child("list", item_list);
 			return resp;
 			
+		} else if (opr == "global_option") {
+			ptree option_list = args.get_child("list");
+			ptree item_list;
+			
+			aria2::KeyVals options;
+			BOOST_FOREACH(const ptree::value_type& option, option_list) {
+				options.push_back(std::make_pair(option.second.get<string>("name"),
+												 option.second.get<string>("value")));
+			}
+			
+			if (change_global_option(options))          // 经测试不能以返回值判断是否设置成功
+				resp->put("ret_code", 1);
+			else
+				resp->put("ret_code", 0);
+			return resp;
+			
 		} else {
 			debug_print("bad json!");
 		}
@@ -189,6 +205,18 @@ int api_download::list_download_items(vector<download_item>& download_items) {
 		}
 	}
 	return 0;
+}
+
+
+int api_download::change_global_option(const aria2::KeyVals& options) {
+	BOOST_ASSERT(aria2_session != NULL && "aria2_session == NULL");
+	
+	int ret = aria2::changeGlobalOption(aria2_session, options);
+	
+	if (!ret)
+		debug_print("options changed");
+		
+	return ret;
 }
 
 
