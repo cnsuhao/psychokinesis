@@ -1,0 +1,15 @@
+{
+	"method": "download",
+	"opr": "global_option",
+	"session_id": 12,
+	"list": [
+		{
+			"name": "max-overall-download-limit",
+			"value": "102400"
+		},
+		{
+			"name": "max-overall-download-limit",
+			"value": "102400"
+		}
+	]
+}
