@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window size="460,510">
+	<Font name="幼圆" size="16" default="true" />
+	<Font name="微软雅黑" size="17" />
+	<VerticalLayout bkcolor="#FFD1E8F5">
+		<Control height="70"/>
+		<HorizontalLayout height="5">
+			<HorizontalLayout bkcolor="#FF97C0DA" bkcolor2="#FFB8DFF2"></HorizontalLayout>
+		</HorizontalLayout>
+		<HorizontalLayout height="440" bkcolor="#FFB8DFF2">
+			<TabLayout name="switch">
+				<HorizontalLayout>
+					<Container float="true" pos="30, 20, 420, 95" bordercolor="#F0B0D0F0" bordersize="1">
+						<Edit name="pathedit" float="true" pos="20, 25, 300, 55" bordercolor="#FF4EA0D1" bordersize="1"/>
+						<Button name="pathbtn" text="移动" float="true" pos="310, 25, 370, 55" normalimage="button_normal.png" hotimage="button_normal.png" pushedimage="button_pushed.png" />
+					</Container>
+					<Label text="资源位置" float="true" pos="35, 10, 105, 30" font="1" bkcolor="#FFB8DFF2" />
+					<Container float="true" pos="30, 130, 420, 305" bordercolor="#F0B0D0F0" bordersize="1">
+						<Label text="账号：" float="true" pos="20, 25, 75, 55" font="1" />
+						<Edit name="accountedit" float="true" pos="75, 25, 370, 55" tooltip="请在这里输入您的账号" bordercolor="#FF4EA0D1" bordersize="1"/>
+						<Label text="密码：" float="true" pos="20, 75, 75, 105" font="1" />
+						<Edit name="pwdedit" float="true" pos="75, 75, 370, 105" password="true" tooltip="请在这里输入您的密码" bordercolor="#FF4EA0D1" bordersize="1"/>
+						<Button name="loginbtn" text="登录" float="true" pos="140, 125, 220, 155" tooltip="点击这里登录" normalimage="button_normal.png" hotimage="button_normal.png" pushedimage="button_pushed.png" />
+						<Button text="{u}{l}注册账号{/l}{/u}" showhtml="true" float="true" pos="230, 125, 300, 155" tooltip="如果你还没有账号，请点击注册一个账号" />
+					</Container>
+					<Label text="关联的账户" float="true" pos="35, 120, 120, 140" font="1" bkcolor="#FFB8DFF2" />
+				</HorizontalLayout>
+				<HorizontalLayout>
+					<Container float="true" pos="30, 20, 420, 150" bordercolor="#F0B0D0F0" bordersize="1">
+						<Option text="不限制" pos="15, 25, 110, 55" foreimage="file='RadioBtnNon.png' dest='0,9,13,22'" float="true" font="1" name="nolimitdownload" selected="true" />
+						<Option text="限制为" pos="15, 65, 110, 95" foreimage="file='RadioBtnNon.png' dest='0,9,13,22'" float="true" font="1" name="limitdownload" />
+						<Edit name="downloadedit" pos="100, 65, 160, 95" bordercolor="#FF4EA0D1" bordersize="1" float="true" />
+						<Label text="KB/s" pos="170, 65, 210, 95" font="1" float="true" />
+					</Container>
+					<Label text="下载速度" float="true" pos="35, 10, 105, 30" font="1" bkcolor="#FFB8DFF2" />
+					<Container float="true" pos="30, 180, 420, 310" bordercolor="#F0B0D0F0" bordersize="1">
+						<Option text="不限制" pos="15, 25, 110, 55" foreimage="file='RadioBtnNon.png' dest='0,9,13,22'" float="true" font="1" name="nolimitupload" selected="true" />
+						<Option text="限制为" pos="15, 65, 110, 95" foreimage="file='RadioBtnNon.png' dest='0,9,13,22'" float="true" font="1" name="limitupload" />
+						<Edit name="downloadedit" pos="100, 65, 160, 95" bordercolor="#FF4EA0D1" bordersize="1" float="true" />
+						<Label text="KB/s" pos="170, 65, 210, 95" font="1" float="true" />
+					</Container>
+					<Label text="上传速度" float="true" pos="35, 170, 105, 190" font="1" bkcolor="#FFB8DFF2" />
+				</HorizontalLayout>
+			</TabLayout>
+		</HorizontalLayout>
+		<Button text="" textcolor=""/>
+		<HorizontalLayout  float="true" pos="0, 0, 460, 70">
+			<Option pos="0, 0, 70, 70" float="true" align="bottom" name="account" text=" 账户" textcolor="#FF386382" textpadding="0,0,10,2" foreimage="file='account.png' dest='13,5,53,45'" normalimage="toolbar_normal.png" hotimage="toolbar_hover.png" pushedimage="toolbar_pushed.png" selectedimage="toolbar_pushed.png" group="quickbar" selected="true"/>
+			<Option pos="70, 0, 140, 70" float="true" align="bottom" name="bandwidth" text=" 带宽" textcolor="#FF386382" textpadding="0,0,10,2" foreimage="file='bandwidth.png' dest='13,5,53,45'" normalimage="toolbar_normal.png" hotimage="toolbar_hover.png" pushedimage="toolbar_pushed.png" selectedimage="toolbar_pushed.png" group="quickbar"/>
+		</HorizontalLayout>
+	</VerticalLayout>
+</Window>
