@@ -20,7 +20,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
 	if (!window.create())
 		return 2;
 	
-	CPaintManagerUI::MessageLoop();
+	MSG msg = {0};
+	while(::GetMessage(&msg, NULL, 0, 0)) {
+		if(!CPaintManagerUI::TranslateMessage(&msg)) {
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		} else {
+			window.handle_background_message();
+		}
+	}
 	
 	::CoUninitialize();
 	

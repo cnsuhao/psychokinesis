@@ -4,6 +4,7 @@
 
 #define CONTROL_NAME_TAB              "switch"
 
+using DuiLib::CSliderUI;
 using DuiLib::TNotifyUI;
 using DuiLib::CStdString;
 using DuiLib::CTabLayoutUI;
@@ -20,16 +21,10 @@ frame_window::frame_window() {
 
 
 void frame_window::Notify(TNotifyUI& msg) {
-	if (msg.sType == _T("setfocus")) {
-		CStdString name = msg.pSender->GetName();
-		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T(CONTROL_NAME_TAB)));
-
-		boost::unordered_map<std::string, int>::const_iterator it = tabs.find(name.GetData());
-		if (it != tabs.end()) {
-			pControl->SelectItem(it->second);
-		}
-	} else if (msg.sType == _T("windowinit")) {
-		// 可在此处添加界面启动时的动画
+	if (msg.sType == _T("windowinit")) {
+		make_notify(_T("account"), &frame_window::on_tab_notify);
+		make_notify(_T("bandwidth"), &frame_window::on_tab_notify);
+		make_notify(_T("loginbtn"), &frame_window::on_login_notify);
 	}
 }
 
@@ -84,6 +79,15 @@ bool frame_window::create() {
 }
 
 
+void frame_window::handle_background_message() {
+	if (api_msgs.size() == 0)
+		return;
+
+	boost::ptr_deque<api_message>::auto_type msg = api_msgs.pop_front();
+	msg->execute();
+}
+
+
 LRESULT frame_window::on_create(WPARAM wParam, LPARAM lParam, bool& handled) {
 	CDialogBuilder builder;
 
@@ -126,4 +130,31 @@ LRESULT frame_window::on_syscommand(WPARAM wParam, LPARAM lParam, bool& handled)
 	}
 
 	return CWindowWnd::HandleMessage(WM_SYSCOMMAND, wParam, lParam);
+}
+
+
+bool frame_window::on_tab_notify(void* msg) {
+	TNotifyUI* pmsg = (TNotifyUI*)msg;
+
+	if (pmsg->sType == _T("click")) {
+		CStdString name = pmsg->pSender->GetName();
+		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T(CONTROL_NAME_TAB)));
+
+		boost::unordered_map<std::string, int>::const_iterator it = tabs.find(name.GetData());
+		if (it != tabs.end()) {
+			pControl->SelectItem(it->second);
+		}
+	}
+
+	return true;
+}
+
+
+bool frame_window::on_login_notify(void* msg) {
+	TNotifyUI* pmsg = (TNotifyUI*)msg;
+
+	if (pmsg->sType == _T("click")) {
+	}
+
+	return true;
 }
