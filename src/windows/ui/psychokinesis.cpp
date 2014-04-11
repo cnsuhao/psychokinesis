@@ -16,18 +16,24 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
 		return 1;
 	}
 	
-	frame_window window;
+	frame_window& window = frame_window::get_mutable_instance();
 	if (!window.create())
 		return 2;
 	
 	MSG msg = {0};
-	while(::GetMessage(&msg, NULL, 0, 0)) {
-		if(!CPaintManagerUI::TranslateMessage(&msg)) {
-			::TranslateMessage(&msg);
-			::DispatchMessage(&msg);
-		} else {
-			window.handle_background_message();
+	for (;;) {
+		while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			if (!CPaintManagerUI::TranslateMessage(&msg)) {
+				::TranslateMessage(&msg);
+				::DispatchMessage(&msg);
+			}
+
+			if (msg.message == WM_QUIT)
+				return true;
 		}
+
+		if (!window.handle_background_message())
+			::WaitMessage();
 	}
 	
 	::CoUninitialize();

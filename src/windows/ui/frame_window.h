@@ -2,13 +2,13 @@
 #include <boost/assert.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
+#include <boost/serialization/singleton.hpp>
 #include <DuiLib/StdAfx.h>
 #include "api_message.h"
 
 namespace psychokinesis {
 
-class frame_window : public DuiLib::CWindowWnd, public DuiLib::INotifyUI
-{
+class frame_window : public DuiLib::CWindowWnd, public DuiLib::INotifyUI, public boost::serialization::singleton<frame_window> {
 public:
 	frame_window();
 
@@ -24,7 +24,7 @@ public:
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	bool create();
-	void handle_background_message();
+	bool handle_background_message();
 
 	DuiLib::CPaintManagerUI m_pm;
 

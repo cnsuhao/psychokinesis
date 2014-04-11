@@ -1,8 +1,7 @@
 #include <boost/assign.hpp>
 #include "frame_window.h"
 #include "resource.h"
-
-#define CONTROL_NAME_TAB              "switch"
+#include "api_message.h"
 
 using DuiLib::CSliderUI;
 using DuiLib::TNotifyUI;
@@ -10,6 +9,8 @@ using DuiLib::CStdString;
 using DuiLib::CTabLayoutUI;
 using DuiLib::CDialogBuilder;
 using DuiLib::CControlUI;
+using DuiLib::CEditUI;
+using DuiLib::CButtonUI;
 
 using namespace psychokinesis;
 
@@ -79,12 +80,13 @@ bool frame_window::create() {
 }
 
 
-void frame_window::handle_background_message() {
+bool frame_window::handle_background_message() {
 	if (api_msgs.size() == 0)
-		return;
+		return false;
 
 	boost::ptr_deque<api_message>::auto_type msg = api_msgs.pop_front();
 	msg->execute();
+	return true;
 }
 
 
@@ -138,7 +140,7 @@ bool frame_window::on_tab_notify(void* msg) {
 
 	if (pmsg->sType == _T("click")) {
 		CStdString name = pmsg->pSender->GetName();
-		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T(CONTROL_NAME_TAB)));
+		CTabLayoutUI* pControl = dynamic_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
 
 		boost::unordered_map<std::string, int>::const_iterator it = tabs.find(name.GetData());
 		if (it != tabs.end()) {
@@ -154,6 +156,21 @@ bool frame_window::on_login_notify(void* msg) {
 	TNotifyUI* pmsg = (TNotifyUI*)msg;
 
 	if (pmsg->sType == _T("click")) {
+		CEditUI* account_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("accountedit")));
+		CEditUI* password_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("pwdedit")));
+		CStdString account = account_edit->GetText();
+		CStdString password = password_edit->GetText();
+
+		if (account.GetLength() > 0 && password.GetLength() > 0) {
+			account_edit->SetEnabled(false);
+			password_edit->SetEnabled(false);
+
+			CButtonUI* login_button = dynamic_cast<CButtonUI*>(pmsg->pSender);
+			login_button->SetEnabled(false);
+
+			// ≤‚ ‘¥˙¬Î
+			api_msgs.push_back(new api_communication_login_failed());
+		}
 	}
 
 	return true;
