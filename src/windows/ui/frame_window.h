@@ -25,6 +25,7 @@ public:
 
 	bool create();
 	bool handle_background_message();
+	void destory();
 
 	DuiLib::CPaintManagerUI m_pm;
 
@@ -38,18 +39,35 @@ private:
 		psilder->OnNotify += d;
 	}
 
+	// 托盘图标接口
+	bool add_tray();
+	void delete_tray();
+	void popup_tray_menu();
+
 	// 原始窗口事件
 	LRESULT on_create(WPARAM wParam, LPARAM lParam, bool& handled);
 	LRESULT on_close(WPARAM wParam, LPARAM lParam, bool& handled);
 	LRESULT on_destory(WPARAM wParam, LPARAM lParam, bool& handled);
-	LRESULT on_syscommand(WPARAM wParam, LPARAM lParam, bool& handled);
+	LRESULT on_syscommand(WPARAM wParam, LPARAM lParam, bool& handled);            // 窗口菜单命令
+	LRESULT on_command(WPARAM wParam, LPARAM lParam, bool& handled);               // 自建菜单命令
+	LRESULT on_tray(WPARAM wParam, LPARAM lParam, bool& handled);
 
 	// directui控件事件
+	void on_windowinit_notify(DuiLib::TNotifyUI& msg);
 	bool on_tab_notify(void* msg);
 	bool on_login_notify(void* msg);
+	bool on_register_notify(void* msg);
+	bool on_changestorepath_notify(void* msg);
+	bool on_nolimitdownload_notify(void* msg);
+	bool on_limitdownload_notify(void* msg);
+	bool on_nolimitupload_notify(void* msg);
+	bool on_limitupload_notify(void* msg);
 
 	boost::unordered_map<std::string, int> tabs;
 	boost::ptr_deque<api_message> api_msgs;
+	OSVERSIONINFO windows_version;
+	NOTIFYICONDATA m_tray;
+	HICON m_icon;
 };
 
 } // namespace psychokinesis
