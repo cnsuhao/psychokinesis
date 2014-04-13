@@ -213,7 +213,8 @@ LRESULT frame_window::on_command(WPARAM wParam, LPARAM lParam, bool& handled) {
 		break;
 	}
 
-	return CWindowWnd::HandleMessage(WM_COMMAND, wParam, lParam);
+	handled = false;
+	return 0;
 }
 
 
