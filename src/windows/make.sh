@@ -35,5 +35,4 @@ if [ $? -ne 0 ]; then
 fi
 cd -
 
-strip ${PROJECT_PATH}/build/psychokinesis.exe
 sz ${PROJECT_PATH}/build/psychokinesis.exe

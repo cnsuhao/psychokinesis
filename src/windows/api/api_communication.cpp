@@ -147,6 +147,7 @@ shared_ptr< vector<string> > api_communication::available_resources_get(const st
 void api_communication::handleMessage(const gloox::Message& msg, gloox::MessageSession* session) {
 	ptree content;
 	
+	content.put("info", "message");
 	content.put("account", msg.from().username());
 	content.put("resource_name", msg.from().resource());
 	content.put("message", msg.body());
@@ -174,7 +175,7 @@ void api_communication::onConnect() {
 void api_communication::onDisconnect(gloox::ConnectionError e) {
 	ptree content;
 	
-	content.put("warning", "disconnect");
+	content.put("info", "disconnect");
 	content.put("error_code", e);
 	
 	communicate(*this, content);

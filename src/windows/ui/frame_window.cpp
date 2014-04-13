@@ -1,4 +1,5 @@
 #include <boost/assign.hpp>
+#include "../process/ui_control.h"
 #include "frame_window.h"
 #include "resource.h"
 #include "api_message.h"
@@ -292,9 +293,9 @@ bool frame_window::on_login_notify(void* msg) {
 
 			CButtonUI* login_button = dynamic_cast<CButtonUI*>(pmsg->pSender);
 			login_button->SetEnabled(false);
-
-			// ≤‚ ‘¥˙¬Î
-			api_msgs.push_back(new api_communication_login_failed());
+			
+			ui_control& m_ui_control = ui_control::get_mutable_instance();
+			m_ui_control.login(account.GetData(), password.GetData());
 		}
 	}
 

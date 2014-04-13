@@ -26,7 +26,11 @@ public:
 	bool create();
 	bool handle_background_message();
 	void destory();
-
+	
+	void post_message(api_message* msg) {
+		api_msgs.push_back(msg);
+	}
+	
 	DuiLib::CPaintManagerUI m_pm;
 
 private:

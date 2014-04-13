@@ -1,5 +1,6 @@
 #include <DuiLib/StdAfx.h>
 #include "frame_window.h"
+#include "../process/control.h"
 
 using DuiLib::CPaintManagerUI;
 
@@ -12,19 +13,35 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("res"));
 	
+	// 初始化COM
 	HRESULT Hr = ::CoInitialize(NULL);                // 仅在界面线程
-	if(FAILED(Hr)) {
+	if (FAILED(Hr)) {
 		MessageBox(NULL, _T("初始化COM失败!"), _T("错误"), MB_ICONERROR | MB_OK);
-		return 1;
+		return 0;
 	}
 	
-	frame_window& window = frame_window::get_mutable_instance();
-	if (!window.create())
-		return 2;
+	do {
+		// 初始化后台
+		control& m_control = control::get_mutable_instance();
+		if (!m_control.open()) {
+			MessageBox(NULL, _T("程序初始化失败!"), _T("错误"), MB_ICONERROR | MB_OK);
+			break;
+		}
 	
-	window_message_loop();
+		// 初始化界面
+		frame_window& m_window = frame_window::get_mutable_instance();
+		if (!m_window.create()) {
+			MessageBox(NULL, _T("界面初始化失败!"), _T("错误"), MB_ICONERROR | MB_OK);
+			m_control.close();
+			break;
+		}
 	
-	window.destory();
+		window_message_loop();
+	
+		m_window.destory();
+		m_control.close();
+	} while (0);
+	
 	::CoUninitialize();
 	
 	return 0;

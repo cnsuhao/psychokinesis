@@ -1,6 +1,7 @@
 #include <boost/assert.hpp>
 #include <boost/foreach.hpp>
 #include "control.h"
+#include "ui_control.h"
 #include "../api/api_download.h"
 #include "../api/api_communication.h"
 #include "../adapter/adapter_download.h"
@@ -9,32 +10,47 @@
 using namespace psychokinesis;
 
 #ifdef PSYCHOKINESIS_DEBUG
-#include <iostream>
-
-using namespace std;
+#include <fstream>
 
 class api_listener_with_debug : public api_listener {
 public:
+	api_listener_with_debug() {
+		debug_file.open("log.txt", std::ofstream::out | std::ofstream::app);
+	}
+	
+	~api_listener_with_debug() {
+		debug_file.close();
+	}
+	
 	virtual void debug(const boost::property_tree::ptree& content) {
 		try {
-			cout << "debug: " << content.get<string>("debug") << endl;
+			debug_file << "debug: " << content.get<std::string>("debug") << std::endl;
 		} catch (boost::property_tree::ptree_bad_path) {
-			cout << "bad json!" << endl;
-			BOOST_ASSERT(0 && "");
+			BOOST_ASSERT(0 && "bad debug json!");
 		}
 	}
 	
 	virtual void communicate(const api& caller, boost::property_tree::ptree& content) {
 	}
+	
+private:
+	std::ofstream debug_file;
 };
 #endif
 
 control::control() {
+	ui_control& m_ui_control = ui_control::get_mutable_instance();
+	
 	api_download* download = new api_download();
 	adapter_download* download_adapter = new adapter_download(download);
 	api_communication* communication = new api_communication();
 	adapter_communication* communication_adapter = new adapter_communication(communication);
 	
+	// UI控制需要最高优先级监听，保证消息没改变
+	download->attach_listener(&m_ui_control);
+	communication->attach_listener(&m_ui_control);
+	
+	// 会改变消息的监听者优先级最低
 	// api_download的事件监听者
 	bind_listener(download, communication_adapter);
 	
@@ -85,7 +101,7 @@ void control::bind_listener(api* bind_api, api* listen_api) {
 	api_listener_list.push_back(listener);
 }
 
-#define TEST
+// #define TEST
 #ifdef TEST
 
 #include <iostream>

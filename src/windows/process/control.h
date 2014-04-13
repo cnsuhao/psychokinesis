@@ -2,9 +2,13 @@
 #define _CONTROL_H_
 
 #include <boost/ptr_container/ptr_container.hpp>
+#include <boost/serialization/singleton.hpp>
 #include "../api/api.h"
 
+
 namespace psychokinesis {
+
+class ui_control;
 
 class api_listener_with_control : public api_listener {
 public: 
@@ -24,10 +28,12 @@ private:
 	api* m_adapter;
 };
 
-class control {
+class control : public boost::serialization::singleton<control> {
 public:
 	control();
 	~control();
+	
+	friend class ui_control;
 	
 	bool open();
 	void close();

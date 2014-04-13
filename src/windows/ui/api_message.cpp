@@ -17,15 +17,17 @@ void api_communication_logged::execute() {
 
 void api_communication_login_failed::execute() {
 	CPaintManagerUI& window_manager = frame_window::get_mutable_instance().m_pm;
-
-	MessageBox(NULL, _T("µÇÂ¼Ê§°Ü!"), _T("´íÎó"), MB_ICONERROR | MB_OK);
-
-	CEditUI* account_edit = dynamic_cast<CEditUI*>(window_manager.FindControl(_T("accountedit")));
-	CEditUI* password_edit = dynamic_cast<CEditUI*>(window_manager.FindControl(_T("pwdedit")));
-	account_edit->SetEnabled(true);
-	password_edit->SetText(_T(""));
-	password_edit->SetEnabled(true);
-
 	CButtonUI* login_button = dynamic_cast<CButtonUI*>(window_manager.FindControl(_T("loginbtn")));
-	login_button->SetEnabled(true);
+	
+	if (!login_button->IsEnabled()) {
+		MessageBox(NULL, _T("µÇÂ¼Ê§°Ü!"), _T("´íÎó"), MB_ICONERROR | MB_OK);
+
+		CEditUI* account_edit = dynamic_cast<CEditUI*>(window_manager.FindControl(_T("accountedit")));
+		CEditUI* password_edit = dynamic_cast<CEditUI*>(window_manager.FindControl(_T("pwdedit")));
+		account_edit->SetEnabled(true);
+		password_edit->SetText(_T(""));
+		password_edit->SetEnabled(true);
+
+		login_button->SetEnabled(true);
+	}
 }
