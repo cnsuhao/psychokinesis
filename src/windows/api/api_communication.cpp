@@ -206,6 +206,7 @@ void api_communication::configure() {
 	client->disconnect();
 	
 	client->setServer(server);
+	const_cast<gloox::JID&>(client->jid()).setServer(server);            // 需同时修改JID里的server
 	if (port > -1)
 		client->setPort(port);
 	client->setUsername(account);
@@ -220,20 +221,27 @@ void api_communication::configure() {
 void api_communication::run_client_thread(void* handle) {
 	api_communication* h = (api_communication*)handle;
 	
+	if (!h->immediate_connect)
+		h->reconnect_semaphore.wait();
+	
 	while (h->is_open) {
 		// 调用 j->connect(true)时，即实现与服务器的连接，连接成功会返回真。
 		// connect函数参数为false表示不阻塞方式连接，经测试也会造成短暂阻塞
 		// 而如果为true ，则为阻塞方式连接，即会等待接收数据
 		h->client->connect(true);
 		
-		if (h->is_open)
-			h->reconnect_semaphore.timed_wait(boost::get_system_time() + boost::posix_time::seconds(h->reconnect_timeout));
+		if (h->is_open) {
+			if (h->reconnect_timeout == 0)
+				h->reconnect_semaphore.wait();
+			else
+				h->reconnect_semaphore.timed_wait(boost::get_system_time() + boost::posix_time::seconds(h->reconnect_timeout));
+		}
 	}
 }
 
 
 
-// #define TEST
+// #define TEST                                        // 编译指令： i686-w64-mingw32-g++ api_communication.cpp -o communication.exe -g -static -DPSYCHOKINESIS_DEBUG -I$HOME/mingw32/include -L$HOME/mingw32/lib -lgloox -lwsock32 -lgdi32 -ldnsapi -lcrypt32 -lsecur32 -lboost_system -lboost_thread_win32
 #ifdef TEST
 
 #include <iostream>
@@ -267,6 +275,7 @@ int main() {
 	api_communication_listener listener;
 	char json_path[260];
 	ptree json;
+	shared_ptr<ptree> result;
 	
 	cout << "config json file's path: ";
 	cin.getline(json_path, 260);
@@ -281,7 +290,7 @@ int main() {
 		return 0;
 	}
 		
-	shared_ptr<ptree> result = api.execute(json);
+	result = api.execute(json);
 	
 	if (result->get<int>("ret_code")) {
 		cout << "config failed! ret_code = " << result->get<int>("ret_code") << endl;

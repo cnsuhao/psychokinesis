@@ -1,11 +1,16 @@
 #include <boost/assert.hpp>
 #include <boost/foreach.hpp>
+#include <boost/filesystem.hpp>
 #include "control.h"
 #include "ui_control.h"
 #include "../api/api_download.h"
 #include "../api/api_communication.h"
 #include "../adapter/adapter_download.h"
 #include "../adapter/adapter_communication.h"
+
+#define LOGIN_SERVER_INFO_FILE "server.json"
+
+using boost::property_tree::ptree;
 
 using namespace psychokinesis;
 
@@ -76,6 +81,9 @@ control::~control() {
 
 
 bool control::open() {
+	// 获取配置设置API
+	load_config();
+	
 	BOOST_FOREACH(api& i, adapter_list) {
 		if (!i.open())
 		{
@@ -100,6 +108,53 @@ void control::bind_listener(api* bind_api, api* listen_api) {
 	bind_api->attach_listener(listener);
 	api_listener_list.push_back(listener);
 }
+
+
+void control::load_config() {
+	ptree json;
+	bool immediate_connect = true;
+	
+	try {
+		boost::property_tree::read_json(LOGIN_SERVER_INFO_FILE, json);
+	} catch (...) {
+		immediate_connect = false;
+	}
+	
+	// 设置api_communication
+	boost::ptr_list<api>::iterator communication_adapter = std::find_if(adapter_list.begin(),
+																		adapter_list.end(), 
+																		find_api_func<adapter_communication>());
+	if (immediate_connect) {
+		dynamic_cast<adapter_communication*>(&(*communication_adapter))->immediate_connect_set(true);
+		communication_adapter->execute(json);
+	}
+}
+
+
+void control::save_config() {
+	ptree config, communication_config;
+	boost::ptr_list<api>::iterator communication_adapter = std::find_if(adapter_list.begin(),
+																		adapter_list.end(), 
+																		find_api_func<adapter_communication>());
+	adapter_communication* communication = dynamic_cast<adapter_communication*>(&(*communication_adapter));
+	
+	communication_config.put("server", communication->server_ip_get());
+	communication_config.put("port", communication->server_port_get());
+	communication_config.put("account", communication->account_get());
+	communication_config.put("password", communication->password_get());
+	communication_config.put("resource", communication->resource_get());
+	communication_config.put("reconnect_timeout", 0);
+	
+	config.put_child("parameters", communication_config);
+	config.put("opr", "configure");
+	
+	boost::filesystem::path file(LOGIN_SERVER_INFO_FILE);
+    if(boost::filesystem::exists(file))
+            boost::filesystem::remove(file);
+	
+	boost::property_tree::write_json(LOGIN_SERVER_INFO_FILE, config);
+}
+
 
 // #define TEST
 #ifdef TEST

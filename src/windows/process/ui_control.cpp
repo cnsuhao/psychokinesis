@@ -10,32 +10,19 @@ using boost::property_tree::ptree;
 
 using namespace psychokinesis;
 
-template <typename T>
-class list_find_func {
-public:
-	bool operator()(const api& m_api) {
-		if (typeid(m_api) == typeid(T))
-			return true;
-		else
-			return false;
-	}
-};
-
 void ui_control::login(const string& account, const string& password) {
 	boost::ptr_list<api>& adapter_list = control::get_mutable_instance().adapter_list;
 	boost::ptr_list<api>::iterator communication_adapter = std::find_if(adapter_list.begin(),
 																		adapter_list.end(), 
-																		list_find_func<adapter_communication>());
-	if (communication_adapter == adapter_list.end())
-		BOOST_ASSERT(0 && "communication_adapter can't be found!");
-		
+																		find_api_func<adapter_communication>());
+	
 	ptree args, parameters;
 	parameters.put("server", "127.0.0.1");
-	parameters.put("port", "5223");
+	parameters.put("port", -1);
 	parameters.put("account", account);
 	parameters.put("password", password);
 	parameters.put("resource", "psychokinesis-pc");
-	parameters.put("reconnect_timeout", 10);
+	parameters.put("reconnect_timeout", 0);             // 不进行自动重连
 	args.put("opr", "configure");
 	args.add_child("parameters", parameters);
 	
@@ -65,8 +52,18 @@ void ui_control::communicate(const api& caller, boost::property_tree::ptree& con
 
 
 void ui_control::on_logged() {
+	control::get_mutable_instance().save_config();
+	
+	boost::ptr_list<api>& adapter_list = control::get_mutable_instance().adapter_list;
+	boost::ptr_list<api>::iterator communication_adapter = std::find_if(adapter_list.begin(),
+																		adapter_list.end(), 
+																		find_api_func<adapter_communication>());
+	adapter_communication* communication = dynamic_cast<adapter_communication*>(&(*communication_adapter));
+	
+	communication->reconnect_timeout_set(10);                      // 登录成功后设置中断后重连时间为10s
+	
 	frame_window& m_window = frame_window::get_mutable_instance();
-	m_window.post_message(new api_communication_logged());
+	m_window.post_message(new api_communication_logged(communication->account_get(), communication->password_get()));
 }
 
 

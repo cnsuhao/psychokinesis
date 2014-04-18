@@ -3,6 +3,7 @@
 #include "frame_window.h"
 #include "resource.h"
 #include "api_message.h"
+#include "encoding_changer.h"
 #include <shlobj.h>
 
 using DuiLib::CSliderUI;
@@ -292,10 +293,12 @@ bool frame_window::on_login_notify(void* msg) {
 			password_edit->SetEnabled(false);
 
 			CButtonUI* login_button = dynamic_cast<CButtonUI*>(pmsg->pSender);
+			login_button->SetText(_T("µÇÂ¼ÖÐ"));
 			login_button->SetEnabled(false);
 			
 			ui_control& m_ui_control = ui_control::get_mutable_instance();
-			m_ui_control.login(account.GetData(), password.GetData());
+			m_ui_control.login(encoding_changer::ascii2utf8(account.GetData()),
+							   encoding_changer::ascii2utf8(password.GetData()));
 		}
 	}
 

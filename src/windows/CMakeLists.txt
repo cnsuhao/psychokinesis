@@ -19,6 +19,7 @@ SET(SRC_LIST api/api_communication.cpp
 	adapter/adapter_download.cpp
 	process/control.cpp
 	process/ui_control.cpp
+	ui/encoding_changer.cpp
 	ui/api_message.cpp
 	ui/frame_window.cpp
 	ui/psychokinesis.cpp
@@ -48,6 +49,7 @@ TARGET_LINK_LIBRARIES(psychokinesis winmm)
 TARGET_LINK_LIBRARIES(psychokinesis iphlpapi)
 TARGET_LINK_LIBRARIES(psychokinesis psapi)
 TARGET_LINK_LIBRARIES(psychokinesis boost_system)
+TARGET_LINK_LIBRARIES(psychokinesis boost_filesystem)
 TARGET_LINK_LIBRARIES(psychokinesis boost_serialization)
 TARGET_LINK_LIBRARIES(psychokinesis boost_thread_win32)
 TARGET_LINK_LIBRARIES(psychokinesis expat)

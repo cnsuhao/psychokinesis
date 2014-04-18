@@ -19,7 +19,7 @@ class api_communication : public api, public gloox::MessageSessionHandler, publi
 public:
 	api_communication()
 		: client(NULL), client_thread(NULL), reconnect_semaphore(0), 
-		  is_open(false), port(-1), reconnect_timeout(10)
+		  is_open(false), immediate_connect(false), port(-1), reconnect_timeout(0)
 	{}
 	virtual bool open();
 	
@@ -28,8 +28,32 @@ public:
 	
 	virtual void close();
 	
+	const std::string& server_ip_get() const {
+		return server;
+	}
+	
+	int server_port_get() const {
+		return port;
+	}
+	
 	const std::string& account_get() const {
 		return account;
+	}
+	
+	const std::string& password_get() const {
+		return password;
+	}
+	
+	const std::string& resource_get() const {
+		return resource;
+	}
+	
+	void immediate_connect_set(bool immediate_connect) {
+		this->immediate_connect = immediate_connect;
+	}
+	
+	void reconnect_timeout_set(unsigned int reconnect_timeout) {
+		this->reconnect_timeout = reconnect_timeout;
 	}
 	
 	/**
@@ -56,13 +80,14 @@ private:
 	boost::thread* client_thread;                                      // 客户端线程
 	boost::interprocess::interprocess_semaphore reconnect_semaphore;   // 立即重连信号量
 	bool is_open;                                                      // 开启标识
+	bool immediate_connect;                                            // 开启后立刻连接
 	
 	std::string server;                        // 服务器域名
 	int port;                                  // 服务器端口号
 	std::string account;                       // 账号名
 	std::string password;                      // 密码
 	std::string resource;                      // 资源名
-	unsigned int reconnect_timeout;            // 重连等待时间
+	unsigned int reconnect_timeout;            // 自动重连等待时间（秒），如果为0则不自动重连
 };
 
 } // namespace psychokinesis

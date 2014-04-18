@@ -8,7 +8,16 @@
 
 namespace psychokinesis {
 
-class ui_control;
+template <typename T>
+class find_api_func {
+public:
+	bool operator()(const api& m_api) {
+		if (typeid(m_api) == typeid(T))
+			return true;
+		else
+			return false;
+	}
+};
 
 class api_listener_with_control : public api_listener {
 public: 
@@ -28,6 +37,8 @@ private:
 	api* m_adapter;
 };
 
+class ui_control;
+
 class control : public boost::serialization::singleton<control> {
 public:
 	control();
@@ -40,6 +51,8 @@ public:
 	
 private:
 	void bind_listener(api* bind_api, api* listen_api);
+	void load_config();
+	void save_config();
 	
 	boost::ptr_list<api_listener> api_listener_list;
 	boost::ptr_list<api> adapter_list;
