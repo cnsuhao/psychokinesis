@@ -78,6 +78,13 @@ private:
 	
 	int change_global_option(const aria2::KeyVals& options);
 	
+	aria2::KeyVals get_global_options() {
+		if (is_open)
+			return aria2::getGlobalOptions(aria2_session);
+		else
+			return aria2_global_options;
+	}
+	
 	static void run_aria2(void* handle);
 	
 	static int downloadEventCallback(aria2::Session* session, aria2::DownloadEvent event,
@@ -86,6 +93,7 @@ private:
 	aria2::Session* aria2_session;
 	boost::thread* aria2_thread;
 	bool is_open;
+	aria2::KeyVals aria2_global_options;                        // 用于api开启前存储配置
 };
 
 } // namespace psychokinesis

@@ -26,20 +26,40 @@ public:
 		return m_api->server_ip_get();
 	}
 	
+	void server_ip_set(const std::string& server_ip) {
+		m_api->server = server_ip;
+	}
+	
 	int server_port_get() const {
 		return m_api->server_port_get();
+	}
+	
+	void server_port_set(int server_port) {
+		m_api->port = server_port;
 	}
 	
 	const std::string& account_get() const {
 		return m_api->account_get();
 	}
 	
+	void account_set(const std::string& account) {
+		m_api->account = account;
+	}
+	
 	const std::string& password_get() const {
 		return m_api->password_get();
 	}
 	
+	void password_set(const std::string& password) {
+		m_api->password = password;
+	}
+	
 	const std::string& resource_get() const {
 		return m_api->resource_get();
+	}
+	
+	void resource_set(const std::string& resource) {
+		m_api->resource = resource;
 	}
 	
 	void immediate_connect_set(bool immediate_connect) {

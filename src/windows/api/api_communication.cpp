@@ -71,12 +71,18 @@ shared_ptr<ptree> api_communication::execute(const ptree& args, const api* /*cal
 		} else if (opr == "configure") {
 			ptree parameters = args.get_child("parameters");
 			
-			server = parameters.get<string>("server");
-			port = parameters.get<int>("port");
-			account = parameters.get<string>("account");
-			password = parameters.get<string>("password");
-			resource = parameters.get<string>("resource");
-			reconnect_timeout = parameters.get<unsigned int>("reconnect_timeout");
+			if (parameters.count("server"))
+				server = parameters.get<string>("server");
+			if (parameters.count("port"))
+				port = parameters.get<int>("port");
+			if (parameters.count("account"))
+				account = parameters.get<string>("account");
+			if (parameters.count("password"))
+				password = parameters.get<string>("password");
+			if (parameters.count("resource"))
+				resource = parameters.get<string>("resource");
+			if (parameters.count("reconnect_timeout"))
+				reconnect_timeout = parameters.get<unsigned int>("reconnect_timeout");
 			
 			if (is_open)
 				configure();
@@ -213,7 +219,7 @@ void api_communication::configure() {
 	client->setPassword(password);
 	client->setResource(resource);
 	
-	if (!reconnect_semaphore.try_wait())
+	if (!reconnect_semaphore.try_wait() && account.length() > 0)         // 账号长度大于0时才尝试连接，防止空账号登录
 		reconnect_semaphore.post();
 }
 
@@ -221,8 +227,7 @@ void api_communication::configure() {
 void api_communication::run_client_thread(void* handle) {
 	api_communication* h = (api_communication*)handle;
 	
-	if (!h->immediate_connect)
-		h->reconnect_semaphore.wait();
+	h->reconnect_semaphore.wait();
 	
 	while (h->is_open) {
 		// 调用 j->connect(true)时，即实现与服务器的连接，连接成功会返回真。

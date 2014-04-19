@@ -15,9 +15,13 @@ shared_ptr<ptree> adapter_communication::execute(const ptree& args, const api* c
 		return m_api->execute(args);
 		
 	ptree req;
-	shared_ptr<ptree> ret;
+	shared_ptr<ptree> ret = shared_ptr<ptree>(new ptree());
 	
 	if (typeid(*caller) == typeid(api_download)) {
+		if (!m_api->is_open) {
+			return shared_ptr<ptree>(new ptree(args));
+		}
+		
 		req.put("opr", "communicate");
 		
 		std::stringstream message_sstr;
@@ -30,6 +34,9 @@ shared_ptr<ptree> adapter_communication::execute(const ptree& args, const api* c
 		for (vector<string>::iterator it = resources->begin();
 			 it != resources->end();
 			 ++it) {
+			if (*it == m_api->resource)
+				continue;
+			
 			req.put("resource_name", *it);
 			
 			ret = m_api->execute(req);                  // 向自己账号的所有其他在线客户端发送消息
@@ -38,7 +45,7 @@ shared_ptr<ptree> adapter_communication::execute(const ptree& args, const api* c
 			}
 		}
 	} else {
-		req = args;
+		ret = shared_ptr<ptree>(new ptree(args));
 	}
 	
 	return ret;

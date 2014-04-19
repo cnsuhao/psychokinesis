@@ -1,6 +1,7 @@
 #include <boost/assert.hpp>
 #include "control.h"
 #include "ui_control.h"
+#include "../adapter/adapter_download.h"
 #include "../adapter/adapter_communication.h"
 #include "../ui/frame_window.h"
 #include "../ui/api_message.h"
@@ -17,29 +18,46 @@ void ui_control::login(const string& account, const string& password) {
 																		find_api_func<adapter_communication>());
 	
 	ptree args, parameters;
-	parameters.put("server", "127.0.0.1");
-	parameters.put("port", -1);
 	parameters.put("account", account);
 	parameters.put("password", password);
-	parameters.put("resource", "psychokinesis-pc");
 	parameters.put("reconnect_timeout", 0);             // 不进行自动重连
 	args.put("opr", "configure");
 	args.add_child("parameters", parameters);
 	
 	communication_adapter->execute(args, NULL);
+	
+	frame_window& m_window = frame_window::get_mutable_instance();
+	m_window.post_message(new api_communication_logging(account, password));
+}
+
+
+void ui_control::change_store_path(const std::string& path) {
+	change_download_global_option("dir", path);
+}
+
+
+void ui_control::change_max_download_speed(const std::string& speed) {
+	change_download_global_option("max-download-limit", speed);
+	control::get_mutable_instance().save_config();
+}
+
+
+void ui_control::change_max_upload_speed(const std::string& speed) {
+	change_download_global_option("max-upload-limit", speed);
+	control::get_mutable_instance().save_config();
 }
 
 
 void ui_control::communicate(const api& caller, boost::property_tree::ptree& content) {
+	string info;
+		
+	try {
+		info = content.get<string>("info");
+	} catch(...) {
+		return;
+	}
+	
 	if (typeid(caller) == typeid(api_communication)) {
-		string info;
-		
-		try {
-			info = content.get<string>("info");
-		} catch(...) {
-			BOOST_ASSERT(0 && "communication_api communicate failed!");
-		}
-		
 		if (info == "connected") {
 			on_logged();
 		}
@@ -47,7 +65,31 @@ void ui_control::communicate(const api& caller, boost::property_tree::ptree& con
 			int error_code = content.get<int>("error_code");
 			on_login_failed(error_code);
 		}
+	} else if (typeid(caller) == typeid(api_download)) {
+		if (info == "global_options_changed") {
+			ptree option_list = content.get_child("options");
+			BOOST_FOREACH(const ptree::value_type& option, option_list) {
+				string option_name = option.second.get<string>("name");
+				
+				if (option_name == "dir") {
+					on_download_store_path_changed(option.second.get<string>("value"));
+				}
+			}
+		}
 	}
+}
+
+
+inline void ui_control::change_download_global_option(const string& name, const string& value) {
+	boost::ptr_list<api>& adapter_list = control::get_mutable_instance().adapter_list;
+	boost::ptr_list<api>::iterator download_adapter = std::find_if(adapter_list.begin(),
+																		adapter_list.end(), 
+																		find_api_func<adapter_download>());
+	adapter_download* download = dynamic_cast<adapter_download*>(&(*download_adapter));																	
+	
+	aria2::KeyVals option;
+	option.push_back(std::make_pair(name.c_str(), value.c_str()));
+	download->change_global_option(option);
 }
 
 
@@ -70,4 +112,12 @@ void ui_control::on_logged() {
 void ui_control::on_login_failed(int error_code) {
 	frame_window& m_window = frame_window::get_mutable_instance();
 	m_window.post_message(new api_communication_login_failed(error_code));
+}
+
+
+void ui_control::on_download_store_path_changed(const std::string& new_path) {
+	control::get_mutable_instance().save_config();
+	
+	frame_window& m_window = frame_window::get_mutable_instance();
+	m_window.post_message(new api_download_store_path_changed(new_path));
 }

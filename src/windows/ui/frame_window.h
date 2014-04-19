@@ -48,6 +48,8 @@ private:
 	void delete_tray();
 	void popup_tray_menu();
 
+	void show_store_window();
+	
 	// 原始窗口事件
 	LRESULT on_create(WPARAM wParam, LPARAM lParam, bool& handled);
 	LRESULT on_close(WPARAM wParam, LPARAM lParam, bool& handled);
@@ -64,8 +66,10 @@ private:
 	bool on_changestorepath_notify(void* msg);
 	bool on_nolimitdownload_notify(void* msg);
 	bool on_limitdownload_notify(void* msg);
+	bool on_downloadedit_notify(void* msg);
 	bool on_nolimitupload_notify(void* msg);
 	bool on_limitupload_notify(void* msg);
+	bool on_uploadedit_notify(void* msg);
 
 	boost::unordered_map<std::string, int> tabs;
 	boost::ptr_deque<api_message> api_msgs;

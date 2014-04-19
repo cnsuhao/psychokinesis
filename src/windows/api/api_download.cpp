@@ -21,7 +21,7 @@ bool api_download::open() {
 		config.downloadEventCallback = downloadEventCallback;
 		config.userData = this;
 		
-		aria2_session = aria2::sessionNew(aria2::KeyVals(), config);
+		aria2_session = aria2::sessionNew(aria2_global_options, config);
 		if (aria2_session == NULL)
 			break;
 			
@@ -209,12 +209,34 @@ int api_download::list_download_items(vector<download_item>& download_items) {
 
 
 int api_download::change_global_option(const aria2::KeyVals& options) {
-	BOOST_ASSERT(aria2_session != NULL && "aria2_session == NULL");
+	int ret = 0;
 	
-	int ret = aria2::changeGlobalOption(aria2_session, options);
+	if (!is_open) {
+		BOOST_FOREACH(const aria2::KeyVals::value_type& option, options) {
+			aria2_global_options.push_back(std::make_pair(option.first,
+														  option.second));
+		}
+	} else {
+		ret = aria2::changeGlobalOption(aria2_session, options);
+	}
 	
-	if (!ret)
-		debug_print("options changed");
+	if (!ret) {
+		ptree info, poptions;
+		
+		BOOST_FOREACH(const aria2::KeyVals::value_type& option, options) {
+			ptree item;
+			
+			item.put("name", option.first);
+			item.put("value", option.second);
+			
+			poptions.push_back(std::make_pair("", item));
+		}
+		info.add_child("options", poptions);
+		info.put("info", "global_options_changed");
+		
+		communicate(*this, info);
+	} else
+		debug_print("change options failed!");
 		
 	return ret;
 }
@@ -256,6 +278,7 @@ int api_download::downloadEventCallback(aria2::Session* session, aria2::Download
 	}
 	
 	event_ptree.put("gid", aria2::gidToHex(gid));
+	event_ptree.put("info", "event");
 	
 	h->communicate(*h, event_ptree);
 	

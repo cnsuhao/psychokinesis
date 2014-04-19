@@ -21,6 +21,14 @@ public:
 	virtual void close() {
 		m_api->close();
 	}
+	
+	void change_global_option(const aria2::KeyVals& options) {
+		m_api->change_global_option(options);
+	}
+	
+	aria2::KeyVals get_global_options() {
+		return m_api->get_global_options();
+	}
 
 private:
 	boost::shared_ptr<api_download> m_api;

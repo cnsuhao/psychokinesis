@@ -5,6 +5,7 @@
 #include "api_message.h"
 #include "encoding_changer.h"
 #include <shlobj.h>
+#include <stdlib.h>
 
 using DuiLib::CSliderUI;
 using DuiLib::TNotifyUI;
@@ -155,6 +156,12 @@ void frame_window::popup_tray_menu() {
 }
 
 
+void frame_window::show_store_window() {
+	CEditUI* changestorepath_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("changestorepathedit")));
+	::ShellExecute(m_hWnd, _T("open"), changestorepath_edit->GetText().GetData(), NULL, NULL, SW_SHOW);
+}
+
+
 LRESULT frame_window::on_create(WPARAM wParam, LPARAM lParam, bool& handled) {
 	CDialogBuilder builder;
 
@@ -164,7 +171,7 @@ LRESULT frame_window::on_create(WPARAM wParam, LPARAM lParam, bool& handled) {
 	CControlUI* root = builder.Create(_T("frame.xml"), (UINT)0,  NULL, &m_pm);
 	if (!root){
 		MessageBox(NULL, _T("找不到所需的资源文件！请尝试重新下载安装软件。"), _T("错误"), MB_ICONERROR | MB_OK);
-		::PostQuitMessage(0L);
+		::exit(0);
 		return 0;
 	}
 
@@ -202,6 +209,9 @@ LRESULT frame_window::on_syscommand(WPARAM wParam, LPARAM lParam, bool& handled)
 
 LRESULT frame_window::on_command(WPARAM wParam, LPARAM lParam, bool& handled) {
 	switch(LOWORD(wParam)) {
+	case ID_TRAY_FOLDER:
+		show_store_window();
+		break;
 	case ID_TRAY_CONFIG:
 		::ShowWindow(*this, SW_SHOW);
 		break;
@@ -224,10 +234,7 @@ LRESULT frame_window::on_tray(WPARAM wParam, LPARAM lParam, bool& handled) {
 	if (lParam == WM_RBUTTONUP) {
 		popup_tray_menu();
 	} else if (lParam == WM_LBUTTONDBLCLK) {
-		if (!::IsWindowVisible(*this))
-			::ShowWindow(*this, SW_SHOW);
-		else
-			::ShowWindow(*this, SW_HIDE);
+		show_store_window();
 	} else if (lParam == WM_LBUTTONUP) {
 		if (::IsWindowVisible(*this)) {
 			// 使窗口最前
@@ -248,8 +255,10 @@ void frame_window::on_windowinit_notify(DuiLib::TNotifyUI& msg) {
 	make_notify(_T("changestorepathbtn"), &frame_window::on_changestorepath_notify);
 	make_notify(_T("nolimitdownload"), &frame_window::on_nolimitdownload_notify);
 	make_notify(_T("limitdownload"), &frame_window::on_limitdownload_notify);
+	make_notify(_T("downloadedit"), &frame_window::on_downloadedit_notify);
 	make_notify(_T("nolimitupload"), &frame_window::on_nolimitupload_notify);
 	make_notify(_T("limitupload"), &frame_window::on_limitupload_notify);
+	make_notify(_T("uploadedit"), &frame_window::on_uploadedit_notify);
 
 	CEditUI* changestorepath_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("changestorepathedit")));
 	changestorepath_edit->SetEnabled(false);
@@ -259,6 +268,16 @@ void frame_window::on_windowinit_notify(DuiLib::TNotifyUI& msg) {
 	download_edit->SetEnabled(false);
 	CEditUI* upload_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("uploadedit")));
 	upload_edit->SetEnabled(false);
+}
+
+
+static bool is_number(const CStdString& str) {
+	char* p;
+	strtoul(str.GetData(), &p, 0);
+	if (*p == 0)                      // 空字符串也认为是数字
+		return true;
+	else
+		return false;
 }
 
 
@@ -289,13 +308,6 @@ bool frame_window::on_login_notify(void* msg) {
 		CStdString password = password_edit->GetText();
 
 		if (account.GetLength() > 0 && password.GetLength() > 0) {
-			account_edit->SetEnabled(false);
-			password_edit->SetEnabled(false);
-
-			CButtonUI* login_button = dynamic_cast<CButtonUI*>(pmsg->pSender);
-			login_button->SetText(_T("登录中"));
-			login_button->SetEnabled(false);
-			
 			ui_control& m_ui_control = ui_control::get_mutable_instance();
 			m_ui_control.login(encoding_changer::ascii2utf8(account.GetData()),
 							   encoding_changer::ascii2utf8(password.GetData()));
@@ -339,9 +351,9 @@ bool frame_window::on_changestorepath_notify(void* msg) {
 			::CoTaskMemFree(pidl);
 			return true;
 		}
-
-		CEditUI* changestorepath_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("changestorepathedit")));
-		changestorepath_edit->SetText(buffer);
+		
+		ui_control& m_ui_control = ui_control::get_mutable_instance();
+		m_ui_control.change_store_path(buffer);
 
 		::CoTaskMemFree(pidl);
 	}
@@ -355,6 +367,9 @@ bool frame_window::on_nolimitdownload_notify(void* msg) {
 	if (pmsg->sType == _T("selectchanged")) {
 		CEditUI* download_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("downloadedit")));
 		download_edit->SetEnabled(false);
+		
+		ui_control& m_ui_control = ui_control::get_mutable_instance();
+		m_ui_control.change_max_download_speed(_T("0"));
 	}
 
 	return true;
@@ -367,8 +382,34 @@ bool frame_window::on_limitdownload_notify(void* msg) {
 	if (pmsg->sType == _T("selectchanged")) {
 		CEditUI* download_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("downloadedit")));
 		download_edit->SetEnabled(true);
+		
+		CStdString text = download_edit->GetText();
+		if (text.GetLength() > 0) {
+			ui_control& m_ui_control = ui_control::get_mutable_instance();
+			m_ui_control.change_max_download_speed(text.GetData());
+		}
 	}
 
+	return true;
+}
+
+
+bool frame_window::on_downloadedit_notify(void* msg) {
+	TNotifyUI* pmsg = (TNotifyUI*)msg;
+	
+	if (pmsg->sType == _T("textchanged")) {
+		CStdString text = pmsg->pSender->GetText();
+		if (!is_number(text)) {
+			pmsg->pSender->SetText(_T(""));
+			return true;
+		}
+			
+		if (text.GetLength() > 0) {
+			ui_control& m_ui_control = ui_control::get_mutable_instance();
+			m_ui_control.change_max_download_speed(text.GetData());
+		}
+	}
+	
 	return true;
 }
 
@@ -379,6 +420,9 @@ bool frame_window::on_nolimitupload_notify(void* msg) {
 	if (pmsg->sType == _T("selectchanged")) {
 		CEditUI* upload_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("uploadedit")));
 		upload_edit->SetEnabled(false);
+		
+		ui_control& m_ui_control = ui_control::get_mutable_instance();
+		m_ui_control.change_max_upload_speed(_T("0"));
 	}
 
 	return true;
@@ -391,7 +435,33 @@ bool frame_window::on_limitupload_notify(void* msg) {
 	if (pmsg->sType == _T("selectchanged")) {
 		CEditUI* upload_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("uploadedit")));
 		upload_edit->SetEnabled(true);
+		
+		CStdString text = upload_edit->GetText();
+		if (text.GetLength() > 0) {
+			ui_control& m_ui_control = ui_control::get_mutable_instance();
+			m_ui_control.change_max_upload_speed(text.GetData());
+		}
 	}
 
+	return true;
+}
+
+
+bool frame_window::on_uploadedit_notify(void* msg) {
+	TNotifyUI* pmsg = (TNotifyUI*)msg;
+	
+	if (pmsg->sType == _T("textchanged")) {
+		CStdString text = pmsg->pSender->GetText();
+		if (!is_number(text)) {
+			pmsg->pSender->SetText(_T(""));
+			return true;
+		}
+		
+		if (text.GetLength() > 0) {
+			ui_control& m_ui_control = ui_control::get_mutable_instance();
+			m_ui_control.change_max_upload_speed(text.GetData());
+		}
+	}
+	
 	return true;
 }

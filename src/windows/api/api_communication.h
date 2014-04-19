@@ -48,14 +48,6 @@ public:
 		return resource;
 	}
 	
-	void immediate_connect_set(bool immediate_connect) {
-		this->immediate_connect = immediate_connect;
-	}
-	
-	void reconnect_timeout_set(unsigned int reconnect_timeout) {
-		this->reconnect_timeout = reconnect_timeout;
-	}
-	
 	/**
      * 获取指定账号所有在线的资源名
      * @param account 账号名
@@ -74,6 +66,15 @@ private:
 	virtual void handleLog(gloox::LogLevel level, gloox::LogArea area, const std::string& message);
 	
 	void configure();
+	
+	void immediate_connect_set(bool immediate_connect) {
+		this->immediate_connect = immediate_connect;
+	}
+	
+	void reconnect_timeout_set(unsigned int reconnect_timeout) {
+		this->reconnect_timeout = reconnect_timeout;
+	}
+	
 	static void run_client_thread(void* handle);
 	
 	gloox::Client* client;                                             // 客户端实例对象指针
