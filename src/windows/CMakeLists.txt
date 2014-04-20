@@ -29,7 +29,9 @@ SET(SRC_LIST api/api_communication.cpp
 if(NOT CMAKE_BUILD_TYPE)
 	SET(CMAKE_BUILD_TYPE Debug)
 endif()
-ADD_DEFINITIONS("-Wall -DPSYCHOKINESIS_DEBUG")
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+	ADD_DEFINITIONS("-Wall -DPSYCHOKINESIS_DEBUG")
+endif(${CMAKE_BUILD_TYPE} MATCHES Debug)
 
 SET(CMAKE_CXX_FLAGS "-fpermissive")
 SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static -s -Wl,--subsystem,windows")
