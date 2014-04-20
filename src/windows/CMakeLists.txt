@@ -19,6 +19,7 @@ SET(SRC_LIST api/api_communication.cpp
 	adapter/adapter_download.cpp
 	process/control.cpp
 	process/ui_control.cpp
+	process/config_control.cpp
 	ui/encoding_changer.cpp
 	ui/api_message.cpp
 	ui/frame_window.cpp
@@ -27,7 +28,7 @@ SET(SRC_LIST api/api_communication.cpp
 	)
 	
 if(NOT CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE Debug)
+	SET(CMAKE_BUILD_TYPE Release)
 endif()
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
 	ADD_DEFINITIONS("-Wall -DPSYCHOKINESIS_DEBUG")

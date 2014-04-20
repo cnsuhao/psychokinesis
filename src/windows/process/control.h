@@ -4,6 +4,7 @@
 #include <boost/ptr_container/ptr_container.hpp>
 #include <boost/serialization/singleton.hpp>
 #include "../api/api.h"
+#include "config_control.h"
 
 
 namespace psychokinesis {
@@ -45,17 +46,20 @@ public:
 	~control();
 	
 	friend class ui_control;
+	friend class config_control;
 	
 	bool open();
 	void close();
 	
 private:
 	void bind_listener(api* bind_api, api* listen_api);
-	void load_config();
+	bool load_config();
 	void save_config();
 	
 	boost::ptr_list<api_listener> api_listener_list;
 	boost::ptr_list<api> adapter_list;
+	
+	config_control config;
 };
 
 } // namespace psychokinesis

@@ -271,7 +271,7 @@ void frame_window::on_windowinit_notify(DuiLib::TNotifyUI& msg) {
 }
 
 
-static bool is_number(const CStdString& str) {
+static bool is_number(CStdString& str) {
 	char* p;
 	strtoul(str.GetData(), &p, 0);
 	if (*p == 0)                      // 空字符串也认为是数字
@@ -322,7 +322,7 @@ bool frame_window::on_register_notify(void* msg) {
 	TNotifyUI* pmsg = (TNotifyUI*)msg;
 
 	if (pmsg->sType == _T("click")) {
-		::ShellExecute(m_hWnd, _T("open"), _T("http://www.baidu.com"), NULL, NULL, SW_SHOW);
+		::MessageBox(NULL, _T("注册功能尚未开放，敬请期待！"), _T("提示"), MB_ICONINFORMATION | MB_OK);
 	}
 	return true;
 }
@@ -353,7 +353,7 @@ bool frame_window::on_changestorepath_notify(void* msg) {
 		}
 		
 		ui_control& m_ui_control = ui_control::get_mutable_instance();
-		m_ui_control.change_store_path(buffer);
+		m_ui_control.change_store_path(encoding_changer::ascii2utf8(buffer));
 
 		::CoTaskMemFree(pidl);
 	}
@@ -369,7 +369,7 @@ bool frame_window::on_nolimitdownload_notify(void* msg) {
 		download_edit->SetEnabled(false);
 		
 		ui_control& m_ui_control = ui_control::get_mutable_instance();
-		m_ui_control.change_max_download_speed(_T("0"));
+		m_ui_control.change_max_download_limit(0);
 	}
 
 	return true;
@@ -385,8 +385,11 @@ bool frame_window::on_limitdownload_notify(void* msg) {
 		
 		CStdString text = download_edit->GetText();
 		if (text.GetLength() > 0) {
+			unsigned long limit = strtoul(text.GetData(), NULL, 0);
+			limit *= 1024;
+			
 			ui_control& m_ui_control = ui_control::get_mutable_instance();
-			m_ui_control.change_max_download_speed(text.GetData());
+			m_ui_control.change_max_download_limit(limit);
 		}
 	}
 
@@ -405,8 +408,11 @@ bool frame_window::on_downloadedit_notify(void* msg) {
 		}
 			
 		if (text.GetLength() > 0) {
+			unsigned long limit = strtoul(text.GetData(), NULL, 0);
+			limit *= 1024;
+			
 			ui_control& m_ui_control = ui_control::get_mutable_instance();
-			m_ui_control.change_max_download_speed(text.GetData());
+			m_ui_control.change_max_download_limit(limit);
 		}
 	}
 	
@@ -422,7 +428,7 @@ bool frame_window::on_nolimitupload_notify(void* msg) {
 		upload_edit->SetEnabled(false);
 		
 		ui_control& m_ui_control = ui_control::get_mutable_instance();
-		m_ui_control.change_max_upload_speed(_T("0"));
+		m_ui_control.change_max_upload_limit(0);
 	}
 
 	return true;
@@ -438,8 +444,11 @@ bool frame_window::on_limitupload_notify(void* msg) {
 		
 		CStdString text = upload_edit->GetText();
 		if (text.GetLength() > 0) {
+			unsigned long limit = strtoul(text.GetData(), NULL, 0);
+			limit *= 1024;
+			
 			ui_control& m_ui_control = ui_control::get_mutable_instance();
-			m_ui_control.change_max_upload_speed(text.GetData());
+			m_ui_control.change_max_upload_limit(limit);
 		}
 	}
 
@@ -458,8 +467,11 @@ bool frame_window::on_uploadedit_notify(void* msg) {
 		}
 		
 		if (text.GetLength() > 0) {
+			unsigned long limit = strtoul(text.GetData(), NULL, 0);
+			limit *= 1024;
+			
 			ui_control& m_ui_control = ui_control::get_mutable_instance();
-			m_ui_control.change_max_upload_speed(text.GetData());
+			m_ui_control.change_max_upload_limit(limit);
 		}
 	}
 	

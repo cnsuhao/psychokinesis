@@ -60,4 +60,28 @@ private:
 	std::string new_path;
 };
 
+class api_download_max_download_limit_changed : public api_message {
+public:
+	api_download_max_download_limit_changed(unsigned int limit)
+		: limit(limit)
+	{}
+	
+	virtual void execute();
+	
+private:
+	unsigned int limit;
+};
+
+class api_download_max_upload_limit_changed : public api_message {
+public:
+	api_download_max_upload_limit_changed(unsigned int limit)
+		: limit(limit)
+	{}
+	
+	virtual void execute();
+	
+private:
+	unsigned int limit;
+};
+
 } // namespace psychokinesis

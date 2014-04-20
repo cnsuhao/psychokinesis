@@ -12,8 +12,8 @@ class ui_control : public api_listener, public boost::serialization::singleton<u
 public:
 	void login(const std::string& account, const std::string& password);
 	void change_store_path(const std::string& path);
-	void change_max_download_speed(const std::string& speed);
-	void change_max_upload_speed(const std::string& speed);
+	void change_max_download_limit(unsigned int limit);
+	void change_max_upload_limit(unsigned int limit);
 	
 	virtual void debug(const boost::property_tree::ptree& content)
 	{}
@@ -25,6 +25,8 @@ private:
 	void on_logged();
 	void on_login_failed(int error_code);
 	void on_download_store_path_changed(const std::string& new_path);
+	void on_download_max_download_limit_changed(unsigned int limit);
+	void on_download_max_upload_limit_changed(unsigned int limit);
 };
 
 } // namespace psychokinesis

@@ -1,3 +1,4 @@
+#include <sstream>
 #include <boost/assert.hpp>
 #include "control.h"
 #include "ui_control.h"
@@ -7,6 +8,7 @@
 #include "../ui/api_message.h"
 
 using std::string;
+using std::stringstream;
 using boost::property_tree::ptree;
 
 using namespace psychokinesis;
@@ -36,15 +38,17 @@ void ui_control::change_store_path(const std::string& path) {
 }
 
 
-void ui_control::change_max_download_speed(const std::string& speed) {
-	change_download_global_option("max-download-limit", speed);
-	control::get_mutable_instance().save_config();
+void ui_control::change_max_download_limit(unsigned int limit) {
+	stringstream str_limit;
+	str_limit << limit;
+	change_download_global_option("max-overall-download-limit", str_limit.str());
 }
 
 
-void ui_control::change_max_upload_speed(const std::string& speed) {
-	change_download_global_option("max-upload-limit", speed);
-	control::get_mutable_instance().save_config();
+void ui_control::change_max_upload_limit(unsigned int limit) {
+	stringstream str_limit;
+	str_limit << limit;
+	change_download_global_option("max-overall-upload-limit", str_limit.str());
 }
 
 
@@ -73,6 +77,10 @@ void ui_control::communicate(const api& caller, boost::property_tree::ptree& con
 				
 				if (option_name == "dir") {
 					on_download_store_path_changed(option.second.get<string>("value"));
+				} else if (option_name == "max-overall-download-limit") {
+					on_download_max_download_limit_changed(option.second.get<unsigned int>("value"));
+				} else if (option_name == "max-overall-upload-limit") {
+					on_download_max_upload_limit_changed(option.second.get<unsigned int>("value"));
 				}
 			}
 		}
@@ -120,4 +128,20 @@ void ui_control::on_download_store_path_changed(const std::string& new_path) {
 	
 	frame_window& m_window = frame_window::get_mutable_instance();
 	m_window.post_message(new api_download_store_path_changed(new_path));
+}
+
+
+void ui_control::on_download_max_download_limit_changed(unsigned int limit) {
+	control::get_mutable_instance().save_config();
+	
+	frame_window& m_window = frame_window::get_mutable_instance();
+	m_window.post_message(new api_download_max_download_limit_changed(limit));
+}
+
+
+void ui_control::on_download_max_upload_limit_changed(unsigned int limit) {
+	control::get_mutable_instance().save_config();
+	
+	frame_window& m_window = frame_window::get_mutable_instance();
+	m_window.post_message(new api_download_max_upload_limit_changed(limit));
 }
