@@ -1,5 +1,8 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include <winuser.h>
+1 RT_MANIFEST psychokinesis.manifest
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -65,6 +68,46 @@ BEGIN
         MENUITEM "Psychokinesis ÎÄ¼þ¼Ð",           ID_TRAY_FOLDER
         MENUITEM "ÅäÖÃ",                          ID_TRAY_CONFIG
         MENUITEM "ÍË³ö",                          ID_TRAY_EXIT
+    END
+END
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "CompanyName", ""
+            VALUE "FileDescription", "Controlling everything via your mobile phone"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "psychokinesis.exe"
+            VALUE "LegalCopyright", ""
+            VALUE "OriginalFilename", "psychokinesis.exe"
+            VALUE "ProductName", "Psychokinesis"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
     END
 END
 

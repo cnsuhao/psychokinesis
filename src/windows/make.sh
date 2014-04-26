@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# 程序依赖动态库目录
+DLL_PATH=$HOME/mingw32/bin
+
 # 获取当前项目所在目录
 RUN_PATH=`pwd`
 PROJECT_PATH=`echo $0 | grep "^/"`
@@ -35,4 +38,20 @@ if [ $? -ne 0 ]; then
 fi
 cd -
 
-sz ${PROJECT_PATH}/build/psychokinesis.exe
+# 打包
+cd ${PROJECT_PATH}/build
+cp -f ${DLL_PATH}/libUIlib.dll .
+cp -f ${PROJECT_PATH}/default/config.xml .
+cp -f ${PROJECT_PATH}/packet/packet.bat .
+cp -f ${PROJECT_PATH}/packet/rar_sfx.conf .
+cp -f ${PROJECT_PATH}/packet/setup.bat .
+cp -rf ${PROJECT_PATH}/ui/res ./res
+
+7zr a Psychokinesis.7z psychokinesis.exe libUIlib.dll res config.xml packet.bat rar_sfx.conf setup.bat
+if [ $? -ne 0 ]; then
+        echo "packet failed!"
+        exit 4
+fi
+cd -
+
+sz ${PROJECT_PATH}/build/Psychokinesis.7z

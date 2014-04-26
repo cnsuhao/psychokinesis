@@ -20,6 +20,7 @@ SET(SRC_LIST api/api_communication.cpp
 	process/control.cpp
 	process/ui_control.cpp
 	process/config_control.cpp
+	process/program_install.cpp
 	ui/encoding_changer.cpp
 	ui/api_message.cpp
 	ui/frame_window.cpp
@@ -58,3 +59,4 @@ TARGET_LINK_LIBRARIES(psychokinesis boost_thread_win32)
 TARGET_LINK_LIBRARIES(psychokinesis expat)
 TARGET_LINK_LIBRARIES(psychokinesis ${MINGW32_APTH}/lib/libUIlib.dll.a)
 TARGET_LINK_LIBRARIES(psychokinesis ole32)
+TARGET_LINK_LIBRARIES(psychokinesis uuid)
