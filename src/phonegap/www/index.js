@@ -8,7 +8,8 @@ $(document).ready(function() {
 		pwd = $("#signin_password").val();
 		if (account == '' || pwd == '')
 		{
-			on_connect(Strophe.Status.AUTHFAIL);
+			$('#message_dialog_content').html('账号或密码为空！');
+			$.mobile.changePage("#message_dialog", {transition: "pop"});
 			return;
 		}
 		
@@ -20,7 +21,7 @@ $(document).ready(function() {
 	
 	$("#add_resource_button").click(function(){
 		var rs_url = $("#resource_location").val();
-		if (rs_url == '')
+		if (rs_url == '' || !rs_url.match(/^(http[s]?|ftp|magnet):/i))
 			return;
 		
 		loading_message_show('请稍等......');
@@ -39,7 +40,7 @@ $(document).ready(function() {
 						 ]
 		};
 		
-		communication.send_message(send_json, function(back_msg){
+		communication.send_message(send_json, 10*1000, function(back_msg){
 			if (back_msg.ret_code == 0 && back_msg.list[0].result == 'success')
 			{
 				var rs_number = back_msg.list[0].gid;
@@ -50,7 +51,7 @@ $(document).ready(function() {
 			}
 			else
 			{
-				alert('添加资源失败');
+				alert('添加资源失败，请确认电脑上的Psychokinesis已启用');
 			}
 			
 			loading_message_hide();
@@ -76,30 +77,31 @@ function on_connect(status)
 								var diff = Math.round((new Date() - response_time) / 1000);
 								if (diff == 31)              // 只执行一次
 								{
-									alert("PC客户端无响应");
-									
 									$("#resource_list").find("li").each(function () {
-										$(this).find(".resource_speed").html('0MB 0KB/s');
+										$(this).find(".resource_state").html('无法获取当前的下载状态，请确认电脑上的Psychokinesis已启用');
 									});
 								}
 								
 								var send_json = {method: 'download',
 						 						 opr: 'list'};
 								
-								communication.send_message(send_json, function(back_msg){
+								communication.send_message(send_json, null, function(back_msg){
 									if (back_msg.ret_code == 0)
 									{
 										for (var i = 0, len = back_msg.list.length; i < len; ++i)
 										{
 											var rs_number = back_msg.list[i].gid;
 											
-											if($("#resource_" + rs_number).length)
+											if ($("#resource_" + rs_number).length)
 											{
 												var speed = bytes_transform(back_msg.list[i].download_speed) + '/s';
 												var size = bytes_transform(back_msg.list[i].total_length);
-												var progress = Math.round(back_msg.list[i].completed_length * 100 / back_msg.list[i].total_length);
+												if (back_msg.list[i].total_length > 0)
+													var progress = Math.round(back_msg.list[i].completed_length * 100 / back_msg.list[i].total_length);
+												else
+													var progress = 0;
 												
-												$('#resource_speed_' + rs_number).html(size + ' ' + speed);
+												$('#resource_state_' + rs_number).html(size + ' ' + speed);
 												progress_objs['resource_progressbar_' + rs_number].setValue(progress);
 											}
 											else
@@ -117,7 +119,8 @@ function on_connect(status)
 	else if (status == Strophe.Status.AUTHFAIL)
 	{
 		loading_message_hide();
-		$.mobile.changePage("#signining_error_dialog", {transition: "pop"});
+		$('#message_dialog_content').html('账号或密码错误！');
+		$.mobile.changePage("#message_dialog", {transition: "pop"});
 	}
 	else if (status == Strophe.Status.ERROR || 
 			 status == Strophe.Status.CONNFAIL)
@@ -128,14 +131,50 @@ function on_connect(status)
 			ping_timer = null;
 		}
 		
+		if (status == Strophe.Status.ERROR)
+			$('#connecting_error_dialog_content').html('与服务器失去联系！');
+		else
+			$('#connecting_error_dialog_content').html('无法连接服务器！');
+		
 		loading_message_hide();
 		$.mobile.changePage("#connecting_error_dialog", {transition: "pop"});
+	}
+	else if (status == Strophe.Status.DISCONNECTED)
+	{
+		if (ping_timer)
+		{
+			window.clearInterval(ping_timer);
+			ping_timer = null;
+		}
+		
+		loading_message_hide();
+		$.mobile.changePage("#signin_page", {reverse: true});
 	}
 }
 
 function on_message(from, message)
 {
-	// alert('Get a message from ' + from + ': ' + message);
+	if (message.info == 'event')
+	{
+		var rs_number = message.gid;
+		
+		if ($("#resource_" + rs_number).length)
+		{
+			if (message.event_type == 'START')
+				var state = '0MB 0KB/s';
+			else if (message.event_type == 'PAUSE')
+				var state = '暂停';
+			else if (message.event_type == 'STOP')
+				var state = '停止';
+			else if (message.event_type == 'COMPLETE')
+				var state = '已完成';
+			else if (message.event_type == 'ERROR')
+				var state = '无法获取资源';
+				
+			if (state)
+				$('#resource_state_' + rs_number).html(state);
+		}
+	}
 }
 
 function loading_message_show(msg)
@@ -159,7 +198,7 @@ function resource_item_create(item_name, item_id)
 				 "<img src='images/movie.png' />" +
 				 "<h3>" + item_name + "</h3>" +
 				 "<p>" +
-					"<div id='resource_speed_" + item_id + "' class='resource_speed'>0MB 0KB/s</div>" +
+					"<div id='resource_state_" + item_id + "' class='resource_state'>正在连接</div>" +
 					"<div id='resource_progressbar_" + item_id + "' class='resource_progressbar'/>" + 
 				 "</p>" +
 				 "</a><a href='#resource_config'>修改下载状态</a></li>");

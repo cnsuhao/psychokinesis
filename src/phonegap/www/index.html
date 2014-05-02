@@ -47,21 +47,21 @@
     </form>
   </div>
 </div>
-<div data-role="dialog" id="signining_error_dialog">
+<div data-role="dialog" id="message_dialog">
   <div data-role="header">
-    <h1>消息</h1>
+    <h1 id="message_dialog_header">消息</h1>
   </div>
   <div data-role="content">
-    <p>登录失败。</p>
+    <p id="message_dialog_content"></p>
     <a data-role="button" data-rel="back">确定</a>
   </div>
 </div>
 <div data-role="dialog" id="connecting_error_dialog">
   <div data-role="header">
-    <h1>消息</h1>
+    <h1>错误</h1>
   </div>
   <div data-role="content">
-    <p>无法连接服务器。</p>
+    <p id="connecting_error_dialog_content"></p>
     <a data-role="button" href="#signin_page">确定</a>
   </div>
 </div>

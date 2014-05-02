@@ -1,4 +1,4 @@
-var BOSH_DOMAIN = '127.0.0.1';
+var BOSH_DOMAIN = '192.168.1.100';
 var BOSH_RESOURCE = 'psychokinesis-mobile';
 var REMOTE_RESOURCE = 'psychokinesis-pc';
 var BOSH_SERVICE = '/http-bind/';
@@ -16,7 +16,7 @@ var Communication = {
 		communication.connect = function (account, password, on_connect)
 		{
 			if (communication.xmpp_connection == null)
-					communication.xmpp_connection = new Strophe.Connection(BOSH_SERVICE);
+					communication.xmpp_connection = new Strophe.Connection('http://' + BOSH_DOMAIN + BOSH_SERVICE);
 	
 			communication.xmpp_account = account;
 			communication.xmpp_jid = account + '@' + BOSH_DOMAIN + '/' + BOSH_RESOURCE;
@@ -34,7 +34,7 @@ var Communication = {
 		{
 			communication.xmpp_connection.addHandler(function (msg)
 													 {
-														 // TODO 接收PC客户端离线消息
+														 // TODO 接收PC客户端上下线消息
 														return true;
 													 }, 
 										   null, 'presence', null, null, null); 
@@ -46,33 +46,36 @@ var Communication = {
 													 {
 														try
 														{
-															if (msg.getAttribute('type') != 'chat')
-																return true;
-																
-															var from = Strophe.getBareJidFromJid(msg.getAttribute('from'));
-															
-															if (window.navigator.userAgent.indexOf('MSIE') > 0 ||
-																!!window.navigator.userAgent.match(/Trident.*/)) {
-        														var els = msg.getElementsByTagName("*");
-																for (var i=0, numEls=els.length, el; i<numEls; i++){
-																	if (els[i].localName == 'body')
-																		var message = els[i].childNodes[0].data;
-																}
-															}
-															else
-																var message = $(msg).find('body').html();
-															
-															on_func(from, message);
-															
 															if (msg.getAttribute('from') != communication.xmpp_jid)    // 防止自己发的消息被处理
 															{
+																if (msg.getAttribute('type') != 'chat')
+																	return true;
+																
+																var from = Strophe.getBareJidFromJid(msg.getAttribute('from'));
+        														var message = $(msg).find('body')[0].childNodes[0].data;
 																var message_json = jQuery.parseJSON(message);
-																if (message_json.session_id < communication.message_listeners.length)
-																	communication.message_listeners[message_json.session_id](message_json);
+																
+																if (message_json)
+																{
+																	on_func(from, message_json);
+															
+																	if (message_json.session_id != undefined && 
+																		message_json.session_id < communication.message_listeners.length)
+																	{
+																		communication.message_listeners[message_json.session_id].func(message_json);
+																		if (communication.message_listeners[message_json.session_id].timer)
+																		{
+																			window.clearInterval(communication.message_listeners[message_json.session_id].timer);
+																			communication.message_listeners[message_json.session_id].timer = null;
+																		}
+																	}
+																}
 															}
 														}
 														catch(err)
-														{}
+														{
+															// alert(err.message);
+														}
 														
 														return true;
 													 }, 
@@ -89,12 +92,27 @@ var Communication = {
 			communication.xmpp_connection.ping.ping(BOSH_DOMAIN, null, null, 30*1000);
 		}
 		
-		communication.send_message = function (message, listener_func)
+		communication.send_message = function (message, timeout, listener_func)
 		{
 			if (listener_func)
 			{
-				communication.message_listeners[communication.message_listeners.length] = listener_func;
-				message["session_id"] = communication.message_listeners.length - 1;
+				var cur_length = communication.message_listeners.length;
+				
+				communication.message_listeners[cur_length] = {};
+				communication.message_listeners[cur_length].func = listener_func;
+				if (timeout)
+				{
+					communication.message_listeners[cur_length].timer = window.setInterval(function(){
+						var error_message = {ret_code: 1000};
+						listener_func(error_message);
+						
+						window.clearInterval(communication.message_listeners[cur_length].timer);
+						communication.message_listeners[cur_length].timer = null;
+					},
+					timeout);
+				}
+				
+				message["session_id"] = cur_length;
 				
 				var m_msg = $msg({to: communication.xmpp_account + '@' + BOSH_DOMAIN + '/' + REMOTE_RESOURCE, 
 							  	 from: communication.xmpp_jid, 
