@@ -42,12 +42,13 @@ cd -
 cd ${PROJECT_PATH}/build
 cp -f ${DLL_PATH}/libUIlib.dll .
 cp -f ${PROJECT_PATH}/default/config.xml .
+cp -f ${PROJECT_PATH}/default/dht.dat .
 cp -f ${PROJECT_PATH}/packet/packet.bat .
 cp -f ${PROJECT_PATH}/packet/rar_sfx.conf .
 cp -f ${PROJECT_PATH}/packet/setup.bat .
 cp -rf ${PROJECT_PATH}/ui/res ./res
 
-7zr a Psychokinesis.7z psychokinesis.exe libUIlib.dll res config.xml packet.bat rar_sfx.conf setup.bat
+7zr a Psychokinesis.7z psychokinesis.exe libUIlib.dll res config.xml dht.dat packet.bat rar_sfx.conf setup.bat
 if [ $? -ne 0 ]; then
         echo "packet failed!"
         exit 4
