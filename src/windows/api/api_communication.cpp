@@ -112,6 +112,9 @@ void api_communication::close() {
 	if (!reconnect_semaphore.try_wait())
 		reconnect_semaphore.post();
 	
+	client->presence().setPresence(gloox::Presence::Unavailable);
+	client->setPresence();                                  // 广播离线消息
+	
 	client->disconnect();
 	
 	client_thread->join();
@@ -127,13 +130,13 @@ void api_communication::close() {
 
 shared_ptr< vector<string> > api_communication::available_resources_get(const string& account) {
 	shared_ptr< vector<string> > resources = shared_ptr< vector<string> >(new vector<string>());
-	
+		
 	gloox::JID jid;
 	if (jid.setJID(account + "@" + server) == false) {
 		return resources;
 	}
 	
-	gloox::RosterItem* roster = client->rosterManager()->getRosterItem(jid);
+	gloox::RosterItem* roster = client->rosterManager()->getRosterItem(jid);           // 前提为jid在roster列表中
 	if (roster == NULL) {
 		return resources;
 	}

@@ -14,16 +14,16 @@ using boost::property_tree::ptree;
 using namespace psychokinesis;
 
 #ifdef PSYCHOKINESIS_DEBUG
-#include <fstream>
+#include <stdio.h>
 
 class api_listener_with_debug : public api_listener {
 public:
 	api_listener_with_debug() {
-		debug_file.open("log.txt", std::ofstream::out | std::ofstream::app);
+		debug_file = fopen("log.txt", "a+");
 	}
 	
 	~api_listener_with_debug() {
-		debug_file.close();
+		fclose(debug_file);
 	}
 	
 	virtual void debug(const ptree& content) {
@@ -33,19 +33,19 @@ public:
 		strftime(strdate, sizeof(strdate), "%X", localtime(&timep));
 		
 		try {
-			debug_file << "debug(" << strdate << "): " << content.get<string>("debug") << std::endl;
+			fprintf(debug_file, "%-10s%s\n", strdate, content.get<string>("debug").c_str());
 		} catch (boost::property_tree::ptree_bad_path) {
 			BOOST_ASSERT(0 && "bad debug json!");
 		}
 		
-		debug_file.flush();
+		fflush(debug_file);
 	}
 	
 	virtual void communicate(const api& caller, ptree& content) {
 	}
 	
 private:
-	std::ofstream debug_file;
+	FILE* debug_file;
 };
 #endif
 

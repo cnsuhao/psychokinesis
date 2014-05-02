@@ -147,6 +147,8 @@ void frame_window::popup_tray_menu() {
 	// menu that TrackPopupMenu displays. 
 	hmenuTrackPopup = GetSubMenu(hmenu, 0);
 
+	SetForegroundWindow(m_hWnd);                  // 解决托盘菜单失去焦点不会自动关闭的问题
+	
 	// Draw and track the shortcut menu.
 	TrackPopupMenu(hmenuTrackPopup, TPM_LEFTALIGN | TPM_LEFTBUTTON, 
 		mouse_point.x, mouse_point.y, 0, m_hWnd, NULL); 

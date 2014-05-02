@@ -39,7 +39,7 @@ shared_ptr<ptree> adapter_communication::execute(const ptree& args, const api* c
 			
 			req.put("resource_name", *it);
 			
-			ret = m_api->execute(req);                  // 向自己账号的所有其他在线客户端发送消息
+			ret = m_api->execute(req);                  // 向自己账号的所有其他在线客户端发送消息，服务器上需保证自己是自己的联系人（Roster）
 			if (ret->get<int>("ret_code") != 0) {
 				break;
 			}

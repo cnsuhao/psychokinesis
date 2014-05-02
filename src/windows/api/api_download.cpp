@@ -95,7 +95,43 @@ shared_ptr<ptree> api_download::execute(const ptree& args, const api* /*caller*/
 			resp->add_child("list", item_list);
 			return resp;
 			
-		} else if (opr == "remove") {
+		} else if (opr == "list_item") {
+			string gid = args.get<string>("gid");
+			
+			aria2::DownloadHandle* dh = aria2::getDownloadHandle(aria2_session, aria2::hexToGid(gid));
+			if (dh == NULL) {
+				resp->put("ret_code", 1);
+				return resp;
+			}
+			
+			string name;
+			if (dh->getNumFiles()) {
+				string file_path = dh->getFile(1).path;
+				string files_path = dh->getDir();
+				name = file_path.substr(files_path.length() + 1);
+				size_t found = name.rfind("/");
+				if (found != std::string::npos)
+					name = name.substr(0, found);
+			}
+			resp->put("name", name);
+			
+			resp->put("total_length", dh->getTotalLength());
+			
+			ptree option_list;
+			aria2::KeyVals options = dh->getOptions();
+			BOOST_FOREACH(const aria2::KeyVals::value_type& option, options) {
+				ptree option_ptree;
+				option_ptree.put("name", option.first);
+				option_ptree.put("value", option.second);
+				
+				option_list.push_back(std::make_pair("", option_ptree));
+			}
+			resp->add_child("options", option_list);
+			
+			resp->put("ret_code", 0);
+			return resp;
+			
+		}else if (opr == "remove") {
 			ptree remove_list = args.get_child("list");
 			ptree item_list;
 			
@@ -149,7 +185,7 @@ void api_download::close() {
 	
 	is_open = false;
 	
-	if (shutdown(aria2_session)) {
+	if (shutdown(aria2_session, true)) {                       // 需要强制退出，否则在下载bt资源时会不能及时退出
 		BOOST_ASSERT(0 && "shutdown aria2 failed!");
 	}
 	
@@ -261,6 +297,9 @@ int api_download::downloadEventCallback(aria2::Session* session, aria2::Download
 	ptree event_ptree;
 	
 	switch(event) {
+	case aria2::EVENT_ON_DOWNLOAD_START:
+		event_ptree.put("event_type", "START");
+		break;
 	case aria2::EVENT_ON_DOWNLOAD_PAUSE:
 		event_ptree.put("event_type", "PAUSE");
 		break;

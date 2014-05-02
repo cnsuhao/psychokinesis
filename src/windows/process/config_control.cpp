@@ -113,7 +113,8 @@ void config_control::download_load(const ptree& config) {
 	boost::ptr_list<api>& adapter_list = control::get_mutable_instance().adapter_list;
 	ptree download_config;
 	aria2::KeyVals options;
-	bool has_store_path = false, has_save_session = false, has_continue = false, has_max_connection_per_server = false;
+	bool has_store_path = false, has_save_session = false, has_continue = false, has_max_connection_per_server = false,
+		 has_dht_dat = false;
 	try {
 		download_config = config.get_child("download");
 	} catch (...) 
@@ -146,6 +147,10 @@ void config_control::download_load(const ptree& config) {
 		if (option.second.get<string>("name") == "max-connection-per-server" && 
 			value.length() > 0)
 			has_max_connection_per_server = true;
+			
+		if (option.second.get<string>("name") == "dht-file-path" && 
+			value.length() > 0)
+			has_dht_dat = true;
 	}
 	
 	// 设置api_download的默认值
@@ -165,6 +170,11 @@ void config_control::download_load(const ptree& config) {
 	}
 	if (!has_max_connection_per_server) {
 		options.push_back(std::make_pair("max-connection-per-server", "5"));
+	}
+	if (!has_dht_dat) {
+		options.push_back(std::make_pair("dht-file-path", instance_path + "dht.dat"));
+		options.push_back(std::make_pair("enable-dht", "true"));
+		options.push_back(std::make_pair("dht-entry-point", "dht.transmissionbt.com:6881"));         // 指定dht网络入口点，解决bt下载无速度的问题
 	}
 #ifdef PSYCHOKINESIS_DEBUG
 	options.push_back(std::make_pair("log-level", "debug"));

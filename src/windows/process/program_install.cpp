@@ -215,6 +215,7 @@ void program_install::uninstall() {
 			 << " del \"" << str_exe_path << "libUIlib.dll\"" << std::endl
 			 << " del \"" << str_exe_path << "session.dat\"" << std::endl
 			 << " del \"" << str_exe_path << "config.xml\"" << std::endl
+			 << " del \"" << str_exe_path << "dht.dat\"" << std::endl
 			 << " rd  /s/q \"" << str_exe_path << "res\"" << std::endl
 			 << "if exist \"" << str_exe_path << "psychokinesis.exe\" goto del" << std::endl
 			 << "rd /q \"" << str_exe_path << "\" 2>nul" << std::endl
