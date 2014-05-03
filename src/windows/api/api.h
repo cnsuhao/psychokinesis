@@ -2,6 +2,7 @@
 #define _API_H_
 
 #include <list>
+#include <vector>
 #include <string>
 #include <sstream>
 #include <boost/foreach.hpp>
@@ -19,7 +20,8 @@ class api;
 class api_listener {
 public:
 	virtual void debug(const boost::property_tree::ptree& content) = 0;
-	virtual void communicate(const api& caller, boost::property_tree::ptree& content) = 0; 
+	virtual boost::shared_ptr<boost::property_tree::ptree> 
+		communicate(const api& caller, const boost::property_tree::ptree& content) = 0; 
 };
 
 class api {
@@ -53,21 +55,21 @@ protected:
 		}
 	}
 	
-	boost::shared_ptr<std::string> communicate(const api& caller, const boost::property_tree::ptree& content) {
+	boost::shared_ptr< std::vector<std::string> > communicate(const api& caller, const boost::property_tree::ptree& content) {
 		boost::shared_lock<boost::shared_mutex> lock(listeners_mutex);
-		boost::property_tree::ptree resp = content;
+		boost::shared_ptr< std::vector<std::string> > resps(new std::vector<std::string>());
 		
 		BOOST_FOREACH(api_listener* l, listeners) {
-			l->communicate(caller, resp);
+			boost::shared_ptr<boost::property_tree::ptree> resp = l->communicate(caller, content);
+			
+			std::stringstream resp_sstr;
+			if (!resp->empty()) {
+				boost::property_tree::write_json(resp_sstr, *resp);     // 相应数据格式在这儿指定，独立于具体的API
+				resps->push_back(resp_sstr.str());
+			}
 		}
 		
-		std::stringstream resp_sstr;
-		
-		if (!resp.empty())
-			boost::property_tree::write_json(resp_sstr, resp);     // 相应数据格式在这儿指定，独立于具体的API
-		
-		boost::shared_ptr<std::string> resp_str(new std::string(resp_sstr.str()));
-		return resp_str;
+		return resps;
 	}
 	
 	void debug_print(const std::string& d) {

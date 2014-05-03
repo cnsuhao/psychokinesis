@@ -41,7 +41,8 @@ public:
 		fflush(debug_file);
 	}
 	
-	virtual void communicate(const api& caller, ptree& content) {
+	virtual boost::shared_ptr<ptree> communicate(const api& caller, const ptree& content) {
+		return boost::shared_ptr<ptree>(new ptree());
 	}
 	
 private:
@@ -57,16 +58,14 @@ control::control() {
 	api_communication* communication = new api_communication();
 	adapter_communication* communication_adapter = new adapter_communication(communication);
 	
-	// UI控制需要最高优先级监听，保证消息没改变
-	download->attach_listener(&m_ui_control);
-	communication->attach_listener(&m_ui_control);
-	
-	// 会改变消息的监听者优先级最低
 	// api_download的事件监听者
 	bind_listener(download, communication_adapter);
 	
 	// api_communication的事件监听者
 	bind_listener(communication, download_adapter);
+	
+	download->attach_listener(&m_ui_control);
+	communication->attach_listener(&m_ui_control);
 	
 #ifdef PSYCHOKINESIS_DEBUG
 	api_listener* debug_listener = new api_listener_with_debug();

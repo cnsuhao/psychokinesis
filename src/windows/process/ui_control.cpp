@@ -52,13 +52,13 @@ void ui_control::change_max_upload_limit(unsigned int limit) {
 }
 
 
-void ui_control::communicate(const api& caller, boost::property_tree::ptree& content) {
+boost::shared_ptr<ptree> ui_control::communicate(const api& caller, const ptree& content) {
 	string info;
 		
 	try {
 		info = content.get<string>("info");
 	} catch(...) {
-		return;
+		return boost::shared_ptr<ptree>(new ptree());
 	}
 	
 	if (typeid(caller) == typeid(api_communication)) {
@@ -85,6 +85,8 @@ void ui_control::communicate(const api& caller, boost::property_tree::ptree& con
 			}
 		}
 	}
+	
+	return boost::shared_ptr<ptree>(new ptree());
 }
 
 

@@ -18,7 +18,7 @@ public:
 	virtual void debug(const boost::property_tree::ptree& content)
 	{}
 	
-	virtual void communicate(const api& caller, boost::property_tree::ptree& content);
+	virtual boost::shared_ptr<boost::property_tree::ptree> communicate(const api& caller, const boost::property_tree::ptree& content);
 private:
 	inline void change_download_global_option(const std::string& name, const std::string& value);
 	

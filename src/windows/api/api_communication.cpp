@@ -161,10 +161,14 @@ void api_communication::handleMessage(const gloox::Message& msg, gloox::MessageS
 	content.put("resource_name", msg.from().resource());
 	content.put("message", msg.body());
 	
-	shared_ptr<string> resp = communicate(*this, content);
+	shared_ptr< vector<string> > resps = communicate(*this, content);
 	
-	if (resp->length() > 0)
-		session->send(*resp);
+	for (vector<string>::iterator it = resps->begin();
+		 it != resps->end();
+		 ++it) {
+		if (it->length() > 0)
+			session->send(*it);
+	}
 	
 	client->disposeMessageSession(session);
 }
@@ -268,13 +272,13 @@ public:
 		}
 	}
 	
-	virtual void communicate(const api& caller, ptree& content) {
+	virtual shared_ptr<ptree> communicate(const api& caller, const ptree& content) {
 		stringstream content_str;
 		write_json(content_str, content);
 		
 		cout << "communicate: " << content_str.str() << endl;
 		
-		content.clear();
+		return new ptree();
 	}
 };
 

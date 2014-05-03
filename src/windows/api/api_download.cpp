@@ -341,13 +341,14 @@ public:
 		cout << "debug: " << content_str.str() << endl;
 	}
 	
-	virtual void communicate(const api& caller, boost::property_tree::ptree& content) {
+	virtual boost::shared_ptr<boost::property_tree::ptree>
+		communicate(const api& caller, const boost::property_tree::ptree& content) {
 		stringstream content_str;
 		write_json(content_str, content);
 		
 		cout << "communicate: " << content_str.str() << endl;
 		
-		content.clear();
+		return new ptree();
 	}
 };
 
