@@ -1,8 +1,6 @@
 {
 	"opr": "communicate",
-	"content": {
-		"account": "test2",
-		"resource_name": "eChat 1.0",
-		"message": "hello world!"
-	}
+	"account": "test2",
+	"resource_name": "eChat 1.0",
+	"message": "hello world!"
 }
