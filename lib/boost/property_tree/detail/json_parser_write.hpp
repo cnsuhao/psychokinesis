@@ -33,7 +33,8 @@ namespace boost { namespace property_tree { namespace json_parser
             // We escape everything outside ASCII, because this code can't
             // handle high unicode characters.
             if (*b == 0x20 || *b == 0x21 || (*b >= 0x23 && *b <= 0x2E) ||
-                (*b >= 0x30 && *b <= 0x5B) || (*b >= 0x5D && *b <= 0xFF))
+                (*b >= 0x30 && *b <= 0x5B) || (*b >= 0x5D && *b <= 0xFF)
+				|| (*b >= -0x80 && *b < 0 ) ) // 不对UTF-8编码进行转换
                 result += *b;
             else if (*b == Ch('\b')) result += Ch('\\'), result += Ch('b');
             else if (*b == Ch('\f')) result += Ch('\\'), result += Ch('f');
