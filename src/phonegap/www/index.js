@@ -8,8 +8,8 @@ $(document).ready(function() {
 		pwd = $("#signin_password").val();
 		if (account == '' || pwd == '')
 		{
-			$('#message_dialog_content').html('账号或密码为空！');
-			$.mobile.changePage("#message_dialog", {transition: "pop"});
+			$('#error_dialog_content').html('账号或密码为空！');
+			$.mobile.changePage("#error_dialog", {transition: "pop"});
 			return;
 		}
 		
@@ -47,7 +47,7 @@ $(document).ready(function() {
 				
 				$("#cancel_resource_button").click();
 		
-				resource_item_create(rs_url, rs_number);
+				resource_item_create(rs_number);
 			}
 			else
 			{
@@ -78,7 +78,7 @@ function on_connect(status)
 								if (diff == 31)              // 只执行一次
 								{
 									$("#resource_list").find("li").each(function () {
-										$(this).find(".resource_state").html('无法获取当前的下载状态，请确认电脑上的Psychokinesis已启用');
+										$(this).find(".resource_state").html('无法获取当前的下载状态');
 									});
 								}
 								
@@ -106,7 +106,7 @@ function on_connect(status)
 											}
 											else
 											{
-												resource_item_create("", rs_number);
+												resource_item_create(rs_number);
 											}
 										}
 									}
@@ -119,25 +119,13 @@ function on_connect(status)
 	else if (status == Strophe.Status.AUTHFAIL)
 	{
 		loading_message_hide();
-		$('#message_dialog_content').html('账号或密码错误！');
-		$.mobile.changePage("#message_dialog", {transition: "pop"});
+		$('#error_dialog_content').html('账号或密码错误！');
+		$.mobile.changePage("#error_dialog", {transition: "pop"});
 	}
 	else if (status == Strophe.Status.ERROR || 
 			 status == Strophe.Status.CONNFAIL)
 	{
-		if (ping_timer)
-		{
-			window.clearInterval(ping_timer);
-			ping_timer = null;
-		}
-		
-		if (status == Strophe.Status.ERROR)
-			$('#connecting_error_dialog_content').html('与服务器失去联系！');
-		else
-			$('#connecting_error_dialog_content').html('无法连接服务器！');
-		
-		loading_message_hide();
-		$.mobile.changePage("#connecting_error_dialog", {transition: "pop"});
+		loading_message_show("网络中断，正在重新连接......");
 	}
 	else if (status == Strophe.Status.DISCONNECTED)
 	{
@@ -147,8 +135,8 @@ function on_connect(status)
 			ping_timer = null;
 		}
 		
-		loading_message_hide();
-		$.mobile.changePage("#signin_page", {reverse: true});
+		// 自动重连
+		communication.reconnect(on_connect);
 	}
 }
 
@@ -161,7 +149,7 @@ function on_message(from, message)
 		if ($("#resource_" + rs_number).length)
 		{
 			if (message.event_type == 'START')
-				var state = '0MB 0KB/s';
+				var state = '0B 0KB/s';
 			else if (message.event_type == 'PAUSE')
 				var state = '暂停';
 			else if (message.event_type == 'STOP')
@@ -192,16 +180,15 @@ function loading_message_hide()
 	$.mobile.hidePageLoadingMsg();
 }
 
-function resource_item_create(item_name, item_id)
+function resource_item_create(item_id)
 {
-	var list = $("<li id='resource_" + item_id + "'><a>" + 
+	var list = $("<li id='resource_" + item_id + "'>" + 
 				 "<img src='images/movie.png' />" +
-				 "<h3>" + item_name + "</h3>" +
+				 "<h3 id='resource_name_" + item_id + "' class='resource_name'>" + item_id + "</h3>" +
 				 "<p>" +
 					"<div id='resource_state_" + item_id + "' class='resource_state'>正在连接</div>" +
 					"<div id='resource_progressbar_" + item_id + "' class='resource_progressbar'/>" + 
-				 "</p>" +
-				 "</a><a href='#resource_config'>修改下载状态</a></li>");
+				 "</p></li>");
 					
 	$("#resource_list").append(list);
 	$('ul').listview('refresh');
@@ -214,6 +201,29 @@ function resource_item_create(item_name, item_id)
 				.setStartFrom(0)
 				.showCounter(true)
 				.build();
+	
+	// 由于BT资源并不能立即获得资源名称，所以10秒获取一次资源名称，直到名称不为空为止		
+	var fetch_item_detail_timer = window.setInterval(function()
+	{
+		var send_json = {method: 'download',
+						 opr: 'list_item',
+						 gid: item_id};
+						 
+		communication.send_message(send_json, null, function(back_msg)
+		{
+			if (back_msg.ret_code == 0)
+			{
+				if (back_msg.name != '')
+				{
+					$("#resource_name_" + item_id).html(back_msg.name);
+					window.clearInterval(fetch_item_detail_timer);
+				}
+			}
+			else                                                  // 资源被删的情况
+				window.clearInterval(fetch_item_detail_timer);
+		});
+	},
+	10*1000);
 }
 
 function bytes_transform(bytes)

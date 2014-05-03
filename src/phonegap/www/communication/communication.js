@@ -25,6 +25,11 @@ var Communication = {
 			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, on_connect);
 		}
 		
+		communication.reconnect = function (on_connect)
+		{
+			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, on_connect);
+		}
+		
 		communication.disconnect = function ()
 		{
 			communication.xmpp_connection.disconnect();
