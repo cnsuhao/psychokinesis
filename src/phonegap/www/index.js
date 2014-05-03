@@ -4,19 +4,7 @@ var progress_objs = {};
 
 $(document).ready(function() {
 	$("#signin_button").click(function(){
-		account = $("#signin_account").val();
-		pwd = $("#signin_password").val();
-		if (account == '' || pwd == '')
-		{
-			$('#error_dialog_content').html('账号或密码为空！');
-			$.mobile.changePage("#error_dialog", {transition: "pop"});
-			return;
-		}
-		
-		loading_message_show('登录中......');
-		
-		communication = Communication.create();
-		communication.connect(account, pwd, on_connect);
+		start_login();
 	});
 	
 	$("#add_resource_button").click(function(){
@@ -121,6 +109,9 @@ function on_connect(status)
 		loading_message_hide();
 		$('#error_dialog_content').html('账号或密码错误！');
 		$.mobile.changePage("#error_dialog", {transition: "pop"});
+		
+		window.localStorage.removeItem("account");
+		window.localStorage.removeItem("password");
 	}
 	else if (status == Strophe.Status.ERROR || 
 			 status == Strophe.Status.CONNFAIL)
@@ -155,7 +146,11 @@ function on_message(from, message)
 			else if (message.event_type == 'STOP')
 				var state = '停止';
 			else if (message.event_type == 'COMPLETE')
+			{
 				var state = '已完成';
+				
+				progress_objs['resource_progressbar_' + rs_number].setValue(100);
+			}
 			else if (message.event_type == 'ERROR')
 				var state = '无法获取资源';
 				
@@ -223,7 +218,7 @@ function resource_item_create(item_id)
 				window.clearInterval(fetch_item_detail_timer);
 		});
 	},
-	10*1000);
+	2*1000);
 }
 
 function bytes_transform(bytes)
@@ -240,4 +235,24 @@ function bytes_transform(bytes)
 		bytes = bytes.toFixed(1);
 	
 	return bytes + transform[count];
+}
+
+function start_login()
+{
+	account = $("#signin_account").val();
+	pwd = $("#signin_password").val();
+	if (account == '' || pwd == '')
+	{
+		$('#error_dialog_content').html('账号或密码为空！');
+		$.mobile.changePage("#error_dialog", {transition: "pop"});
+		return;
+	}
+		
+	loading_message_show('登录中......');
+		
+	communication = Communication.create();
+	communication.connect(account, pwd, on_connect);
+	
+	window.localStorage.setItem("account", account);
+	window.localStorage.setItem("password", pwd);
 }
