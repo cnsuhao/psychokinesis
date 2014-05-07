@@ -77,13 +77,13 @@ tar zxf ${C_ARES_PATH}.tar.gz
 cd ${C_ARES_PATH}
 ./configure --prefix=${INSTALL_PATH_PREFIX} --host=${COMPILER_PREFIX} --enable-static
 if [ $? -ne 0 ]; then
-	echo "configure failed."
+	echo "c_ares: configure failed."
 	exit 2
 fi
 
 make;make install
 if [ $? -ne 0 ]; then
-	echo "make failed."
+	echo "c_ares: make failed."
 	exit 2
 fi
 
@@ -95,13 +95,13 @@ tar zxf ${OPENSSL_PATH}.tar.gz
 cd ${OPENSSL_PATH}
 ./Configure --prefix=${INSTALL_PATH_PREFIX} mingw
 if [ $? -ne 0 ]; then
-	echo "configure failed."
+	echo "openssl: configure failed."
 	exit 2
 fi
 
-make -j 4
+make
 if [ $? -ne 0 ]; then
-	echo "make failed."
+	echo "openssl: make failed."
 	exit 2
 fi
 
@@ -114,13 +114,13 @@ tar zxf ${EXPAT_PATH}.tar.gz
 cd ${EXPAT_PATH}
 ./configure --prefix=${INSTALL_PATH_PREFIX} --host=${COMPILER_PREFIX} --enable-static
 if [ $? -ne 0 ]; then
-	echo "configure failed."
+	echo "expat: configure failed."
 	exit 2
 fi
 
 make;make install
 if [ $? -ne 0 ]; then
-	echo "make failed."
+	echo "expat: make failed."
 	exit 2
 fi
 
@@ -132,13 +132,13 @@ tar zxf ${ZLIB_PATH}.tar.gz
 cd ${ZLIB_PATH}
 ./configure --prefix=${INSTALL_PATH_PREFIX} --static
 if [ $? -ne 0 ]; then
-	echo "configure failed."
+	echo "zlib: configure failed."
 	exit 2
 fi
 
 make;make install
 if [ $? -ne 0 ]; then
-	echo "make failed."
+	echo "zlib: make failed."
 	exit 2
 fi
 
@@ -150,13 +150,13 @@ tar zxf ${CPPUNIT_PATH}.tar.gz
 cd ${CPPUNIT_PATH}
 ./configure --prefix=${INSTALL_PATH_PREFIX} --host=${COMPILER_PREFIX} --enable-static
 if [ $? -ne 0 ]; then
-	echo "configure failed."
+	echo "cppunit: configure failed."
 	exit 2
 fi
 
 make;make install
 if [ $? -ne 0 ]; then
-	echo "make failed."
+	echo "cppunit: make failed."
 	exit 2
 fi
 
@@ -168,13 +168,13 @@ tar zxf ${ARIA2_PATH}.tar.gz
 cd ${ARIA2_PATH}
 ./configure --host=${COMPILER_PREFIX} --prefix=${INSTALL_PATH_PREFIX} --enable-static --enable-libaria2 --without-included-gettext --disable-nls --with-libcares="/lib/i386-linux-gnu" --without-gnutls --with-openssl="${INSTALL_PATH_PREFIX}/include/openssl" --without-sqlite3  --without-libxml2 --with-libexpat --with-libz --without-libgcrypt  --without-libnettle --with-cppunit-prefix=${INSTALL_PATH_PREFIX} CPPFLAGS="-I${INSTALL_PATH_PREFIX}/include" LDFLAGS="-L${INSTALL_PATH_PREFIX}/lib" PKG_CONFIG_PATH="${INSTALL_PATH_PREFIX}/lib/pkgconfig"
 if [ $? -ne 0 ]; then
-	echo "configure failed."
+	echo "aria2: configure failed."
 	exit 2
 fi
 
 make -j 4
 if [ $? -ne 0 ]; then
-	echo "make failed."
+	echo "aria2: make failed."
 	exit 2
 fi
 
