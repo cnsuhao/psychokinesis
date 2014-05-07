@@ -6,6 +6,7 @@ export CC=$COMPILER_PREFIX-gcc
 export CXX=$COMPILER_PREFIX-g++
 export CPP=$COMPILER_PREFIX-cpp
 export RANLIB=$COMPILER_PREFIX-ranlib
+export AR=$COMPILER_PREFIX-ar
 
 # set up the install pathname
 INSTALL_PATH_PREFIX=$HOME/mingw32
