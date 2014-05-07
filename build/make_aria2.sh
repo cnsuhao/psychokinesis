@@ -13,11 +13,11 @@ INSTALL_PATH_PREFIX=$HOME/mingw32
 # set up the source codes pathname
 SOURCE_PREFIX=$HOME
 C_ARES_PATH=${SOURCE_PREFIX}/c-ares-1.10.0
-OPENSSL_PATH=${SOURCE_PREFIX}/openssl-1.0.1f
+OPENSSL_PATH=${SOURCE_PREFIX}/openssl-1.0.1g
 EXPAT_PATH=${SOURCE_PREFIX}/expat-2.1.0
 ZLIB_PATH=${SOURCE_PREFIX}/zlib-1.2.8
 CPPUNIT_PATH=${SOURCE_PREFIX}/cppunit-1.12.1
-ARIA2_PATH=${SOURCE_PREFIX}/aria2-1.18.3
+ARIA2_PATH=${SOURCE_PREFIX}/aria2-1.18.5
 
 # check all the source codes tar.gz
 if [ ! -f "${C_ARES_PATH}.tar.gz" ]; then
