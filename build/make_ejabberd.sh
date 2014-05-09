@@ -40,6 +40,44 @@ do
 	fi
 done
 
+# git clone some libraries
+if [ -d deps ]; then
+	echo "delete the directory: deps"
+	rm -rf deps
+fi
+mkdir deps
+cd deps
+# 经测试使用https速度更快些
+git clone https://github.com/processone/cache_tab.git p1_cache_tab || exit 2
+git clone https://github.com/processone/tls.git p1_tls || exit 2
+git clone https://github.com/processone/stringprep.git p1_stringprep || exit 2
+git clone https://github.com/processone/xml.git p1_xml || exit 2
+git clone https://github.com/processone/p1_yaml.git || exit 2
+git clone https://github.com/rds13/xmlrpc.git || exit 2
+git clone https://github.com/processone/zlib.git || exit 2
+git clone https://github.com/basho/lager.git || exit 2
+git clone https://github.com/processone/eiconv.git || exit 2
+
+git clone https://github.com/DeadZen/goldrush.git || exit 2
+cd goldrush
+git checkout 0.1.6 || exit 2
+cd ..
+
+cd ..
+
+apt-get install -y erlang
+if [ $? -ne 0 ]; then
+	echo "apt-get erlang failed."
+	exit 2
+fi
+
+apt-get install -y libcurl4-openssl-dev
+if [ $? -ne 0 ]; then
+	echo "apt-get openssl failed."
+	exit 2
+fi
+
+
 # start compiling
 echo "compiling expat..."
 tar zxf ${EXPAT_PATH}.tar.gz
@@ -80,18 +118,6 @@ fi
 cd -
 rm -rf ${ZLIB_PATH}
 
-apt-get install -y erlang
-if [ $? -ne 0 ]; then
-	echo "apt-get erlang failed."
-	exit 2
-fi
-
-apt-get install -y libcurl4-openssl-dev
-if [ $? -ne 0 ]; then
-	echo "apt-get openssl failed."
-	exit 2
-fi
-
 echo "compiling ejabberd..."
 tar zxf ${EJABBERD_PATH}.tgz
 cd ${EJABBERD_PATH}
@@ -101,25 +127,7 @@ if [ $? -ne 0 ]; then
 	exit 2
 fi
 
-mkdir deps
-cd deps
-# 经测试使用https速度更快些
-git clone https://github.com/processone/cache_tab.git p1_cache_tab || exit 2
-git clone https://github.com/processone/tls.git p1_tls || exit 2
-git clone https://github.com/processone/stringprep.git p1_stringprep || exit 2
-git clone https://github.com/processone/xml.git p1_xml || exit 2
-git clone https://github.com/processone/p1_yaml.git || exit 2
-git clone https://github.com/rds13/xmlrpc.git || exit 2
-git clone https://github.com/processone/zlib.git || exit 2
-git clone https://github.com/basho/lager.git || exit 2
-git clone https://github.com/processone/eiconv.git || exit 2
-
-git clone https://github.com/DeadZen/goldrush.git || exit 2
-cd goldrush
-git checkout 0.1.6 || exit 2
-cd ..
-
-cd ..
+mv ../deps .
 
 make;make install
 if [ $? -ne 0 ]; then
@@ -127,5 +135,5 @@ if [ $? -ne 0 ]; then
 	exit 2
 fi
 
-cd ..
+cd -
 rm -rf ${EJABBERD_PATH}
