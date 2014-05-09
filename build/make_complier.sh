@@ -8,7 +8,7 @@ for command in ${NECESSARY_COMMANDS[@]};
 do
 	type ${command} >/dev/null 2>&1
 	if [ $? -ne 0 ]; then
-		aptitude install ${command}
+		aptitude install -y ${command}
 		if [ $? -ne 0 ]; then
 			echo "install ${command} failed."
 			exit 1
