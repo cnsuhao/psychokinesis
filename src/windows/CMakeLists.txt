@@ -2,7 +2,7 @@ project(psychokinesis)
 
 cmake_minimum_required(VERSION 2.8)
 
-SET(MINGW32_APTH /home/complier/mingw32)
+SET(MINGW32_APTH $ENV{HOME}/mingw32)
 INCLUDE_DIRECTORIES(${MINGW32_APTH}/include)
 LINK_DIRECTORIES(${MINGW32_APTH}/lib)
 
