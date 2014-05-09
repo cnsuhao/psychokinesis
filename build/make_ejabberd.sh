@@ -104,10 +104,10 @@ fi
 mkdir deps
 cd deps
 # 经测试使用https速度更快些
-git clone https://github.com/processone/cache_tab.git || exit 2
-git clone https://github.com/processone/tls.git || exit 2
-git clone https://github.com/processone/stringprep.git || exit 2
-git clone https://github.com/processone/xml.git || exit 2
+git clone https://github.com/processone/cache_tab.git p1_cache_tab || exit 2
+git clone https://github.com/processone/tls.git p1_tls || exit 2
+git clone https://github.com/processone/stringprep.git p1_stringprep || exit 2
+git clone https://github.com/processone/xml.git p1_xml || exit 2
 git clone https://github.com/processone/p1_yaml.git || exit 2
 git clone https://github.com/rds13/xmlrpc.git || exit 2
 git clone https://github.com/processone/zlib.git || exit 2
