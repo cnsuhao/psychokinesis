@@ -26,6 +26,14 @@ fi
 
 echo "Compiling..."
 
+# 复制编译依赖的库至lib目录
+mkdir -p $HOME/mingw32/lib
+cp -f libriched20.a $HOME/mingw32/lib
+if [ $? -ne 0 ]; then
+	echo "copy libriched20.a failed."
+	exit 2
+fi
+
 # 编译
 cd ${PROJECT_PATH}/build
 make
@@ -35,3 +43,26 @@ if [ $? -ne 0 ]; then
 fi
 cd -
 
+# 复制库文件到mingw目录
+mkdir -p $HOME/mingw32/include/DuiLib
+cp -f *.h $HOME/mingw32/include/DuiLib
+if [ $? -ne 0 ]; then
+	echo "copy header files failed."
+	exit 4
+fi
+
+mkdir -p $HOME/mingw32/bin
+cp -f build/libUIlib.dll.a $HOME/mingw32/lib
+if [ $? -ne 0 ]; then
+	echo "copy libUIlib.dll.a failed."
+	exit 4
+fi
+
+cp -f build/libUIlib.dll $HOME/mingw32/bin
+if [ $? -ne 0 ]; then
+	echo "copy libUIlib.dll failed."
+	exit 4
+fi
+
+# 删除build目录
+rm -rf build

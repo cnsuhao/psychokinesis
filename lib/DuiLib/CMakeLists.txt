@@ -2,8 +2,8 @@ project(UIlib)
 
 cmake_minimum_required(VERSION 2.8)
 
-INCLUDE_DIRECTORIES(/home/complier/mingw32/include)
-LINK_DIRECTORIES(/home/complier/mingw32/lib)
+INCLUDE_DIRECTORIES($ENV{HOME}/mingw32/include)
+LINK_DIRECTORIES($ENV{HOME}/mingw32/lib)
 
 SET(SRC_LIST UIRichEdit.cpp
 			UIManager.cpp
