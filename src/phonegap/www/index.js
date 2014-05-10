@@ -126,8 +126,8 @@ function on_connect(status)
 			ping_timer = null;
 		}
 		
-		// 自动重连
-		communication.reconnect(on_connect);
+		// 5秒后自动重连
+		setTimeout("communication.reconnect(on_connect)", 5000);
 	}
 }
 
