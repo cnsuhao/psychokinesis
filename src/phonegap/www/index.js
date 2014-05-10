@@ -102,7 +102,7 @@ function on_connect(status)
 									response_time = new Date();
 								});
 						   },
-							1*1000);
+							5*1000);
 	}
 	else if (status == Strophe.Status.AUTHFAIL)
 	{
