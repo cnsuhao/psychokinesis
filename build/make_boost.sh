@@ -1,5 +1,6 @@
 #!/bin/sh
 
+APP_PATH=$HOME/psychokinesis
 BOOST_PATH=$HOME/boost_1_55_0
 INSTALL_PATH_PREFIX=$HOME/mingw32
 
@@ -28,7 +29,7 @@ cd -
 rm -rf ${BOOST_PATH}
 
 # 打补丁
-cp -f ../lib/boost/property_tree/detail/json_parser_write.hpp ${INSTALL_PATH_PREFIX}/include/boost/property_tree/detail/
+cp -f ${APP_PATH}/lib/boost/property_tree/detail/json_parser_write.hpp ${INSTALL_PATH_PREFIX}/include/boost/property_tree/detail/
 if [ $? -ne 0 ]; then
 	echo "warning: copy json_parser_write.hpp failed."
 fi
