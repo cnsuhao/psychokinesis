@@ -218,7 +218,7 @@ function resource_item_create(item_id)
 				window.clearInterval(fetch_item_detail_timer);
 		});
 	},
-	2*1000);
+	10*1000);
 }
 
 function bytes_transform(bytes)
