@@ -1,4 +1,4 @@
-var BOSH_DOMAIN = '192.168.1.100';
+var BOSH_DOMAIN = 'psychokinesis.wuyingfengsui.me';
 var BOSH_RESOURCE = 'psychokinesis-mobile';
 var REMOTE_RESOURCE = 'psychokinesis-pc';
 var BOSH_SERVICE = '/http-bind/';
