@@ -65,13 +65,13 @@ cd ..
 
 cd ..
 
-apt-get install -y erlang
+apt-get install -y --force-yes erlang
 if [ $? -ne 0 ]; then
 	echo "apt-get erlang failed."
 	exit 2
 fi
 
-apt-get install -y libcurl4-openssl-dev
+apt-get install -y --force-yes libcurl4-openssl-dev
 if [ $? -ne 0 ]; then
 	echo "apt-get openssl failed."
 	exit 2
