@@ -65,6 +65,22 @@ cd ..
 
 cd ..
 
+# 添加erlang最新源
+grep -q erlang-solutions /etc/apt/sources.list
+if [ $? -ne 0 ]; then
+	cat /etc/issue | grep -q "Debian GNU/Linux 7"
+	if [ $? -ne 0 ]; then
+		echo "deb http://packages.erlang-solutions.com/debian squeeze contrib" >> /etc/apt/sources.list
+	else
+		echo "deb http://packages.erlang-solutions.com/debian wheezy contrib" >> /etc/apt/sources.list
+	fi
+	
+	wget http://packages.erlang-solutions.com/debian/erlang_solutions.asc
+	apt-key add erlang_solutions.asc
+	rm -f add erlang_solutions.asc
+	apt-get update
+fi
+
 apt-get install -y --force-yes erlang
 if [ $? -ne 0 ]; then
 	echo "apt-get erlang failed."
