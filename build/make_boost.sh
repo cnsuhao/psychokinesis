@@ -19,7 +19,16 @@ cd ${BOOST_PATH}
 ./bootstrap.sh
 echo "using gcc : mingw32 : i686-w64-mingw32-g++ : <rc>i686-w64-mingw32-windres <archiver>i686-w64-mingw32-ar <ranlib>i686-w64-mingw32-ranlib ;" >> ${BOOST_PATH}/tools/build/v2/user-config.jam
 ./b2 install toolset=gcc-mingw32 target-os=windows threading=multi threadapi=win32 link=static variant=release --prefix=${INSTALL_PATH_PREFIX} --without-mpi
-
-cp -f ../lib/boost/property_tree/detail/json_parser_write.hpp ${INSTALL_PATH_PREFIX}/include/boost/property_tree/detail/
+if [ $? -ne 0 ]; then
+	echo "error: build boost failed."
+	exit 1
+fi
+cd -
 
 rm -rf ${BOOST_PATH}
+
+# 打补丁
+cp -f ../lib/boost/property_tree/detail/json_parser_write.hpp ${INSTALL_PATH_PREFIX}/include/boost/property_tree/detail/
+if [ $? -ne 0 ]; then
+	echo "warning: copy json_parser_write.hpp failed."
+fi
