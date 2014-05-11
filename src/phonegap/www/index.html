@@ -21,6 +21,22 @@
 	.ui-loader{
     	z-index: 1501;
 	}
+	
+	.center-wrapper {
+		text-align: center;
+	}
+	
+	.center-wrapper * {
+		margin-left: 0 auto;
+	}
+	
+	#signin_page_wrapper {
+		margin-top: 20%;
+	}
+	
+	#signin_form {
+		margin-top: 20%;
+	}
 </style>
 <script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
 <script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
@@ -34,10 +50,8 @@
 </head>
 <body>
 <div data-role="page" id="signin_page">
-  <div data-role="header">
-    <h1>登录Psychokinesis</h1>
-  </div>
-  <div data-role="content">
+  <div id="signin_page_wrapper" data-role="content" class="center-wrapper">
+    <div class="logo"><img src="images/logo.png" /></div>
     <form id="signin_form">
       <div data-role="fieldcontain">
         <label for="signin_account">账号：</label>
@@ -47,7 +61,7 @@
         <label for="signin_password">密码：</label>
         <input id="signin_password" name="password" type="password" />
       </div>
-      <a id="signin_button" data-role="button" data-inline="true">登录</a>
+      <div id="signin_button" data-role="button" data-inline="true" data-corners="false" data-shadow="false">登录</div>
     </form>
   </div>
 </div>
@@ -57,7 +71,7 @@
   </div>
   <div data-role="content">
     <p id="message_dialog_content"></p>
-    <a data-role="button" data-rel="back">确定</a>
+    <a data-role="button" data-rel="back" data-corners="false" data-shadow="false">确定</a>
   </div>
 </div>
 <div data-role="dialog" id="error_dialog">
@@ -66,20 +80,18 @@
   </div>
   <div data-role="content">
     <p id="error_dialog_content"></p>
-    <a data-role="button" href="#signin_page">确定</a>
+    <a data-role="button" href="#signin_page" data-corners="false" data-shadow="false">确定</a>
   </div>
 </div>
 
-<div data-role="page" id="resource_page">
+<div id="resource_page" data-role="page">
   <div data-role="header">
     <h1>资源列表</h1>
+    <a href="#add_resource_dialog" data-icon="plus" class="ui-btn-right">添加</a>
   </div>
   <div data-role="content">
     <ul id="resource_list" data-role="listview" data-split-icon="gear" data-split-theme="a">
     </ul>
-  </div>
-  <div data-role="footer">
-    <a href="#add_resource_dialog">添加资源</a>
   </div>
 </div>
 
@@ -93,8 +105,8 @@
         <label for="resource_location">资源地址：</label>
         <input id="resource_location" name="resource_location" type="text" />
       </div>
-      <a id="add_resource_button" data-role="button" data-inline="true">添加</a>
-      <a id="cancel_resource_button" data-role="button" data-inline="true" data-rel="back">取消</a>
+      <a id="add_resource_button" data-role="button" data-inline="true" data-corners="false" data-shadow="false">添加</a>
+      <a id="cancel_resource_button" data-role="button" data-inline="true" data-rel="back" data-corners="false" data-shadow="false">取消</a>
     </form>
   </div>
 </div>
