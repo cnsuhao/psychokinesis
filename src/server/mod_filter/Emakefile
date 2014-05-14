@@ -1,0 +1,4 @@
+{'../../../lib/ejabberd/src/lager_transform', [{outdir, "ebin"},{i,"/lib/ejabberd/include"}]}.
+{'../../../lib/ejabberd/src/lager_util', [{outdir, "ebin"},{i,"/lib/ejabberd/include"}]}.
+{'../../../lib/ejabberd/src/gen_mod', [{outdir, "ebin"},{i,"/lib/ejabberd/include"}]}.
+{'src/*',     [{outdir, "ebin"},{i,"/lib/ejabberd/include"}]}.
