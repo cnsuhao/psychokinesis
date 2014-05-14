@@ -1,5 +1,5 @@
 #include <sstream>
-#include <gloox/gloox.h>
+#include "../process/ui_control.h"
 #include "api_message.h"
 #include "frame_window.h"
 #include "encoding_changer.h"
@@ -53,23 +53,19 @@ void api_communication_login_failed::execute() {
 	CButtonUI* login_button = dynamic_cast<CButtonUI*>(window_manager.FindControl(_T("loginbtn")));
 	
 	switch (error_code) {
-	case gloox::ConnAuthenticationFailed:
+	case ui_control::authentication_failed:
 		{
 			MessageBox(NULL, _T("账号或密码错误!"), _T("错误"), MB_ICONERROR | MB_OK);
 			break;
 		}
+	case ui_control::connect_failed:
+		{
+			MessageBox(NULL, _T("登录失败，请确认电脑能够连接Internet。"), _T("错误"), MB_ICONERROR | MB_OK);
+			break;
+		}
 	default:
 		{
-			CStdString state = login_button->GetText();
-			if (state != _T("已登录")) {
-				stringstream str_error_code;
-				str_error_code << "登录失败!（错误代码：" << error_code << "）";
-				MessageBox(NULL, _T(str_error_code.str().c_str()), _T("错误"), MB_ICONERROR | MB_OK);
-			} else {
-				return;                                   // 连接中断时会自动进行重连
-			}
-			
-			break;
+			return;                                   // 连接中断时会自动进行重连
 		}
 	}
 

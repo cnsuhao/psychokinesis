@@ -128,6 +128,18 @@ void api_communication::close() {
 }
 
 
+void api_communication::logout() {
+	reconnect_timeout = 0;
+	
+	client->presence().setPresence(gloox::Presence::Unavailable);
+	client->setPresence();                                  // 广播离线消息
+	
+	client->disconnect();
+	
+	debug_print("api_communication logout");
+}
+
+
 shared_ptr< vector<string> > api_communication::available_resources_get(const string& account) {
 	shared_ptr< vector<string> > resources = shared_ptr< vector<string> >(new vector<string>());
 		

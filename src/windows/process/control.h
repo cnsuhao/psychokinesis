@@ -4,7 +4,6 @@
 #include <boost/ptr_container/ptr_container.hpp>
 #include <boost/serialization/singleton.hpp>
 #include "../api/api.h"
-#include "config_control.h"
 
 
 namespace psychokinesis {
@@ -58,8 +57,6 @@ private:
 	
 	boost::ptr_list<api_listener> api_listener_list;
 	boost::ptr_list<api> adapter_list;
-	
-	config_control config;
 };
 
 } // namespace psychokinesis

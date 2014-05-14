@@ -1,5 +1,6 @@
 #include <boost/assign.hpp>
 #include "../process/ui_control.h"
+#include "../process/config_control.h"
 #include "frame_window.h"
 #include "resource.h"
 #include "api_message.h"
@@ -7,6 +8,7 @@
 #include <shlobj.h>
 #include <stdlib.h>
 
+using std::string;
 using DuiLib::CSliderUI;
 using DuiLib::TNotifyUI;
 using DuiLib::CStdString;
@@ -180,6 +182,16 @@ LRESULT frame_window::on_create(WPARAM wParam, LPARAM lParam, bool& handled) {
 	m_pm.AttachDialog(root);
 	m_pm.AddNotifier(this);
 
+	// ÅäÖÃ´æÓÐÕËºÅÃÜÂëÖ±½ÓµÇÂ¼
+	config_control& m_config_control = config_control::get_mutable_instance();
+	string account = m_config_control.account_get();
+	string password = m_config_control.password_get();
+	
+	if (account.length() > 0 && password.length() > 0) {
+		ui_control& m_ui_control = ui_control::get_mutable_instance();
+		m_ui_control.login(account, password);
+	}
+	
 	return 0;
 }
 

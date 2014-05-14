@@ -3,6 +3,7 @@
 #include <time.h>
 #include "control.h"
 #include "ui_control.h"
+#include "config_control.h"
 #include "../api/api_download.h"
 #include "../api/api_communication.h"
 #include "../adapter/adapter_download.h"
@@ -117,12 +118,12 @@ void control::bind_listener(api* bind_api, api* listen_api) {
 
 
 bool control::load_config() {
-	return config.load_config();
+	return config_control::get_mutable_instance().load_config();
 }
 
 
 void control::save_config() {
-	config.save_config();
+	config_control::get_mutable_instance().save_config();
 }
 
 

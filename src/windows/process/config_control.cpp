@@ -61,28 +61,19 @@ void config_control::save_config() {
 void config_control::communication_load(const ptree& config) {
 	boost::ptr_list<api>& adapter_list = control::get_mutable_instance().adapter_list;
 	ptree communication_config;
-	bool immediate_connect = true;
-	string account, password;
+	
 	try {
 		communication_config = config.get_child("communication");
 		account = communication_config.get<string>("account");
+		communication_config.erase("account");                       // 账号、密码存在的话api会自动连接，导致ui_control的超时登录机制失效
 		password = communication_config.get<string>("password");
+		communication_config.erase("password");
 	} catch (...) {
-		immediate_connect = false;
 	}
-	
-	if (account.length() == 0)
-		immediate_connect = false;
 	
 	boost::ptr_list<api>::iterator communication_adapter = std::find_if(adapter_list.begin(),
 																		adapter_list.end(), 
 																		find_api_func<adapter_communication>());
-	if (immediate_connect) {
-		dynamic_cast<adapter_communication*>(&(*communication_adapter))->immediate_connect_set(true);
-		
-		frame_window& m_window = frame_window::get_mutable_instance();
-		m_window.post_message(new api_communication_logging(account, password));
-	}
 	
 	ptree json;
 	json.put_child("parameters", communication_config);

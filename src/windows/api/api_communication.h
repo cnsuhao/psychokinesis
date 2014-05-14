@@ -28,6 +28,8 @@ public:
 	
 	virtual void close();
 	
+	void logout();
+	
 	const std::string& server_ip_get() const {
 		return server;
 	}
@@ -66,10 +68,6 @@ private:
 	virtual void handleLog(gloox::LogLevel level, gloox::LogArea area, const std::string& message);
 	
 	void configure();
-	
-	void immediate_connect_set(bool immediate_connect) {
-		this->immediate_connect = immediate_connect;
-	}
 	
 	void reconnect_timeout_set(unsigned int reconnect_timeout) {
 		this->reconnect_timeout = reconnect_timeout;

@@ -22,6 +22,10 @@ public:
 		m_api->close();
 	}
 	
+	void logout() {
+		m_api->logout();
+	}
+	
 	const std::string& server_ip_get() const {
 		return m_api->server_ip_get();
 	}
@@ -60,10 +64,6 @@ public:
 	
 	void resource_set(const std::string& resource) {
 		m_api->resource = resource;
-	}
-	
-	void immediate_connect_set(bool immediate_connect) {
-		m_api->immediate_connect_set(immediate_connect);
 	}
 	
 	void reconnect_timeout_set(unsigned int reconnect_timeout) {
