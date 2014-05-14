@@ -1,2 +1,2 @@
 #!/bin/sh
-erl -pa ../ejabberd-dev/ebin -pz ebin -make
+erl -pa /lib/ejabberd/ebin -pz ebin -make

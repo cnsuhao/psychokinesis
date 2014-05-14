@@ -1,2 +1,2 @@
-{'../ejabberd-dev/src/gen_mod', [{outdir, "../ejabberd-dev/ebin"},{i,"../ejabberd-dev/include"}]}.
-{'src/mod_admin_extra',     [{outdir, "ebin"},{i,"../ejabberd-dev/include"}]}.
+{'../../../lib/ejabberd/src/gen_mod', [{outdir, "ebin"},{i,"/lib/ejabberd/include"}]}.
+{'src/mod_admin_extra',     [{outdir, "ebin"},{i,"/lib/ejabberd/include"}]}.
