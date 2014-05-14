@@ -1,4 +1,5 @@
 #include <boost/assert.hpp>
+#include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "api_communication.h"
 #include <gloox/message.h>
@@ -10,6 +11,8 @@ using boost::thread;
 using boost::shared_ptr;
 using boost::property_tree::ptree;
 using namespace psychokinesis;
+
+#define XMPP_PING_TIMEOUT          30          // 30秒发一次Ping请求
 
 bool api_communication::open() {
 	if (is_open)
@@ -249,10 +252,23 @@ void api_communication::run_client_thread(void* handle) {
 	h->reconnect_semaphore.wait();
 	
 	while (h->is_open) {
-		// 调用 j->connect(true)时，即实现与服务器的连接，连接成功会返回真。
 		// connect函数参数为false表示不阻塞方式连接，经测试也会造成短暂阻塞
 		// 而如果为true ，则为阻塞方式连接，即会等待接收数据
-		h->client->connect(true);
+		if (h->client->connect(false)) {
+			boost::timer ping_timer;
+			
+			while (h->is_open) {
+				gloox::ConnectionError err = h->client->recv(XMPP_PING_TIMEOUT*1000);
+				if (err != gloox::ConnNoError)
+					break;
+					
+				if (ping_timer.elapsed() > XMPP_PING_TIMEOUT) {
+					h->client->xmppPing(gloox::JID(h->server), NULL);
+					
+					ping_timer.restart();
+				}
+			}
+		}
 		
 		if (h->is_open) {
 			if (h->reconnect_timeout == 0)
