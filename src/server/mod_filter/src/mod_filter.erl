@@ -3,7 +3,7 @@
 %%% Author  : wuyingfengsui <wuyingfengsui@gmail.com>
 %%% Purpose : filter message for psychokinesis
 %%% Created : 17 May 2014 by wuyingfengsui <wuyingfengsui@gmail.com>
-%%% Updated : 
+%%% Updated : 21 May 2014 by wuyingfengsui <wuyingfengsui@gmail.com>
 %%%----------------------------------------------------------------------
 
 -module(mod_filter).
@@ -35,7 +35,9 @@ stop(_Host) ->
 	
 filter_packet({From, To, Packet} = Input) ->
 	%% return modified Packet or atom `drop` to drop the packet
-	if From#jid.luser /= To#jid.luser ->
+	if To#jid.luser /= <<>>,
+	   From#jid.luser /= <<>>,
+	   From#jid.luser /= To#jid.luser ->
 			?INFO_MSG("drop the message:~n from:~p~n  to:~p~n packet:~p~n", [From, To, Packet]),
 			drop;
 	   true ->
