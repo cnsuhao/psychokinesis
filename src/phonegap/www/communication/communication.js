@@ -1,7 +1,8 @@
 var BOSH_DOMAIN = 'psychokinesis.wuyingfengsui.me';
+var BOSH_PORT = 5280;
 var BOSH_RESOURCE = 'psychokinesis-mobile';
 var REMOTE_RESOURCE = 'psychokinesis-pc';
-var BOSH_SERVICE = '/http-bind/';
+var BOSH_SERVICE = '/http-bind';
 
 var Communication = {
 	create : function() {
@@ -16,7 +17,7 @@ var Communication = {
 		communication.connect = function (account, password, on_connect)
 		{
 			if (communication.xmpp_connection == null)
-					communication.xmpp_connection = new Strophe.Connection('http://' + BOSH_DOMAIN + BOSH_SERVICE);
+					communication.xmpp_connection = new Strophe.Connection('http://' + BOSH_DOMAIN + ':' + BOSH_PORT + BOSH_SERVICE);
 	
 			communication.xmpp_account = account;
 			communication.xmpp_jid = account + '@' + BOSH_DOMAIN + '/' + BOSH_RESOURCE;
