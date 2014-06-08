@@ -30,6 +30,10 @@
 		margin-left: 0 auto;
 	}
 	
+	.resource_item img {
+		margin-top: 5px;
+	}
+	
 	#signin_page_wrapper {
 		margin-top: 20%;
 	}
@@ -37,6 +41,12 @@
 	#signin_form {
 		margin-top: 20%;
 	}
+	
+	#add_resource_form {
+		margin-top: 30px;
+		text-align: center;
+	}
+	
 </style>
 <script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
 <script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
@@ -46,6 +56,7 @@
 <script src="communication/communication.js" type="text/javascript"></script>
 <script src="progress-bar/js/jQMProgressBar.js" type="text/javascript"></script>
 <script src="phonegap.js" type="text/javascript"></script>
+<script src="childbrowser.js" type="text/javascript"></script>
 <script src="index.js" type="text/javascript"></script>
 </head>
 <body>
@@ -100,13 +111,23 @@
     <h1>添加资源</h1>
   </div>
   <div data-role="content">
+    <ul data-role="listview" data-inset="true">
+		<li data-role="list-divider">软件</li>
+		<li><a href="javascript:void(0);" onClick="open_child_browser('http://www.onlinedown.net/')">华军软件</a></li>
+        <li><a href="javascript:void(0);" onClick="open_child_browser('http://www.duote.com/')">多特软件</a></li>
+        <li data-role="list-divider">游戏</li>
+        <li><a href="javascript:void(0);" onClick="open_child_browser('http://games.sina.com.cn/download/')">新浪游戏</a></li>
+        <li><a href="javascript:void(0);" onClick="open_child_browser('http://www.yxdown.com/')">游迅网</a></li>
+        <li data-role="list-divider">影视</li>
+        <li><a href="javascript:void(0);" onClick="open_child_browser('http://www.yyets.com/')">人人影视</a></li>
+        <li><a href="javascript:void(0);" onClick="open_child_browser('http://cili.so/')">磁力搜索</a></li>
+    </ul>
     <form id="add_resource_form">
       <div data-role="fieldcontain">
         <label for="resource_location">资源地址：</label>
         <input id="resource_location" name="resource_location" type="text" />
       </div>
       <a id="add_resource_button" data-role="button" data-inline="true" data-corners="false" data-shadow="false">添加</a>
-      <a id="cancel_resource_button" data-role="button" data-inline="true" data-rel="back" data-corners="false" data-shadow="false">取消</a>
     </form>
   </div>
 </div>

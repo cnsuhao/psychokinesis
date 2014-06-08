@@ -1,6 +1,7 @@
 var communication = null;       
 var ping_timer = null;
 var progress_objs = {};
+var in_background = false;
 
 $(document).ready(function() {
 	$("#signin_button").click(function(){
@@ -10,41 +11,12 @@ $(document).ready(function() {
 	$("#add_resource_button").click(function(){
 		var rs_url = $("#resource_location").val();
 		if (rs_url == '' || !rs_url.match(/^(http[s]?|ftp|magnet):/i))
+		{
+			alert('无效的资源地址！请再次确认资源地址。');
 			return;
+		}
 		
-		loading_message_show('请稍等......');
-		
-		var send_json = {method: 'download',
-						 opr: 'add',
-						 list: [
-							{
-								uris: [
-									rs_url
-								],
-								options: [
-								],
-								position: -1
-							}
-						 ]
-		};
-		
-		communication.send_message(send_json, 10*1000, function(back_msg){
-			if (back_msg.ret_code == 0 && back_msg.list[0].result == 'success')
-			{
-				var rs_number = back_msg.list[0].gid;
-				
-				$("#cancel_resource_button").click();
-		
-				resource_item_create(rs_number);
-			}
-			else
-			{
-				alert('添加资源失败，请确认电脑上的Psychokinesis已启用');
-			}
-			
-			loading_message_hide();
-			$("#resource_location").val('');
-		});
+		add_resource();
 	});
 });
 
@@ -68,6 +40,12 @@ function on_connect(status)
 									$("#resource_list").find("li").each(function () {
 										$(this).find(".resource_state").html('无法获取当前的下载状态');
 									});
+								}
+								
+								if (in_background)
+								{
+									response_time = new Date();
+									return;
 								}
 								
 								var send_json = {method: 'download',
@@ -177,8 +155,8 @@ function loading_message_hide()
 
 function resource_item_create(item_id)
 {
-	var list = $("<li id='resource_" + item_id + "'>" + 
-				 "<img src='images/movie.png' />" +
+	var list = $("<li id='resource_" + item_id + "' class='resource_item' >" + 
+				 "<img src='images/file.png' />" +
 				 "<h3 id='resource_name_" + item_id + "' class='resource_name'>" + item_id + "</h3>" +
 				 "<p>" +
 					"<div id='resource_state_" + item_id + "' class='resource_state'>正在连接</div>" +
@@ -186,7 +164,7 @@ function resource_item_create(item_id)
 				 "</p></li>");
 					
 	$("#resource_list").append(list);
-	$('ul').listview('refresh');
+	$("#resource_list").listview('refresh');
 				
 	progress_objs['resource_progressbar_' + item_id] = jQMProgressBar('resource_progressbar_' + item_id)
 				.setOuterTheme('b')
@@ -255,4 +233,46 @@ function start_login()
 	
 	window.localStorage.setItem("account", account);
 	window.localStorage.setItem("password", pwd);
+}
+
+function add_resource()
+{		
+	loading_message_show('请稍等......');
+		
+	var rs_url = $("#resource_location").val();
+	var send_json = {method: 'download',
+					 opr: 'add',
+					 list: [
+					 {
+						uris: [
+							rs_url
+						],
+						options: [
+						],
+						position: -1
+					 }
+					 ]
+	};
+		
+	communication.send_message(send_json, 10*1000, function(back_msg){
+		if (back_msg.ret_code == 0 && back_msg.list[0].result == 'success')
+		{
+			var rs_number = back_msg.list[0].gid;
+				
+			$("#add_resource_dialog").dialog('close');
+		
+			resource_item_create(rs_number);
+		}
+		else
+		{
+			alert('添加资源失败，请确认电脑上的Psychokinesis已启用');
+		}
+			
+		loading_message_hide();
+		$("#resource_location").val('');
+	});
+}
+
+function open_child_browser(url) {
+	window.plugins.ChildBrowser.showWebPage(url);
 }

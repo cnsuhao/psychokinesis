@@ -10,12 +10,22 @@ var app = {
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);   // 准备就绪事件
 		document.addEventListener("pause", this.onPause, false);               // 程序放入后台事件
+		document.addEventListener("resume", this.onResume, false);             // 程序恢复到前台事件
 		document.addEventListener("backbutton", this.onBackKeyDown, false);    // 后退事件
 		
     },
 	
     
     onDeviceReady: function() {
+		window.plugins.ChildBrowser.onLocationChange = function (url) {
+			if (url.match(/^(http[s]?|ftp).+?\.(exe|zip|rar|torrent)$/i) || url.match(/^magnet:/i)) {
+				window.plugins.ChildBrowser.close();
+				
+				$("#resource_location").val(url);
+				add_resource();
+			}
+		};
+		
 		var account = window.localStorage.getItem("account");
 		var password = window.localStorage.getItem("password");
 		
@@ -27,6 +37,11 @@ var app = {
     },
     
 	onPause: function() {
+		in_background = true;
+	},
+	
+	onResume: function() {
+		in_background = false;
 	},
 	
 	onBackKeyDown: function() {
