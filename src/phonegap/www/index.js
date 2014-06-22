@@ -141,16 +141,17 @@ function on_message(from, message)
 function loading_message_show(msg)
 {
 	$("body").append('<div class="freezeWindow"/>');
-	$.mobile.loadingMessage = msg;             // 显示的文字
-	$.mobile.loadingMessageTextVisible = true; // 是否显示文字
-	$.mobile.loadingMessageTheme = 'a';        // 加载器主题样式a-e
-	$.mobile.showPageLoadingMsg();             // 显示加载器
+	
+	$.mobile.loading( 'show', {
+		text: msg,
+		textVisible: true,
+	});
 }
 
 function loading_message_hide()
 {
 	$(".freezeWindow").remove();
-	$.mobile.hidePageLoadingMsg();
+	$.mobile.loading('hide');
 }
 
 function resource_item_create(item_id)

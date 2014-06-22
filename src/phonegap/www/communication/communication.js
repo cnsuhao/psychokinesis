@@ -1,4 +1,4 @@
-var BOSH_DOMAIN = 'psychokinesis.wuyingfengsui.me';
+var BOSH_DOMAIN = 'chat.wuyingfengsui.me';
 var BOSH_PORT = 5280;
 var BOSH_RESOURCE = 'psychokinesis-mobile';
 var REMOTE_RESOURCE = 'psychokinesis-pc';
