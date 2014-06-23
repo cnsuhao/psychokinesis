@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-<communication><server>chat.wuyingfengsui.me</server><port>-1</port><resource>psychokinesis-pc</resource></communication>
+<communication><server>chat.psychokinesis.me</server><port>-1</port><resource>psychokinesis-pc</resource></communication>
 </config>
