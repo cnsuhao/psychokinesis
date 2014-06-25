@@ -274,6 +274,27 @@ function add_resource()
 	});
 }
 
+var child_browser = null;
+
+function child_browser_opening(event) {
+	var url = event.url;
+	
+	if (url.match(/^(http[s]?|ftp).+?\.(exe|zip|rar|torrent)$/i) || url.match(/^magnet:/i)) {	
+		$("#resource_location").val(url);
+		add_resource();
+		
+		child_browser.close();
+	}
+}
+
+function child_browser_closed(event) {
+	child_browser.removeEventListener('loadstart', child_browser_opening);
+	child_browser.removeEventListener('exit', child_browser_closed);
+}
+
 function open_child_browser(url) {
-	window.plugins.ChildBrowser.showWebPage(url);
+	child_browser = window.open(url, '_blank', 'location=yes');
+	
+	child_browser.addEventListener('loadstart', child_browser_opening);
+	child_browser.addEventListener('exit', child_browser_closed);
 }

@@ -17,15 +17,6 @@ var app = {
 	
     
     onDeviceReady: function() {
-		window.plugins.ChildBrowser.onLocationChange = function (url) {
-			if (url.match(/^(http[s]?|ftp).+?\.(exe|zip|rar|torrent)$/i) || url.match(/^magnet:/i)) {
-				window.plugins.ChildBrowser.close();
-				
-				$("#resource_location").val(url);
-				add_resource();
-			}
-		};
-		
 		var account = window.localStorage.getItem("account");
 		var password = window.localStorage.getItem("password");
 		
