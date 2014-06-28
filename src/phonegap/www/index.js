@@ -325,7 +325,7 @@ function add_resource()
 					 ]
 	};
 		
-	communication.send_message(send_json, 10*1000, function(back_msg){
+	communication.send_message(send_json, 20*1000, function(back_msg){
 		if (back_msg.ret_code == 0 && back_msg.list[0].result == 'success')
 		{
 			var rs_number = back_msg.list[0].gid;
