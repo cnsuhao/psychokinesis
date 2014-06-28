@@ -1,18 +1,47 @@
 var communication = null;       
 var ping_timer = null;
 var progress_objs = {};
+var child_browser = null;
 var in_background = false;
+var pc_online = false;
+var reconnect_timer = 0;
+
+$(document).on("pageinit", function() {
+	// fix the new iOS 7 transparent status bar
+	if (navigator.userAgent.match(/(iPad.*|iPhone.*|iPod.*);.*CPU.*OS 7_\d/i)) {
+		$("body").addClass("ios7");
+		$("body").append('');
+	}
+});
 
 $(document).ready(function() {
 	$("#signin_button").click(function(){
 		start_login();
 	});
 	
+	$("#jump_signup_button").click(function(){
+		$.mobile.changePage("#signup_page", {transition: "slide"});
+	});
+	
+	$("#signup_button").click(function(){
+		start_signup();
+	});
+	
+	$(".logout_buttons").click(function(){
+		if (communication) {
+			communication.disconnect();
+			communication = null;
+		}
+		
+		$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
+	});
+	
 	$("#add_resource_button").click(function(){
 		var rs_url = $("#resource_location").val();
 		if (rs_url == '' || !rs_url.match(/^(http[s]?|ftp|magnet):/i))
 		{
-			alert('无效的资源地址！请再次确认资源地址。');
+			$('#error_dialog_content').html('无效的资源地址！请再次确认资源地址。');
+			$.mobile.changePage("#error_dialog", {transition: "pop"});
 			return;
 		}
 		
@@ -25,8 +54,13 @@ function on_connect(status)
 	if (status == Strophe.Status.CONNECTED)
 	{
 		loading_message_hide();
-		$.mobile.changePage("#resource_page", {transition: "flip"});
 		
+		if (pc_online)
+			$.mobile.changePage("#resource_page", {transition: "flip"});
+		else
+			$.mobile.changePage("#waiting_pc_page", {transition: "flip"});
+		
+		communication.listen_presence(on_presence);
 		communication.listen_message(on_message);
 		communication.presence();
 		
@@ -94,7 +128,15 @@ function on_connect(status)
 	else if (status == Strophe.Status.ERROR || 
 			 status == Strophe.Status.CONNFAIL)
 	{
-		loading_message_show("网络中断，正在重新连接......");
+		if (++reconnect_timer > 3) {
+			loading_message_hide();
+			$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
+			
+			$('#error_dialog_content').html('服务器无响应！请稍后再试。');
+			$.mobile.changePage("#error_dialog", {transition: "pop"});
+		}
+		else
+			loading_message_show("网络中断，正在重新连接......");
 	}
 	else if (status == Strophe.Status.DISCONNECTED)
 	{
@@ -104,8 +146,31 @@ function on_connect(status)
 			ping_timer = null;
 		}
 		
-		// 5秒后自动重连
-		setTimeout("communication.reconnect(on_connect)", 5000);
+		if (communication && reconnect_timer <= 3)
+		{
+			// 5秒后自动重连
+			setTimeout("communication.reconnect(on_connect)", 5000);
+		}
+	}
+	else if (status == 999)                // 连接超时
+	{
+		loading_message_hide();
+		$('#error_dialog_content').html('服务器未响应！请稍后再试。');
+		$.mobile.changePage("#error_dialog", {transition: "pop"});
+	}
+}
+
+function on_presence(status)
+{
+	if (status == 'available')
+	{
+		$.mobile.changePage("#resource_page", {transition: "slideup", reverse: "true"});
+		pc_online = true;
+	}
+	else if (status == 'unavailable')
+	{
+		$.mobile.changePage("#waiting_pc_page", {transition: "slideup"});
+		pc_online = false;
 	}
 }
 
@@ -140,12 +205,13 @@ function on_message(from, message)
 
 function loading_message_show(msg)
 {
-	$("body").append('<div class="freezeWindow"/>');
-	
-	$.mobile.loading( 'show', {
-		text: msg,
-		textVisible: true,
-	});
+	if ($(".freezeWindow").length == 0)
+		$("body").append('<div class="freezeWindow"/>');
+
+		$.mobile.loading( 'show', {
+			text: msg,
+			textVisible: true,
+		});
 }
 
 function loading_message_hide()
@@ -156,9 +222,11 @@ function loading_message_hide()
 
 function resource_item_create(item_id)
 {
+	$("#task_promote").hide();
+	
 	var list = $("<li id='resource_" + item_id + "' class='resource_item' >" + 
 				 "<img src='images/file.png' />" +
-				 "<h3 id='resource_name_" + item_id + "' class='resource_name'>" + item_id + "</h3>" +
+				 "<h2 id='resource_name_" + item_id + "' class='resource_name'>" + item_id + "</h2>" +
 				 "<p>" +
 					"<div id='resource_state_" + item_id + "' class='resource_state'>正在连接</div>" +
 					"<div id='resource_progressbar_" + item_id + "' class='resource_progressbar'/>" + 
@@ -228,7 +296,9 @@ function start_login()
 	}
 		
 	loading_message_show('登录中......');
-		
+	
+	reconnect_timer = 0;
+	
 	communication = Communication.create();
 	communication.connect(account, pwd, on_connect);
 	
@@ -266,7 +336,8 @@ function add_resource()
 		}
 		else
 		{
-			alert('添加资源失败，请确认电脑上的Psychokinesis已启用');
+			$('#error_dialog_content').html('添加资源失败，请确认电脑上的Psychokinesis已启用');
+			$.mobile.changePage("#error_dialog", {transition: "pop"});
 		}
 			
 		loading_message_hide();
@@ -274,7 +345,6 @@ function add_resource()
 	});
 }
 
-var child_browser = null;
 
 function child_browser_opening(event) {
 	var url = event.url;
@@ -290,6 +360,7 @@ function child_browser_opening(event) {
 function child_browser_closed(event) {
 	child_browser.removeEventListener('loadstart', child_browser_opening);
 	child_browser.removeEventListener('exit', child_browser_closed);
+	child_browser = null;
 }
 
 function open_child_browser(url) {
@@ -297,4 +368,57 @@ function open_child_browser(url) {
 	
 	child_browser.addEventListener('loadstart', child_browser_opening);
 	child_browser.addEventListener('exit', child_browser_closed);
+}
+
+
+function convert_error_string(error_code) {
+	switch (error_code) {
+	case 1:
+		return '有些数据不合法哦！请再重新检查一下';
+	case 10:
+		return '服务器出错了！请稍后再试。';
+	case 20:
+		return '操作太频繁了！请稍后再试。';
+	default:
+		return '操作失败了！请稍后再试。';
+	}
+}
+
+function start_signup() {
+	var account = $("#signup_account").val();
+	if (account == '')
+	{
+		$('#error_dialog_content').html('账号为空！');
+		$.mobile.changePage("#error_dialog", {transition: "pop"});
+		return;
+	}
+	
+	loading_message_show('注册中......');
+	
+	$.getJSON("http://psychokinesis.wuyingfengsui.me/nodejs/register?account=" + account, 
+		function(data, status){
+			loading_message_hide();
+			
+			if (status != 'success') {
+				$('#error_dialog_content').html('网络故障：' + status);
+				$.mobile.changePage("#error_dialog", {transition: "pop"});
+				return;
+			}
+	  
+			if (data.error_code) {
+				$('#error_dialog_content').html(convert_error_string(data.error_code));
+				$.mobile.changePage("#error_dialog", {transition: "pop"});
+				return;
+			}
+	  
+			$.mobile.changePage("#signin_page", {transition: "slide", reverse: "true"});
+			
+			$('#message_dialog_content').html("<h3>注册成功！</h3>" +
+					"<p>您的账号：" + data.account + "</p>" +
+					"<p>您的密码：" + data.password + "</p>");
+			$.mobile.changePage("#message_dialog", {transition: "pop"});
+			
+			$("#signin_account").val(data.account);
+			$("#signin_password").val(data.password);
+	});
 }

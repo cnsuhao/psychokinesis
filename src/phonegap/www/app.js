@@ -1,7 +1,7 @@
 var app = {
     // Application Constructor
     initialize: function() {
-        this.bindEvents();
+		this.bindEvents();
     },
     // Bind Event Listeners
     //
@@ -36,6 +36,9 @@ var app = {
 	},
 	
 	onBackKeyDown: function() {
-		navigator.app.exitApp();
+		if (child_browser)
+			child_browser.close();
+		else
+			navigator.app.exitApp();
 	}
 };

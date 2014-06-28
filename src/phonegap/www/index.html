@@ -8,6 +8,20 @@
 <link href="jquery-mobile/jquery.mobile-1.4.2.min.css" rel="stylesheet" type="text/css"/>
 <link href="progress-bar/css/jQMProgressBar.css" rel="stylesheet" type="text/css" />
 <style>
+	/**
+	* Styles to fix the new iOS 7 transparent status bar
+	*/
+	#ios7statusbar {
+		width:100%;
+		height:10px;
+		background-color:white;
+		position:fixed;
+		z-index:10000;
+	}
+	.ios7 .ui-page, .ios7 .ui-header, .ios7 .ui-pane {
+		margin-top: 10px;
+	}
+	
 	.freezeWindow{
 		width: 100%;
 		height: 100%;
@@ -33,7 +47,7 @@
 		margin-top: 5px;
 	}
 	
-	#signin_page_wrapper {
+	#sign_page_wrapper {
 		height: 400px;
 		overflow: auto;  
 		margin: auto; 
@@ -59,18 +73,17 @@
 </head>
 <body>
 <div data-role="page" id="signin_page">
-  <div id="signin_page_wrapper" data-role="main" class="ui-content center-wrapper">
+  <div id="sign_page_wrapper" data-role="main" class="ui-content center-wrapper">
     <img src="images/logo.png" />
     <form id="signin_form">
       <div data-role="fieldcontain">
-        <label for="signin_account">账号：</label>
-        <input id="signin_account" name="account" type="text" />
+        <input id="signin_account" name="account" type="text" placeholder="账号" />
       </div>
       <div data-role="fieldcontain">
-        <label for="signin_password">密码：</label>
-        <input id="signin_password" name="password" type="password" />
+        <input id="signin_password" name="password" type="password" placeholder="密码" />
       </div>
-      <a id="signin_button" class="ui-shadow ui-btn ui-btn-inline">确定</a>
+      <a id="jump_signup_button" class="ui-shadow ui-btn ui-btn-inline">注册</a>
+      <a id="signin_button" class="ui-shadow ui-btn ui-btn-inline ui-btn-b">登录</a>
     </form>
   </div>
 </div>
@@ -93,14 +106,44 @@
   </div>
 </div>
 
-<div id="resource_page" data-role="page">
+<div data-role="page" id="signup_page">
+  <div id="sign_page_wrapper" data-role="main" class="ui-content center-wrapper">
+    <img src="images/logo.png" />
+    <form id="signup_form">
+      <div data-role="fieldcontain">
+        <input id="signup_account" name="account" type="text" placeholder="账号名" />
+      </div>
+      <a id="signup_button" class="ui-shadow ui-btn ui-btn-inline">注册</a>
+    </form>
+  </div>
+</div>
+
+<div id="waiting_pc_page" data-role="page">
   <div data-role="header">
-    <h1>资源列表</h1>
-    <a href="#add_resource_dialog" data-icon="plus" data-iconpos="left" class="ui-btn-right">添加</a>
+    <h1>Psychokinesis</h1>
+    <a data-icon="power" data-iconpos="left" class="ui-btn-right logout_buttons">注销</a>
   </div>
   <div data-role="main" class="ui-content">
-    <ul id="resource_list" data-role="listview" data-split-icon="gear" data-split-theme="a">
+    <h2 align="center">您的Psychokinesis处于关闭状态</h2>
+    <p align="center">请使用您的账号登录Psychokinesis的电脑客户端</p>
+  </div>
+</div>
+
+<div id="resource_page" data-role="page">
+  <div data-role="header">
+    <h1>任务列表</h1>
+    <a data-icon="power" data-iconpos="left" class="ui-btn-right logout_buttons">注销</a>
+  </div>
+  <div data-role="main" class="ui-content">
+    <p id="task_promote" align="center">点击下面的按钮给我安排个任务吧</p>
+    <ul id="resource_list" data-role="listview" data-split-icon="gear" data-split-theme="a"></ul>
+  </div>
+  <div data-role="footer">
+  	<div data-role="navbar">
+    <ul>
+  		<li><a href="#add_resource_dialog" class="ui-btn ui-icon-plus ui-btn-icon-left ui-btn-b">添加一个下载任务</a></li>
     </ul>
+    </div>
   </div>
 </div>
 

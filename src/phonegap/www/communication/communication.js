@@ -13,22 +13,51 @@ var Communication = {
 		communication.xmpp_password = null;
 		communication.xmpp_connection = null;
 		communication.message_listeners = new Array();
+		communication.connect_timeout = null;
 		
 		communication.connect = function (account, password, on_connect)
 		{
 			if (communication.xmpp_connection == null)
 					communication.xmpp_connection = new Strophe.Connection('http://' + BOSH_DOMAIN + ':' + BOSH_PORT + BOSH_SERVICE);
 	
+			var connect_listener = function (status)
+			{
+				if (communication.connect_timeout)
+				{
+					clearTimeout(communication.connect_timeout);
+					communication.connect_timeout = null;
+				}
+				
+				on_connect(status);
+			}
+			
 			communication.xmpp_account = account;
 			communication.xmpp_jid = account + '@' + BOSH_DOMAIN + '/' + BOSH_RESOURCE;
 			communication.xmpp_password = password;
 	
-			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, on_connect);
+			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, connect_listener);
+			
+			// 60秒连接超时
+			communication.connect_timeout = setTimeout("on_connect(999)", 60000);
 		}
 		
 		communication.reconnect = function (on_connect)
 		{
-			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, on_connect);
+			var connect_listener = function (status)
+			{
+				if (communication.connect_timeout)
+				{
+					clearTimeout(communication.connect_timeout);
+					communication.connect_timeout = null;
+				}
+				
+				on_connect(status);
+			}
+			
+			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, connect_listener);
+			
+			// 60秒连接超时
+			communication.connect_timeout = setTimeout("on_connect(999)", 60000);
 		}
 		
 		communication.disconnect = function ()
@@ -41,6 +70,14 @@ var Communication = {
 			communication.xmpp_connection.addHandler(function (msg)
 													 {
 														 // TODO 接收PC客户端上下线消息
+														if (msg.getAttribute('from') == communication.xmpp_account + '@' + BOSH_DOMAIN + '/' + REMOTE_RESOURCE)
+														{
+															if (msg.getAttribute('type') == 'unavailable')
+																on_func('unavailable');
+															else
+																on_func('available');
+														}
+														 
 														return true;
 													 }, 
 										   null, 'presence', null, null, null); 
