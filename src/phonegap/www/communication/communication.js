@@ -1,4 +1,4 @@
-var BOSH_DOMAIN = 'chat.wuyingfengsui.me';
+var BOSH_DOMAIN = 'chat.psychokinesis.me';
 var BOSH_PORT = 5280;
 var BOSH_RESOURCE = 'psychokinesis-mobile';
 var REMOTE_RESOURCE = 'psychokinesis-pc';
@@ -35,6 +35,7 @@ var Communication = {
 			communication.xmpp_jid = account + '@' + BOSH_DOMAIN + '/' + BOSH_RESOURCE;
 			communication.xmpp_password = password;
 	
+			communication.xmpp_connection.reset();
 			communication.xmpp_connection.connect(communication.xmpp_jid, communication.xmpp_password, connect_listener);
 			
 			// 60秒连接超时
@@ -62,6 +63,8 @@ var Communication = {
 		
 		communication.disconnect = function ()
 		{
+			communication.xmpp_connection.sync = true;
+			communication.xmpp_connection.flush();
 			communication.xmpp_connection.disconnect();
 		}
 		

@@ -4,6 +4,7 @@ var progress_objs = {};
 var child_browser = null;
 var in_background = false;
 var pc_online = false;
+var mobile_online = false;
 var reconnect_timer = 0;
 
 $(document).on("pageinit", function() {
@@ -28,9 +29,10 @@ $(document).ready(function() {
 	});
 	
 	$(".logout_buttons").click(function(){
+		mobile_online = false;
+		
 		if (communication) {
 			communication.disconnect();
-			communication = null;
 		}
 		
 		$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
@@ -47,12 +49,16 @@ $(document).ready(function() {
 		
 		add_resource();
 	});
+	
+	fetch_download_websites();
 });
 
 function on_connect(status)
 {
 	if (status == Strophe.Status.CONNECTED)
 	{
+		mobile_online = true;
+		
 		loading_message_hide();
 		
 		if (pc_online)
@@ -128,15 +134,19 @@ function on_connect(status)
 	else if (status == Strophe.Status.ERROR || 
 			 status == Strophe.Status.CONNFAIL)
 	{
-		if (++reconnect_timer > 3) {
-			loading_message_hide();
-			$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
-			
-			$('#error_dialog_content').html('服务器无响应！请稍后再试。');
-			$.mobile.changePage("#error_dialog", {transition: "pop"});
+		if (mobile_online) {
+			if (++reconnect_timer > 3) {
+				mobile_online = false;
+				
+				loading_message_hide();
+				$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
+				
+				$('#error_dialog_content').html('服务器无响应！请稍后再试。');
+				$.mobile.changePage("#error_dialog", {transition: "pop"});
+			}
+			else
+				loading_message_show("网络中断，正在重新连接......");
 		}
-		else
-			loading_message_show("网络中断，正在重新连接......");
 	}
 	else if (status == Strophe.Status.DISCONNECTED)
 	{
@@ -146,7 +156,7 @@ function on_connect(status)
 			ping_timer = null;
 		}
 		
-		if (communication && reconnect_timer <= 3)
+		if (mobile_online && communication && reconnect_timer <= 3)
 		{
 			// 5秒后自动重连
 			setTimeout("communication.reconnect(on_connect)", 5000);
@@ -299,7 +309,9 @@ function start_login()
 	
 	reconnect_timer = 0;
 	
-	communication = Communication.create();
+	if (!communication)
+		communication = Communication.create();
+		
 	communication.connect(account, pwd, on_connect);
 	
 	window.localStorage.setItem("account", account);
@@ -336,7 +348,7 @@ function add_resource()
 		}
 		else
 		{
-			$('#error_dialog_content').html('添加资源失败，请确认电脑上的Psychokinesis已启用');
+			$('#error_dialog_content').html('添加资源失败，请稍后重试！');
 			$.mobile.changePage("#error_dialog", {transition: "pop"});
 		}
 			
@@ -385,26 +397,46 @@ function convert_error_string(error_code) {
 }
 
 function start_signup() {
-	var account = $("#signup_account").val();
-	if (account == '')
+	var person = {account: $("#signup_account").val(),
+				  password: $("#signup_password").val(),
+				  email: $("#signup_email").val()};
+	
+	if (person.account == '' || person.password == '' ||
+		person.account.length > 50 || person.password.length > 50 
+		|| /['";&|\s]/.test(person.account) || /['";&|\s]/.test(person.password))
 	{
-		$('#error_dialog_content').html('账号为空！');
+		$('#error_dialog_content').html('账号或密码超过50字符或含有非法字符！');
+		$.mobile.changePage("#error_dialog", {transition: "pop"});
+		return;
+	}
+	
+	var email_reg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+	if (person.email.length > 200 || !email_reg.test(person.email)) {
+		$('#error_dialog_content').html('电子邮箱地址不合法！');
 		$.mobile.changePage("#error_dialog", {transition: "pop"});
 		return;
 	}
 	
 	loading_message_show('注册中......');
 	
-	$.getJSON("http://psychokinesis.wuyingfengsui.me/nodejs/register?account=" + account, 
-		function(data, status){
+	var try_time = 0;
+	
+	function try_again() {
+		if (++try_time > 3) {
 			loading_message_hide();
 			
-			if (status != 'success') {
-				$('#error_dialog_content').html('网络故障：' + status);
-				$.mobile.changePage("#error_dialog", {transition: "pop"});
-				return;
-			}
-	  
+			$.mobile.changePage("#signin_page", {transition: "slide", reverse: "true"});
+			
+			$('#error_dialog_content').html('服务器无响应，请稍后重试！');
+			$.mobile.changePage("#error_dialog", {transition: "pop"});
+			
+			return;
+		}
+			
+		$.post("http://psychokinesis.me/nodejs/register-by-app", person)
+		.done(function(data) {
+		  	loading_message_hide();
+			
 			if (data.error_code) {
 				$('#error_dialog_content').html(convert_error_string(data.error_code));
 				$.mobile.changePage("#error_dialog", {transition: "pop"});
@@ -420,5 +452,56 @@ function start_signup() {
 			
 			$("#signin_account").val(data.account);
 			$("#signin_password").val(data.password);
-	});
+		})
+		.fail(function() {
+			try_again();
+		});
+	}
+	
+	try_again();
+}
+
+function fetch_download_websites() {
+	var try_time = 0;
+	
+	function try_again() {
+		if (++try_time > 3)
+			return;
+			
+		$.getJSON("http://psychokinesis.me/json/download-websites.json")
+		.done(function(data) {
+			if (data.ret_code != 0) {
+				try_again();
+				return;
+			}
+		  
+			for (var i = 0, len = data.list.length; i < len; ++i)
+			{	
+				var list_head = $("<li data-role='list-divider'>" + data.list[i].type + "</li>");
+				$("#website_list").append(list_head);
+					
+				var websites = data.list[i].websites;
+					
+				for (var j = 0, website_len = websites.length; j < website_len; ++j)
+				{
+					var list_item = $("<a href=\"javascript:void(0);\">" + websites[j].name + "</a>");
+					
+					list_item.click({url: websites[j].url}, function(event) {
+						open_child_browser(event.data.url);
+					});
+					var li_item = $("<li></li>");
+					li_item.append(list_item);
+					
+					$("#website_list").append(li_item);
+				}
+			}
+				
+			$("#website_list").listview('refresh');
+		})
+		.fail(function() {
+			try_again();
+		});
+	}
+	
+	try_again();
 }

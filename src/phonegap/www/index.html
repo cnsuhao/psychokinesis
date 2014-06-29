@@ -48,7 +48,7 @@
 	}
 	
 	#sign_page_wrapper {
-		height: 400px;
+		height: 500px;
 		overflow: auto;  
 		margin: auto; 
 		position: absolute;  
@@ -75,6 +75,7 @@
 <div data-role="page" id="signin_page">
   <div id="sign_page_wrapper" data-role="main" class="ui-content center-wrapper">
     <img src="images/logo.png" />
+    <h1>Psychokinesis</h1>
     <form id="signin_form">
       <div data-role="fieldcontain">
         <input id="signin_account" name="account" type="text" placeholder="账号" />
@@ -113,6 +114,12 @@
       <div data-role="fieldcontain">
         <input id="signup_account" name="account" type="text" placeholder="账号名" />
       </div>
+      <div data-role="fieldcontain">
+        <input id="signup_password" name="password" type="password" placeholder="密码" />
+      </div>
+      <div data-role="fieldcontain">
+        <input id="signup_email" name="email" type="email" placeholder="电子邮箱" />
+      </div>
       <a id="signup_button" class="ui-shadow ui-btn ui-btn-inline">注册</a>
     </form>
   </div>
@@ -136,7 +143,7 @@
     <a data-icon="power" data-iconpos="left" class="ui-btn-right logout_buttons">注销</a>
   </div>
   <div data-role="main" class="ui-content">
-    <p id="task_promote" align="center">点击下面的按钮给我安排个任务吧</p>
+    <p id="task_promote" align="center">点击下面的按钮开始一项任务</p>
     <ul id="resource_list" data-role="listview" data-split-icon="gear" data-split-theme="a"></ul>
   </div>
   <div data-role="footer">
@@ -150,24 +157,14 @@
 
 <div data-role="dialog" id="add_resource_dialog">
   <div data-role="header">
-    <h1>添加资源</h1>
+    <h1>添加下载任务</h1>
   </div>
   <div data-role="main" class="ui-content">
-    <ul data-role="listview" data-inset="true">
-		<li data-role="list-divider">软件</li>
-		<li><a href="javascript:void(0);" onClick="open_child_browser('http://www.onlinedown.net/')">华军软件</a></li>
-        <li><a href="javascript:void(0);" onClick="open_child_browser('http://www.duote.com/')">多特软件</a></li>
-        <li data-role="list-divider">游戏</li>
-        <li><a href="javascript:void(0);" onClick="open_child_browser('http://games.sina.com.cn/download/')">新浪游戏</a></li>
-        <li><a href="javascript:void(0);" onClick="open_child_browser('http://www.yxdown.com/')">游迅网</a></li>
-        <li data-role="list-divider">影视</li>
-        <li><a href="javascript:void(0);" onClick="open_child_browser('http://www.yyets.com/')">人人影视</a></li>
-        <li><a href="javascript:void(0);" onClick="open_child_browser('http://cili.so/')">磁力搜索</a></li>
-    </ul>
+    推荐网站：
+    <ul id="website_list" data-role="listview" data-inset="true"></ul>
     <form id="add_resource_form">
       <div data-role="fieldcontain">
-        <label for="resource_location">资源地址：</label>
-        <input id="resource_location" name="resource_location" type="text" />
+        <input name="resource_location" type="text" placeholder="下载地址" />
       </div>
       <a id="add_resource_button" data-role="button" class="ui-btn ui-shadow ui-btn-a">添加</a>
     </form>

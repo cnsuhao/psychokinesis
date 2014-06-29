@@ -1,3 +1,5 @@
+var pause_time = 0;
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -29,10 +31,22 @@ var app = {
     
 	onPause: function() {
 		in_background = true;
+		pause_time = new Date();
 	},
 	
 	onResume: function() {
 		in_background = false;
+		
+		if (mobile_online && (new Date() - pause_time) / 1000 > 120) {        // 后台运行超过2分钟自动注销
+			pause_time = 0;
+			mobile_online = false;
+		
+			if (communication) {
+				communication.disconnect();
+			}
+		
+			$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
+		}	
 	},
 	
 	onBackKeyDown: function() {
