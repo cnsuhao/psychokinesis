@@ -50,8 +50,10 @@ var app = {
 	},
 	
 	onBackKeyDown: function() {
-		if (child_browser)
+		if (child_browser) {
 			child_browser.close();
+			child_browser = null;
+		}
 		else
 			navigator.app.exitApp();
 	}

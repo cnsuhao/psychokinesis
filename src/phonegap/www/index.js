@@ -371,13 +371,15 @@ function child_browser_opening(event) {
 		add_resource();
 		
 		child_browser.close();
+		child_browser = null;
 	}
 }
 
 function child_browser_closed(event) {
 	child_browser.removeEventListener('loadstart', child_browser_opening);
 	child_browser.removeEventListener('exit', child_browser_closed);
-	child_browser = null;
+	
+	// 经测试此函数不一定会被调用，不要再后面添加处理逻辑
 }
 
 function open_child_browser(url) {
