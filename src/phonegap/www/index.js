@@ -164,6 +164,10 @@ function on_connect(status)
 	}
 	else if (status == 999)                // 连接超时
 	{
+		if (communication) {
+			communication.disconnect();
+		}
+		
 		loading_message_hide();
 		$('#error_dialog_content').html('服务器未响应！请稍后再试。');
 		$.mobile.changePage("#error_dialog", {transition: "pop"});
@@ -308,6 +312,7 @@ function start_login()
 	loading_message_show('登录中......');
 	
 	reconnect_timer = 0;
+	pc_online = false;
 	
 	if (!communication)
 		communication = Communication.create();

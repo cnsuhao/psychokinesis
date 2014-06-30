@@ -22,7 +22,7 @@ var Communication = {
 	
 			var connect_listener = function (status)
 			{
-				if (communication.connect_timeout)
+				if (communication.connect_timeout && status == Strophe.Status.CONNECTED)
 				{
 					clearTimeout(communication.connect_timeout);
 					communication.connect_timeout = null;
@@ -46,7 +46,7 @@ var Communication = {
 		{
 			var connect_listener = function (status)
 			{
-				if (communication.connect_timeout)
+				if (communication.connect_timeout && status == Strophe.Status.CONNECTED)
 				{
 					clearTimeout(communication.connect_timeout);
 					communication.connect_timeout = null;
@@ -63,8 +63,6 @@ var Communication = {
 		
 		communication.disconnect = function ()
 		{
-			communication.xmpp_connection.sync = true;
-			communication.xmpp_connection.flush();
 			communication.xmpp_connection.disconnect();
 		}
 		
@@ -72,7 +70,7 @@ var Communication = {
 		{
 			communication.xmpp_connection.addHandler(function (msg)
 													 {
-														 // TODO 接收PC客户端上下线消息
+														 // 接收PC客户端上下线消息
 														if (msg.getAttribute('from') == communication.xmpp_account + '@' + BOSH_DOMAIN + '/' + REMOTE_RESOURCE)
 														{
 															if (msg.getAttribute('type') == 'unavailable')
