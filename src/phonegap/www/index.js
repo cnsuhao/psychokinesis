@@ -138,11 +138,11 @@ function on_connect(status)
 			if (++reconnect_timer > 3) {
 				mobile_online = false;
 				
-				loading_message_hide();
-				$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
-				
-				$('#error_dialog_content').html('服务器无响应！请稍后再试。');
-				$.mobile.changePage("#error_dialog", {transition: "pop"});
+				window.localStorage.removeItem("account");
+				window.localStorage.removeItem("password");
+
+				alert('服务器无响应！请稍后再试。');
+				window.location = "index.html";
 			}
 			else
 				loading_message_show("网络中断，正在重新连接......");
@@ -167,8 +167,11 @@ function on_connect(status)
 		if (communication) {
 			communication.disconnect();
 		}
-		
+		mobile_online = false;
 		loading_message_hide();
+		
+		$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
+		
 		$('#error_dialog_content').html('服务器未响应！请稍后再试。');
 		$.mobile.changePage("#error_dialog", {transition: "pop"});
 	}
@@ -185,6 +188,9 @@ function on_presence(status)
 	{
 		$.mobile.changePage("#waiting_pc_page", {transition: "slideup"});
 		pc_online = false;
+		
+		$("#resource_list").empty();
+		$("#task_promote").show();
 	}
 }
 
@@ -482,6 +488,8 @@ function fetch_download_websites() {
 				return;
 			}
 		  
+		  	$("#website_list").empty();
+			
 			for (var i = 0, len = data.list.length; i < len; ++i)
 			{	
 				var list_head = $("<li data-role='list-divider'>" + data.list[i].type + "</li>");
