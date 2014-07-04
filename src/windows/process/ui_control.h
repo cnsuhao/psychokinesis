@@ -45,6 +45,8 @@ private:
 	void on_download_store_path_changed(const std::string& new_path);
 	void on_download_max_download_limit_changed(unsigned int limit);
 	void on_download_max_upload_limit_changed(unsigned int limit);
+	void on_download_start();
+	void on_download_complete();
 	
 	bool is_logged;
 	unsigned int login_timer;

@@ -120,3 +120,13 @@ void api_download_max_upload_limit_changed::execute() {
 			limitupload_option->Selected(true);
 	}
 }
+
+
+void api_download_start::execute() {
+	frame_window::get_mutable_instance().show_tray_tip("提醒", "一个下载任务开始了！");
+}
+
+
+void api_download_complete::execute() {
+	frame_window::get_mutable_instance().show_tray_tip("提醒", "一个下载任务完成了！请查看您设置的资源所在位置。");
+}

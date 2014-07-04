@@ -26,10 +26,8 @@ public:
 	bool create();
 	bool handle_background_message();
 	void destory();
-	
-	void post_message(api_message* msg) {
-		api_msgs.push_back(msg);
-	}
+	void show_tray_tip(const DuiLib::CStdString& tip_title, const DuiLib::CStdString& tip_msg);
+	void post_message(api_message* msg);
 	
 	DuiLib::CPaintManagerUI m_pm;
 

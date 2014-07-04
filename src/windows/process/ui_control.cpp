@@ -106,6 +106,14 @@ boost::shared_ptr<ptree> ui_control::communicate(const api& caller, const ptree&
 					on_download_max_upload_limit_changed(option.second.get<unsigned int>("value"));
 				}
 			}
+		} else if (info == "event") {
+			string event_type = content.get<string>("event_type");
+			
+			if (event_type == "START") {
+				on_download_start();
+			} else if (event_type == "COMPLETE") {
+				on_download_complete();
+			}
 		}
 	}
 	
@@ -181,6 +189,18 @@ void ui_control::on_download_max_upload_limit_changed(unsigned int limit) {
 	
 	frame_window& m_window = frame_window::get_mutable_instance();
 	m_window.post_message(new api_download_max_upload_limit_changed(limit));
+}
+
+
+void ui_control::on_download_start() {
+	frame_window& m_window = frame_window::get_mutable_instance();
+	m_window.post_message(new api_download_start());
+}
+
+
+void ui_control::on_download_complete() {
+frame_window& m_window = frame_window::get_mutable_instance();
+	m_window.post_message(new api_download_complete());
 }
 
 

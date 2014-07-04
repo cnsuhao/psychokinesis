@@ -84,4 +84,20 @@ private:
 	unsigned int limit;
 };
 
+class api_download_start : public api_message {
+public:
+	api_download_start()
+	{}
+	
+	virtual void execute();
+};
+
+class api_download_complete : public api_message {
+public:
+	api_download_complete()
+	{}
+	
+	virtual void execute();
+};
+
 } // namespace psychokinesis

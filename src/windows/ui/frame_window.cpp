@@ -117,10 +117,23 @@ void frame_window::destory() {
 }
 
 
+void frame_window::show_tray_tip(const DuiLib::CStdString& tip_title, const DuiLib::CStdString& tip_msg) {
+	strncpy(m_tray.szInfoTitle, tip_title.GetData(), 64);
+	strncpy(m_tray.szInfo, tip_msg.GetData(), 256);
+	::Shell_NotifyIcon(NIM_MODIFY, &m_tray);
+}
+
+
+void frame_window::post_message(api_message* msg) {
+	api_msgs.push_back(msg);
+	::PostMessage(m_hWnd, 0x402, 0, 0);            // 激活消息循环处理消息
+}
+
+
 bool frame_window::add_tray() {
 	m_tray.cbSize = sizeof(NOTIFYICONDATA);
 	m_tray.hWnd = m_hWnd;
-	m_tray.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+	m_tray.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_INFO;
 	m_tray.uCallbackMessage = 0x0401;
 	strncpy(m_tray.szTip, "Psychokinesis", 128);
 	m_tray.hIcon = m_icon;
