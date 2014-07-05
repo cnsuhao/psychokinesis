@@ -45,6 +45,8 @@ void api_communication_logged::execute() {
 	account_edit->SetText(encoding_changer::utf82ascii(account).c_str());
 	password_edit->SetEnabled(false);
 	password_edit->SetText(password.c_str());
+	
+	frame_window::get_mutable_instance().show_tray_tip("提醒", "登录成功，移动下载功能已开启！");
 }
 
 

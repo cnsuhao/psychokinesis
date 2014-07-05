@@ -10,8 +10,6 @@
 #include "../ui/api_message.h"
 #include "../ui/encoding_changer.h"
 
-#define CONFIG_FILE "config.xml"
-
 using std::string;
 using boost::shared_ptr;
 using boost::property_tree::ptree;

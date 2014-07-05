@@ -10,12 +10,13 @@
 		<HorizontalLayout height="440" bkcolor="#FFB8DFF2">
 			<TabLayout name="switch">
 				<HorizontalLayout>
-					<Container float="true" pos="30, 20, 420, 95" bordercolor="#F0B0D0F0" bordersize="1">
-						<Edit name="changestorepathedit" float="true" pos="20, 25, 300, 55" bordercolor="#FF4EA0D1" bordersize="1"/>
-						<Button name="changestorepathbtn" text="移动..." float="true" pos="305, 25, 375, 55" normalimage="button_normal.png" hotimage="button_normal.png" pushedimage="button_pushed.png" />
+					<Container float="true" pos="30, 20, 420, 145" bordercolor="#F0B0D0F0" bordersize="1">
+						<Edit name="changestorepathedit" float="true" pos="20, 25, 375, 55" bordercolor="#FF4EA0D1" bordersize="1"/>
+						<Button name="viewstorepathbtn" text="查看" float="true" pos="225, 75, 295, 105" normalimage="button_normal.png" hotimage="button_normal.png" pushedimage="button_pushed.png" />
+						<Button name="changestorepathbtn" text="移动..." float="true" pos="305, 75, 375, 105" normalimage="button_normal.png" hotimage="button_normal.png" pushedimage="button_pushed.png" />
 					</Container>
 					<Label text="资源位置" float="true" pos="35, 10, 105, 30" font="1" bkcolor="#FFB8DFF2" />
-					<Container float="true" pos="30, 130, 420, 305" bordercolor="#F0B0D0F0" bordersize="1">
+					<Container float="true" pos="30, 180, 420, 355" bordercolor="#F0B0D0F0" bordersize="1">
 						<Label text="账号：" float="true" pos="20, 25, 75, 55" font="1" />
 						<Edit name="accountedit" float="true" pos="75, 25, 370, 55" bordercolor="#FF4EA0D1" bordersize="1"/>
 						<Label text="密码：" float="true" pos="20, 75, 75, 105" font="1" />
@@ -23,7 +24,7 @@
 						<Button name="loginbtn" text="登录" float="true" pos="140, 125, 220, 155" normalimage="button_normal.png" hotimage="button_normal.png" pushedimage="button_pushed.png" />
 						<Button name="registerbtn" text="{u}{l}注册账号{/l}{/u}" showhtml="true" float="true" pos="230, 125, 300, 155" />
 					</Container>
-					<Label text="关联的账户" float="true" pos="35, 120, 120, 140" font="1" bkcolor="#FFB8DFF2" />
+					<Label text="关联的账户" float="true" pos="35, 170, 120, 190" font="1" bkcolor="#FFB8DFF2" />
 				</HorizontalLayout>
 				<HorizontalLayout>
 					<Container float="true" pos="30, 20, 420, 150" bordercolor="#F0B0D0F0" bordersize="1">

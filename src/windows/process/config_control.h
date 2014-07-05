@@ -5,6 +5,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/serialization/singleton.hpp>
 
+#define CONFIG_FILE "config.xml"
+
 namespace psychokinesis {
 
 class config_control : public boost::serialization::singleton<config_control> {

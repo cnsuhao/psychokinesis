@@ -61,6 +61,7 @@ private:
 	bool on_tab_notify(void* msg);
 	bool on_login_notify(void* msg);
 	bool on_register_notify(void* msg);
+	bool on_viewstorepathbtn_notify(void* msg);
 	bool on_changestorepath_notify(void* msg);
 	bool on_nolimitdownload_notify(void* msg);
 	bool on_limitdownload_notify(void* msg);

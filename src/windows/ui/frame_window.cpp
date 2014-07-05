@@ -261,7 +261,7 @@ LRESULT frame_window::on_tray(WPARAM wParam, LPARAM lParam, bool& handled) {
 	if (lParam == WM_RBUTTONUP) {
 		popup_tray_menu();
 	} else if (lParam == WM_LBUTTONDBLCLK) {
-		show_store_window();
+		::ShowWindow(*this, SW_SHOW);
 	} else if (lParam == WM_LBUTTONUP) {
 		if (::IsWindowVisible(*this)) {
 			// 使窗口最前
@@ -279,6 +279,7 @@ void frame_window::on_windowinit_notify(DuiLib::TNotifyUI& msg) {
 	make_notify(_T("bandwidth"), &frame_window::on_tab_notify);
 	make_notify(_T("loginbtn"), &frame_window::on_login_notify);
 	make_notify(_T("registerbtn"), &frame_window::on_register_notify);
+	make_notify(_T("viewstorepathbtn"), &frame_window::on_viewstorepathbtn_notify);
 	make_notify(_T("changestorepathbtn"), &frame_window::on_changestorepath_notify);
 	make_notify(_T("nolimitdownload"), &frame_window::on_nolimitdownload_notify);
 	make_notify(_T("limitdownload"), &frame_window::on_limitdownload_notify);
@@ -349,7 +350,19 @@ bool frame_window::on_register_notify(void* msg) {
 	TNotifyUI* pmsg = (TNotifyUI*)msg;
 
 	if (pmsg->sType == _T("click")) {
-		::MessageBox(NULL, _T("注册功能尚未开放，敬请期待！"), _T("提示"), MB_ICONINFORMATION | MB_OK);
+		::ShellExecute(m_hWnd, _T("open"), _T("http://psychokinesis.me/register"), NULL, NULL, SW_SHOW);
+	}
+	return true;
+}
+
+
+bool frame_window::on_viewstorepathbtn_notify(void* msg) {
+	TNotifyUI* pmsg = (TNotifyUI*)msg;
+
+	if (pmsg->sType == _T("click")) {
+		CEditUI* changestorepath_edit = dynamic_cast<CEditUI*>(m_pm.FindControl(_T("changestorepathedit")));
+		
+		::ShellExecute(m_hWnd, _T("open"), changestorepath_edit->GetText().GetData(), NULL, NULL, SW_SHOW);
 	}
 	return true;
 }

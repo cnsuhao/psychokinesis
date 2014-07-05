@@ -6,10 +6,14 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <boost/filesystem.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include "config_control.h"
+#include "../ui/encoding_changer.h"
 
 #define APP_NAME "Psychokinesis"
 #define PRODUCT_VERSION "1.0.0.1"
-#define COMPANY_NAME ""
+#define COMPANY_NAME "Psychokinesis Team"
 
 using DuiLib::CStdString;
 using DuiLib::CPaintManagerUI;
@@ -34,14 +38,14 @@ program_install::install_result program_install::install() {
 	CStdString company_name = _T(COMPANY_NAME);
 	HKEY current_user_key = NULL, psychokinesis_key = NULL,
 	uninstall_key = NULL, uninstall_psychokinesis_key = NULL;
-	IShellLink* pshell_link = NULL;
-	IPersistFile * ppersist_file = NULL;
+	IShellLink *pshell_link = NULL, *pshell_link_uninstall = NULL;
+	IPersistFile *ppersist_file = NULL, *ppersist_uninstall_file = NULL;
 	install_result ret = failed;
 	
 	HRESULT hr_com = ::CoInitialize(NULL);
 	
 	do {
-		// Âú®Ê≥®ÂÜåË°®HKEY_CURRENT_USER\Software‰∏ãÊñ∞Âª∫PsychokinesisÈ°πÔºåÁî®‰∫éÂ≠òÊîæË∑ØÂæÑÂÄº
+		// ‘⁄◊¢≤·±ÌHKEY_CURRENT_USER\Softwareœ¬–¬Ω®PsychokinesisœÓ£¨”√”⁄¥Ê∑≈¬∑æ∂÷µ
 		if (RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software"), 0, KEY_WRITE|KEY_READ,
 						 &current_user_key) != ERROR_SUCCESS)
 			break;
@@ -63,7 +67,7 @@ program_install::install_result program_install::install() {
 			break;
 
 		
-		// Âú®Ê≥®ÂÜåË°®HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall‰∏ãÊñ∞Âª∫PsychokinesisÈ°πÔºåÁî®‰∫éÂ≠òÊîæÂç∏ËΩΩ‰ø°ÊÅØ
+		// ‘⁄◊¢≤·±ÌHKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstallœ¬–¬Ω®PsychokinesisœÓ£¨”√”⁄¥Ê∑≈–∂‘ÿ–≈œ¢
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"), 0, KEY_WRITE|KEY_READ,
 						 &uninstall_key) != ERROR_SUCCESS)
 			break;
@@ -109,18 +113,44 @@ program_install::install_result program_install::install() {
 			break;
 
 		
-		// ÂàõÂª∫Âø´Êç∑ÊñπÂºè
+		// ≥ı ºªØœ¬‘ÿ¥Ê¥¢¬∑æ∂£®AppData£©
+		char appdata_path[MAX_PATH];
+		if (SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, appdata_path)
+				!= S_OK)
+			break;
+		std::string str_download_path = encoding_changer::ascii2utf8(appdata_path);
+		str_download_path += "\\" APP_NAME;               // ≥Ã–Ú∆Ù∂Ø≈‰÷√µº»Î ±ª·»∑±£¬∑æ∂¥Ê‘⁄
+		
+		try {
+			boost::property_tree::ptree root, download_path;
+			
+			boost::property_tree::read_xml(CONFIG_FILE, root);
+			
+			boost::property_tree::ptree& download_config = root.get_child("config").get_child("download");
+			download_path.put("name", "dir");
+			download_path.put("value", str_download_path);
+			download_config.push_back(std::make_pair("KeyVals", download_path));
+			
+			boost::property_tree::write_xml(CONFIG_FILE, root);
+		} catch (...) {
+			break;
+		}
+		
+		
+		// ¥¥Ω®øÏΩ›∑Ω Ω
 		if (!SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, 
 							 CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&pshell_link)))
 			break;
 		if (pshell_link->QueryInterface(IID_IPersistFile, (void**)&ppersist_file)
 			!= S_OK)
 			break;
-		// ËÆæÁΩÆÂø´Êç∑ÊñπÂºèÁöÑÁõÆÊ†áÊâÄÂú®ÁöÑ‰ΩçÁΩÆ(Ê∫êÁ®ãÂ∫èÂÆåÊï¥Ë∑ØÂæÑ) 
+		// …Ë÷√øÏΩ›∑Ω Ωµƒƒø±ÍÀ˘‘⁄µƒŒª÷√(‘¥≥Ã–ÚÕÍ’˚¬∑æ∂) 
 		pshell_link->SetPath(module_path);
-		// Â∫îÁî®Á®ãÂ∫èÁöÑÂ∑•‰ΩúÁõÆÂΩï 
-		// ÂΩìÁî®Êà∑Ê≤°ÊúâÊåáÂÆö‰∏Ä‰∏™ÂÖ∑‰ΩìÁöÑÁõÆÂΩïÊó∂ÔºåÂø´Êç∑ÊñπÂºèÁöÑÁõÆÊ†áÂ∫îÁî®Á®ãÂ∫èÂ∞Ü‰ΩøÁî®ËØ•Â±ûÊÄßÊâÄÊåáÂÆöÁöÑÁõÆÂΩïÊù•Ë£ÖËΩΩÊàñ‰øùÂ≠òÊñá‰ª∂
+		// ”¶”√≥Ã–Úµƒπ§◊˜ƒø¬º 
+		// µ±”√ªß√ª”–÷∏∂®“ª∏ˆæﬂÃÂµƒƒø¬º ±£¨øÏΩ›∑Ω Ωµƒƒø±Í”¶”√≥Ã–ÚΩ´ π”√∏√ Ù–‘À˘÷∏∂®µƒƒø¬º¿¥◊∞‘ÿªÚ±£¥ÊŒƒº˛
 		pshell_link->SetWorkingDirectory(exe_path.GetData());
+		
+		// £®1£©◊¿√ÊøÏΩ›∑Ω Ω
 		TCHAR desktop_path[MAX_PATH];
 		if (SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, desktop_path)
 			!= S_OK)
@@ -129,10 +159,42 @@ program_install::install_result program_install::install() {
 		str_desktop_path += _T("\\" APP_NAME ".lnk");
 		ppersist_file->Save(ansi2unicode(str_desktop_path.GetData()).c_str(), TRUE);
 
+		// £®2£©ø™ º≤Àµ•øÏΩ›∑Ω Ω
+		TCHAR startmenu_path[MAX_PATH];
+		if (SHGetFolderPath(NULL, CSIDL_PROGRAMS, NULL, 0, startmenu_path)
+			!= S_OK)
+			break;
+		CStdString str_startmenu_path = startmenu_path;
+		str_startmenu_path += _T("\\" APP_NAME);
+		boost::filesystem::path startmenu_dir(str_startmenu_path.GetData());
+		boost::filesystem::create_directories(startmenu_dir);
+		
+		CStdString str_startmenu_startup_link = str_startmenu_path;
+		str_startmenu_startup_link += _T("\\" APP_NAME ".lnk");
+		ppersist_file->Save(ansi2unicode(str_startmenu_startup_link.GetData()).c_str(), TRUE);
+		
+		// £®3£©ø™ º≤Àµ•–∂‘ÿøÏΩ›∑Ω Ω
+		if (!SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, 
+							 CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&pshell_link_uninstall)))
+			break;
+		if (pshell_link_uninstall->QueryInterface(IID_IPersistFile, (void**)&ppersist_uninstall_file)
+			!= S_OK)
+			break;
+		// …Ë÷√øÏΩ›∑Ω Ωµƒƒø±ÍÀ˘‘⁄µƒŒª÷√(‘¥≥Ã–ÚÕÍ’˚¬∑æ∂) 
+		pshell_link_uninstall->SetPath(module_path);
+		pshell_link_uninstall->SetArguments(_T("*u"));
+		// ”¶”√≥Ã–Úµƒπ§◊˜ƒø¬º 
+		// µ±”√ªß√ª”–÷∏∂®“ª∏ˆæﬂÃÂµƒƒø¬º ±£¨øÏΩ›∑Ω Ωµƒƒø±Í”¶”√≥Ã–ÚΩ´ π”√∏√ Ù–‘À˘÷∏∂®µƒƒø¬º¿¥◊∞‘ÿªÚ±£¥ÊŒƒº˛
+		pshell_link_uninstall->SetWorkingDirectory(exe_path.GetData());
+		
+		CStdString str_startmenu_uninstall_link = str_startmenu_path;
+		str_startmenu_uninstall_link += _T("\\–∂‘ÿ" APP_NAME ".lnk");
+		ppersist_uninstall_file->Save(ansi2unicode(str_startmenu_uninstall_link.GetData()).c_str(), TRUE);
+		
 		ret = success;
 	} while(0);
 	
-	// ÂõûÊªö
+	// ªÿπˆ
 	if (ret == failed)
 		program_install::uninstall();
 	
@@ -141,6 +203,12 @@ program_install::install_result program_install::install() {
 	}
 	if (pshell_link) {
 		pshell_link->Release();
+	}
+	if (ppersist_uninstall_file) {
+		ppersist_uninstall_file->Release();
+	}
+	if (pshell_link_uninstall) {
+		pshell_link_uninstall->Release();
 	}
 	if (current_user_key) {
 		RegCloseKey(current_user_key);
@@ -169,7 +237,16 @@ void program_install::uninstall() {
 	HKEY current_user_key = NULL, uninstall_key = NULL;
 	
 	do {
-		// Âà†Èô§Âø´Êç∑ÊñπÂºè
+		// …æ≥˝◊¢≤·±Ìœ‡πÿº¸÷µ
+		if (RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software"), 0, KEY_ALL_ACCESS,
+						 &current_user_key) == ERROR_SUCCESS)
+			RegDeleteKey(current_user_key, _T(APP_NAME));
+		
+		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"), 0, KEY_ALL_ACCESS,
+						 &uninstall_key) == ERROR_SUCCESS)
+			RegDeleteKey(uninstall_key, _T(APP_NAME));
+			
+		// …æ≥˝øÏΩ›∑Ω Ω
 		TCHAR desktop_path[MAX_PATH];
 		if (SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, desktop_path)
 			!= S_OK)
@@ -178,14 +255,13 @@ void program_install::uninstall() {
 		str_desktop_path += _T("\\" APP_NAME ".lnk");
 		DeleteFile(str_desktop_path.GetData());
 		
-		// Âà†Èô§Ê≥®ÂÜåË°®Áõ∏ÂÖ≥ÈîÆÂÄº
-		if (RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software"), 0, KEY_ALL_ACCESS,
-						 &current_user_key) == ERROR_SUCCESS)
-			RegDeleteKey(current_user_key, _T(APP_NAME));
-		
-		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"), 0, KEY_ALL_ACCESS,
-						 &uninstall_key) == ERROR_SUCCESS)
-			RegDeleteKey(uninstall_key, _T(APP_NAME));
+		TCHAR startmenu_path[MAX_PATH];
+		if (SHGetFolderPath(NULL, CSIDL_PROGRAMS, NULL, 0, startmenu_path)
+			!= S_OK)
+			break;
+		CStdString str_startmenu_path = startmenu_path;
+		str_startmenu_path += _T("\\" APP_NAME);
+		boost::filesystem::remove_all(str_startmenu_path.GetData());
 	} while (0);
 	
 	if (current_user_key) {
@@ -197,7 +273,7 @@ void program_install::uninstall() {
 		uninstall_key = NULL;
 	}
 	
-	// Âà†Èô§Â∫îÁî®Á®ãÂ∫è
+	// …æ≥˝”¶”√≥Ã–Ú
 	char appdata_path[MAX_PATH];
 	if (SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, appdata_path)
 		!= S_OK)
