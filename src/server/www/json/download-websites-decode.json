@@ -1,0 +1,44 @@
+{
+	"ret_code": 0,
+	"list": [
+				{
+					"type": "软件",
+					"websites": [
+						{
+							"name": "华军软件",
+							"url": "http://www.onlinedown.net/"
+						},
+						{
+							"name": "多特软件",
+							"url": "http://www.duote.com/"
+						}
+					]
+				},
+				{
+					"type": "游戏",
+					"websites": [
+						{
+							"name": "新浪游戏",
+							"url": "http://games.sina.com.cn/download/"
+						},
+						{
+							"name": "游迅网",
+							"url": "http://www.yxdown.com/"
+						}
+					]
+				},
+				{
+					"type": "电影",
+					"websites": [
+						{
+							"name": "人人影视",
+							"url": "http://www.yyets.com/"
+						},
+						{
+							"name": "磁力搜索",
+							"url": "http://cili.so/"
+						}
+					]
+				}
+	]
+}

@@ -1,0 +1,18 @@
+<div id="join-form-panel" class="children-panel content-panel">
+	<form name="join_form">
+		<fieldset>
+			<legend>请填写以下个人信息</legend>
+			<label><b>偏好</b></label>
+			<div>
+				<div class="input-control radio default-style psychokinesis-radio"><label><input type="radio" ng-model="person.interest" name="person_interest" value="ui" /><span class="check"></span>界面设计</label></div>
+				<div class="input-control radio default-style psychokinesis-radio"><label><input type="radio" ng-model="person.interest" name="person_interest" value="background" /><span class="check"></span>后台开发</label></div>
+				<div class="input-control radio default-style psychokinesis-radio"><label><input type="radio" ng-model="person.interest" name="person_interest" value="algorithm" /><span class="check"></span>算法研究</label></div>
+			</div>
+            <label><b>个人简介</b></label>
+            <div class="input-control textarea"><textarea ng-model="person.introduction" name="person_introduction" placeholder="曾经的作品、其他兴趣爱好等（可以为空）"></textarea></div>
+			<label><b>联系方式</b></label>
+			<div class="input-control text"><input type="email" ng-model="person.email" name="person_email" placeholder="邮箱地址"><button class="btn-clear"></button></div>
+            <input ng-click="join(person)" ng-disabled="join_form.$invalid || isUnchanged(person)" id="join_submit_button" class="button" type="button" value="提交" />
+		</fieldset>
+	</form>
+</div>

@@ -1,0 +1,39 @@
+<div id="suggest-panel" class="children-panel content-panel">
+	<form name="suggest_form">
+		<fieldset>
+			<legend>建议</legend>
+			<label><b>建议类别</b></label>
+			<div>
+				<div class="input-control radio default-style psychokinesis-radio">
+					<label>
+						<input type="radio" ng-model="suggestion.type" name="suggest_type" value="more_function" />
+						<span class="check"></span>
+						缺少功能
+					</label>
+				</div>
+				<div class="input-control radio default-style psychokinesis-radio">
+					<label>
+						<input type="radio" ng-model="suggestion.type" name="suggest_type" value="bug" />
+						<span class="check"></span>
+						程序运行问题
+					</label>
+				</div>
+				<div class="input-control radio default-style psychokinesis-radio">
+					<label>
+						<input type="radio" ng-model="suggestion.type" name="suggest_type" value="other" />
+						<span class="check"></span>
+						其他
+					</label>
+				</div>
+			</div>
+			<label>
+				<b>内容</b>
+				<span ng-show="suggest_form.suggest_content.$dirty && suggest_form.suggest_content.$error.minlength">最少10个字符！</span>
+			</label>
+			<div class="input-control textarea">
+				<textarea ng-minlength=10 ng-model="suggestion.content" name="suggest_content"></textarea>
+			</div>
+			<input ng-click="suggest(suggestion)" ng-disabled="suggest_form.$invalid || isUnchanged(suggestion)" id="suggest_button" type="button" value="确定" />
+		</fieldset>
+	</form>
+</div>

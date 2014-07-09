@@ -1,0 +1,40 @@
+<div id="default-panel" class="content-panel">
+	<div id="left-panel" class="children-panel">
+		<h3>Psychokinesis</h3>
+		<h4>帮助您使用手机控制其他智能设备：</h4><br/><br/>
+		<img src="images/introduction.png" />
+	</div>
+	<div id="right-panel">
+		<div class="children-panel">
+			<fieldset>
+				<legend>下载</legend>
+				<h4>PC端：</h4>
+				<a target="_self" href="psychokinesis.exe" class="image-button bg-darkGreen fg-white image-left large">
+					<i class="icon-windows bg-green fg-white" style="padding:10px"></i>
+					Windows版
+				</a><br/><br/>
+				<h4>移动端：</h4>
+				<a target="_self" href="Psychokinesis.apk" class="image-button bg-lightBlue fg-white image-left large">
+					<i class="icon-android bg-blue" style="padding:10px"></i>
+					Android版
+				</a>
+				<img style="padding-left:30px" src="images/android_code.png" />
+			</fieldset>
+		</div>
+		<div id="register-panel" class="children-panel">
+			<form name="register_form">
+			<fieldset>
+				<legend>注册</legend>
+				<div class="input-item">
+				<div class="input-control text" data-role="input-control">
+					<input name="account" ng-model="account_text" ng-pattern="invalidAccount" type="text" placeholder="账号名" />
+					<button class="btn-clear" tabindex="-1"></button>
+				</div>
+				<span ng-show="register_form.account.$dirty && register_form.account.$error.pattern">不能包含'";&|及空字符</span>
+				</div>
+				<input ng-click="register(account_text)" ng-disabled="register_form.$invalid || isUnchanged(account_text)"  id="register_button" class="large" type="button" value="注册" />
+			</fieldset>
+			</form>
+		</div>
+	</div>
+</div>

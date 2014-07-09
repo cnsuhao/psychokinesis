@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Psychokinesis</title>
+<link rel="icon" href="/psychokinesis.ico" mce_href="/psychokinesis.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/psychokinesis.ico" mce_href="/psychokinesis.ico" type="image/x-icon">
+<link rel="stylesheet" href="css/metro-bootstrap.css">
+<link rel="stylesheet" href="css/iconFont.min.css">
+<link rel="stylesheet" href="css/index.css">
+<script src="js/angular/angular.min.js"></script>
+<script type="text/javascript">
+	angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
+</script>
+</head>
+<body ng-app="psychokinesis" class="metro">
+	<div id="wapper">
+	<nav class="navigation-bar light">
+        <div class="navigation-bar-content">
+            <a class="element" href="/">
+                <img src="images/logo.png" />
+                Psychokinesis
+            </a>
+        </div>
+    </nav>
+	<div id="main-panel">
+    	<div ng-view></div>
+		<div id="foot-bar">
+			<span id="foot-bar-left">
+				&copy;2014, Psychokinesis
+			</span>
+			<span id="foot-bar-right">
+				<a href="suggest">反馈建议</a>
+				<a href="join">加入我们</a>
+			</span>
+		</div>
+	</div>
+	</div>
+	<script src="js/jquery/jquery.min.js"></script>
+	<script src="js/jquery/jquery.widget.min.js"></script>
+	<script src="js/metro/metro.min.js"></script>
+	<script src="js/angular/angular-route.min.js"></script>
+	<script src="js/util.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
