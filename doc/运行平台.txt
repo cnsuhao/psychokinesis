@@ -1,8 +1,0 @@
-## 服务器
-支持主流的Linux发行版（Debian和Redhat）
-
-## Windows客户端
-版本：xp-sp3及其以上
-
-## Android客户端
-版本：4.0及其以上
