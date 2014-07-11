@@ -1,0 +1,26 @@
+<div id="register-panel" class="children-panel content-panel">
+	<form name="register_form">
+		<fieldset>
+			<legend>注册</legend>
+			<label><b>账号名</b></label>
+			<div class="input-item">
+				<div class="input-control text" data-role="input-control">
+					<input name="account" ng-model="register_info.account" ng-pattern="invalidAccount" type="text" />
+					<button class="btn-clear" tabindex="-1"></button>
+				</div>
+				<span ng-show="register_form.account.$dirty && register_form.account.$error.pattern">不能包含'";&|及空字符</span>
+			</div>
+            <label><b>密码</b></label>
+            <div class="input-control text" data-role="input-control">
+				<input name="password" ng-model="register_info.password" type="password" />
+				<button class="btn-clear" tabindex="-1"></button>
+			</div>
+			<label><b>邮箱</b></label>
+			<div class="input-control text">
+            	<input type="email" ng-model="register_info.email" name="email">
+                <button class="btn-clear" tabindex="-1"></button>
+            </div>
+            <input ng-click="register(register_info)" ng-disabled="register_form.$invalid || isUnchanged(register_info)" id="register_button" class="button" type="button" value="注册账号" />
+		</fieldset>
+	</form>
+</div>

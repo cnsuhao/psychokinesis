@@ -1,38 +1,5 @@
 angular.module('psychokinesis', ['ngRoute'])
 		.controller('DefaultController', function($scope, $route, $routeParams, $location) {
-			$scope.invalidAccount = /^[^'";&|\s]+$/;
-					
-			$scope.isUnchanged = function(account) {
-				return account == undefined || account == '';
-			};
-					
-			$scope.register = function(account) {
-				$("#register_button").val('请稍等');
-				$("#register_button").attr("disabled", true);
-			
-				$.getJSON("nodejs/register?account=" + account, 
-					function(data, status){
-						if (status != 'success') {
-							message_box('错误', '网络故障：' + status);
-							$("#register_button").val('注册');
-							$("#register_button").attr("disabled", false);
-							return;
-						}
-				
-						if (data.error_code) {
-							message_box('错误', convert_error_string(data.error_code));
-							$("#register_button").val('注册');
-							$("#register_button").attr("disabled", false);
-							return;
-						}
-				
-						$("#register-panel").hide();
-						$("#register-panel").fadeIn('normal');
-						$("#register-panel").html("<h3>注册成功！您的账户信息如下：</h3>" +
-								"<p>账号：" + data.account + "</p>" +
-								"<p>密码：" + data.password + "</p>");
-					});
-			};
 		})
 		.controller('SuggestController', function($scope, $route, $routeParams, $location) {
 			$scope.isUnchanged = function(suggestion) {
@@ -101,9 +68,45 @@ angular.module('psychokinesis', ['ngRoute'])
 			} else if ($routeParams.type == 'join_success') {
 				$scope.prompt_img = 'images/right.jpg';
 				$scope.prompt_text = '提交成功！请耐心等待，我们将在三天内与你联系。';
+			} else if ($routeParams.type == 'register_success') {
+				$scope.prompt_img = 'images/right.jpg';
+				$scope.prompt_text = '注册成功！登录客户端开启专属您的Psychokinesis吧！';
 			} else {
 				$location.path('/');
 			}
+		})
+		.controller('RegisterController', function($scope, $route, $routeParams, $location) {
+			$scope.invalidAccount = /^[^'";&|\s]+$/;
+					
+			$scope.isUnchanged = function(info) {
+				return info.account == undefined || info.account == '' ||
+					   info.password == undefined || info.password == '' ||
+					   info.email == undefined || info.email == '';
+			};
+					
+			$scope.register = function(info) {
+				$("#register_button").val('请稍等');
+				$("#register_button").attr("disabled", true);
+					
+				$.post("nodejs/register-by-app", info)
+					.done(function(data) {
+						if (data.error_code) {
+							message_box('错误', convert_error_string(data.error_code));
+							$("#register_button").val('注册账号');
+							$("#register_button").attr("disabled", false);
+							return;
+						}
+				  
+						$location.path('/success').search({type: 'register_success'});
+						$scope.$apply();
+					})
+					.fail(function() {
+						message_box('错误', '网络故障！请稍后重试。');
+						$("#register_button").val('注册账号');
+						$("#register_button").attr("disabled", false);
+						return;
+					});
+			};
 		})
 		.config(function($routeProvider, $locationProvider) {
 			$routeProvider
@@ -126,6 +129,10 @@ angular.module('psychokinesis', ['ngRoute'])
 				.when('/success', {
 					templateUrl: 'success.html',
 					controller: 'SuccessController'
+				})
+				.when('/register', {
+					templateUrl: 'register.html',
+					controller: 'RegisterController'
 				})
 				.otherwise({
 					redirectTo: '/'

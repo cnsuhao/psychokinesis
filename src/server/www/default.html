@@ -21,20 +21,5 @@
 				<img style="padding-left:30px" src="images/android_code.png" />
 			</fieldset>
 		</div>
-		<div id="register-panel" class="children-panel">
-			<form name="register_form">
-			<fieldset>
-				<legend>注册</legend>
-				<div class="input-item">
-				<div class="input-control text" data-role="input-control">
-					<input name="account" ng-model="account_text" ng-pattern="invalidAccount" type="text" placeholder="账号名" />
-					<button class="btn-clear" tabindex="-1"></button>
-				</div>
-				<span ng-show="register_form.account.$dirty && register_form.account.$error.pattern">不能包含'";&|及空字符</span>
-				</div>
-				<input ng-click="register(account_text)" ng-disabled="register_form.$invalid || isUnchanged(account_text)"  id="register_button" class="large" type="button" value="注册" />
-			</fieldset>
-			</form>
-		</div>
 	</div>
 </div>
