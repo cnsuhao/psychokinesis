@@ -329,6 +329,7 @@ function start_login()
 	
 	reconnect_timer = 0;
 	pc_online = false;
+	$("#resource_list").empty();
 	
 	if (!communication)
 		communication = Communication.create();
