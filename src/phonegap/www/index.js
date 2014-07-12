@@ -6,6 +6,7 @@ var in_background = false;
 var pc_online = false;
 var mobile_online = false;
 var reconnect_timer = 0;
+var refresh_flag = false;
 
 $(document).on("pageinit", function() {
 	// fix the new iOS 7 transparent status bar
@@ -48,6 +49,18 @@ $(document).ready(function() {
 		}
 		
 		add_resource();
+	});
+	
+	$("#error_dialog_button").click(function(){
+		if (refresh_flag) 
+		{
+			window.localStorage.removeItem("password");
+			window.location = "index.html";
+		}
+		else
+		{
+			window.history.back();
+		}
 	});
 	
 	fetch_download_websites();
@@ -125,24 +138,21 @@ function on_connect(status)
 	else if (status == Strophe.Status.AUTHFAIL)
 	{
 		loading_message_hide();
+		
+		refresh_flag = true;
+		
 		$('#error_dialog_content').html('账号或密码错误！');
 		$.mobile.changePage("#error_dialog", {transition: "pop"});
-		
-		window.localStorage.removeItem("account");
-		window.localStorage.removeItem("password");
 	}
 	else if (status == Strophe.Status.ERROR || 
 			 status == Strophe.Status.CONNFAIL)
 	{
 		if (mobile_online) {
 			if (++reconnect_timer > 3) {
-				mobile_online = false;
+				refresh_flag = true;
 				
-				window.localStorage.removeItem("account");
-				window.localStorage.removeItem("password");
-
-				alert('服务器无响应！请稍后再试。');
-				window.location = "index.html";
+				$('#error_dialog_content').html('服务器无响应！请稍后再试。');
+				$.mobile.changePage("#error_dialog", {transition: "pop"});
 			}
 			else
 				loading_message_show("网络中断，正在重新连接......");
@@ -170,7 +180,7 @@ function on_connect(status)
 		mobile_online = false;
 		loading_message_hide();
 		
-		$.mobile.changePage("#signin_page", {transition: "flip", reverse: "true"});
+		refresh_flag = true;
 		
 		$('#error_dialog_content').html('服务器未响应！请稍后再试。');
 		$.mobile.changePage("#error_dialog", {transition: "pop"});

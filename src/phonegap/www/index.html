@@ -97,19 +97,20 @@
     <a data-rel="back" class="ui-btn ui-shadow ui-btn-a">确定</a>
   </div>
 </div>
-<div data-role="page" data-dialog="true" id="error_dialog">
+<div data-role="page" data-dialog="true" data-close-btn="none" id="error_dialog">
   <div data-role="header">
     <h1>错误</h1>
   </div>
   <div data-role="main" class="ui-content">
     <p id="error_dialog_content"></p>
-    <a href="index.html" data-rel="back" class="ui-btn ui-shadow ui-btn-a">确定</a>
+    <a id="error_dialog_button" class="ui-btn ui-shadow ui-btn-a">确定</a>
   </div>
 </div>
 
 <div data-role="page" id="signup_page">
   <div id="sign_page_wrapper" data-role="main" class="ui-content center-wrapper">
     <img src="images/logo.png" />
+    <h1>Psychokinesis</h1>
     <form id="signup_form">
       <div data-role="fieldcontain">
         <input id="signup_account" name="account" type="text" placeholder="账号名" />
@@ -164,7 +165,7 @@
     <ul id="website_list" data-role="listview" data-inset="true"></ul>
     <form id="add_resource_form">
       <div data-role="fieldcontain">
-        <input id="resource_location" name="resource_location" type="text" placeholder="下载地址" />
+        <input id="resource_location" name="resource_location" type="text" placeholder="下载地址（HTTP/FTP/种子/磁力链接）" />
       </div>
       <a id="add_resource_button" data-role="button" class="ui-btn ui-shadow ui-btn-a">添加</a>
     </form>

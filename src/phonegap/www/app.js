@@ -22,8 +22,11 @@ var app = {
 		var account = window.localStorage.getItem("account");
 		var password = window.localStorage.getItem("password");
 		
-		if (account && password) {
+		if (account) {
 			$("#signin_account").val(account);
+		}
+		
+		if (account && password) {
 			$("#signin_password").val(password);
 			start_login();
 		}
