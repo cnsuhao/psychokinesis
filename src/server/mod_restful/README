@@ -28,18 +28,13 @@ The module itself is configured separately. Available options are
 An example configuration is shown
 here:
 
-    {modules, [
-           {mod_restful, [
-            {api,
-             [
-              {["admin"], mod_restful_admin, [
-               {key, "secret"},
-               {allowed_commands, [register, unregister]}
-              ]},
-              {["register"], mod_restful_register, [{key, "secret"}]}
-             ]}
-           ]}
-          ]}.
+	  modules:
+		mod_restful:
+		api:
+		  - path: ["register"]
+			module: mod_restful_register
+			params:
+			  key: "secret"
 
 This enables two sub paths to two different mod_restful modules:
 mod_restful_admin under http://hostname:8088/api/admin and
