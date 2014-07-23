@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>下载Psychokinesis</title>
+<script type="text/javascript">
+	var isMobile = {
+		Android: function() {
+			return navigator.userAgent.match(/Android/i);
+		},
+		iOS: function() {
+			return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+		},
+		Windows: function() {
+			return navigator.userAgent.match(/IEMobile/i);
+		}
+	};
+	
+	if (isMobile.Android()) {
+		window.location.href = "Psychokinesis.apk";
+	} else if (isMobile.iOS()) {
+		window.location.href = "index.html";
+	} else if (isMobile.Windows()) {
+		window.location.href = "http://www.windowsphone.com/s?appid=00acc51c-ff96-419a-b0da-1736fd378f1b";
+	} else {
+		window.location.href = "index.html";
+	}
+</script>
+</head>
+</html>
