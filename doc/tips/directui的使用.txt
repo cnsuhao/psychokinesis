@@ -1,4 +1,4 @@
 编译界面资源文件
-i686-w64-mingw32-windres -i psychokinesis.rc -o resource.o
+i686-w64-mingw32-windres --codepage=936 -i psychokinesis.rc -o resource.o
 编译UI源文件
 i686-w64-mingw32-g++ -o psychokinesis.exe *.cpp resource.o -fpermissive -I$HOME/mingw32/include -L$HOME/mingw32/lib -static -lUIlib.dll -lole32 -lgdi32 -s -Wl,--subsystem,windows
