@@ -32,3 +32,38 @@ function convert_error_string(error_code) {
 		return '操作失败了！请稍后再试。';
 	}
 }
+
+var isMobile = {
+	Android: function() {
+		return navigator.userAgent.match(/Android/i);
+	},
+	iOS: function() {
+		return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+	},
+	Windows: function() {
+		return navigator.userAgent.match(/IEMobile/i);
+	}
+};
+
+function download_app(type, cb) {
+	if (type == 'android') {
+		if (cb)
+			cb(true);
+		window.location.href = '/Psychokinesis.apk';
+	} else if (type == 'wp') {
+		if (cb)
+			cb(true);
+		window.location.href = 'http://www.windowsphone.com/s?appid=00acc51c-ff96-419a-b0da-1736fd378f1b';
+	} else if (type == 'ios') {
+		if (cb)
+			cb(true);
+		window.location.href = 'https://itunes.apple.com/cn/app/psychokinesis/id898639199?mt=8';
+	} else if (type == 'windows') {
+		if (cb)
+			cb(true);
+		window.location.href = '/psychokinesis.exe';
+	} else {
+		if (cb)
+			cb(false);
+	}
+}
