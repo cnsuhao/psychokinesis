@@ -1,8 +1,13 @@
-目标：
+﻿目标：
 插件自定义后台逻辑和界面，并且方便部署，主程序可动态加载/卸载插件。
 
 实现方式：
-1、界面插件化基于ModernUI框架实现；          -- 待预研
+1、界面插件化基于ModernUI框架实现；
+1）具体界面插件实现参考
+https://mui.codeplex.com/wikipage?title=A%20guide%20to%20using%20MEF&referringTitle=Documentation；
+2）程序启动时实例化插件（App的OnStartup中实现）；
+3）依据插件信息动态创建界面元素（主界面构造函数中实现）；
+4）运行过程中动态添加/删除插件（调用Catalog的Refresh刷新容器，并监听Changed事件实现动态增减界面元素）。
 
 2、后台插件化基于.NET的MEF扩展框架实现：
 1）定义相关协议，参考1.0版本；
@@ -11,4 +16,4 @@
 4）控制器与界面交互。
 
 3、插件部署：
-打包dll+xaml，部署时解压到相应目录，通知程序进行加载即可。
+打包dll，部署时解压到相应目录，通知程序进行加载即可（Catalog的Refresh方法）。
