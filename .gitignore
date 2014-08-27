@@ -1,0 +1,8 @@
+src/Windows(DotNet)/Interface/bin/
+src/Windows(DotNet)/Interface/obj/
+*.aps
+*.user
+*.ilk
+*.log
+*.sdf
+*.suo
