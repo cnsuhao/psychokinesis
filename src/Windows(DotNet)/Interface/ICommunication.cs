@@ -37,7 +37,7 @@ namespace Psychokinesis
          *
          * 异步发送消息
          */
-        public delegate void SendMessageDelegate(Message msg);
+        public delegate bool SendMessageDelegate(Message msg);
     }
     
 }
