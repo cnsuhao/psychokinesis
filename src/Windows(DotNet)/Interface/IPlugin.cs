@@ -51,5 +51,17 @@ namespace Psychokinesis
              */
             void MessageReceived(Message msg);
         }
+
+        /** 插件属性
+         *
+         * 定义插件时使用特性声明这些属性，以标识此插件。
+         */
+        public interface IPluginMetadata
+        {
+            // Mui的标识属性，Mui框架依据此属性查找此插件
+            string MuiUri { get; }
+            // 插件的界面标题
+            string DisplayName { get; }
+        }
     } 
 }

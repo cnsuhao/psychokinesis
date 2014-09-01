@@ -7,7 +7,7 @@
     <ProjectGuid>{97E67121-B9B7-483D-9D51-B7F28E2FE081}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Interface</RootNamespace>
+    <RootNamespace>Psychokinesis.Interface</RootNamespace>
     <AssemblyName>Interface</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
