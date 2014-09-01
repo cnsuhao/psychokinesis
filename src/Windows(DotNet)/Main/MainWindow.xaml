@@ -1,0 +1,14 @@
+﻿<mui:ModernWindow  x:Class="Psychokinesis.Main.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+        Title="Psychokinesis" Height="350" Width="525"
+        ContentSource="/Welcome">
+    <mui:ModernWindow.MenuLinkGroups>
+        <mui:LinkGroup DisplayName="欢迎使用">
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="" Source="/Welcome" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+    </mui:ModernWindow.MenuLinkGroups>
+</mui:ModernWindow>

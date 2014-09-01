@@ -1,0 +1,32 @@
+﻿<Application x:Class="Psychokinesis.Main.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             xmlns:local="clr-namespace:Psychokinesis.Main"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FirstFloor.ModernUI;component/Assets/ModernUI.xaml" />
+                <ResourceDictionary Source="/FirstFloor.ModernUI;component/Assets/ModernUI.Light.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- make sure all ModernFrame, ModernTab and MainWindow instances use the MefContentLoader -->
+            <Style TargetType="mui:ModernFrame">
+                <Setter Property="ContentLoader" Value="{DynamicResource PluginContentLoader}" />
+            </Style>
+            <Style TargetType="mui:ModernTab">
+                <Setter Property="ContentLoader" Value="{DynamicResource PluginContentLoader}" />
+            </Style>
+            <Style TargetType="local:MainWindow">
+                <Setter Property="ContentLoader" Value="{DynamicResource PluginContentLoader}" />
+            </Style>
+
+            <!-- make sure all BBCodeBlock instance use the MefLinkNavigator -->
+            <!-- <Style TargetType="mui:BBCodeBlock">
+                <Setter Property="LinkNavigator" Value="{DynamicResource MefLinkNavigator}" />
+            </Style> -->
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
