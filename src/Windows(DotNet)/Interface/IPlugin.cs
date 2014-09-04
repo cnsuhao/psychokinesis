@@ -29,7 +29,7 @@ namespace Psychokinesis
 
             /** 网络不可用
              *
-             * 网络中断事件，之后不可再使用ICommunication，否则相关调用会抛出异常。
+             * 网络不再可用事件，之后不可再使用ICommunication进行发送消息，否则相关调用会抛出异常。
              */
             void NetworkUnavailable();
 
@@ -44,12 +44,6 @@ namespace Psychokinesis
              * 下线终端的标识符
              */
             void DeviceOffline(Device dev);
-
-            /** 接收其他终端发来的消息
-             *
-             * 可获得消息的来源及内容
-             */
-            void MessageReceived(Message msg);
         }
 
         /** 插件属性

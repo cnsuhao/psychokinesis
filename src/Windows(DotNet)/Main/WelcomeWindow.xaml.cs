@@ -73,11 +73,6 @@ namespace Psychokinesis
             public void DeviceOffline(Device dev)
             {
             }
-
-            // 接收其他终端发来的消息
-            public void MessageReceived(Message msg)
-            {
-            }
         }
     }
     

@@ -16,9 +16,10 @@ namespace Psychokinesis
     {
         /** 通信接口
          *
-         * 插件可通过NetworkAvailable事件获得此接口实例。
+         * 插件可通过NetworkAvailable事件获得此接口实例；
+         * 插件可通过接口的Subscribe方法订阅消息事件。
          */
-        public interface ICommunication
+        public interface ICommunication : IObservable<Message>
         {
             /** 获取在线终端的信息
              *
