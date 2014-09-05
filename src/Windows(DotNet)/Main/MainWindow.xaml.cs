@@ -41,6 +41,9 @@ namespace Psychokinesis
 
                 // 插件目录有变化事件
                 App.pluginCatalog.Changed += pluginCatalog_Changed;
+
+                // 耗时的初始化操作过渡界面
+                new SplashWindow().ShowDialog();
             }
 
             // 插件目录有变化事件
