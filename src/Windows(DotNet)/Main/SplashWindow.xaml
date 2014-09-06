@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SplashWindow" Height="310" Width="459"
         WindowStyle="None" WindowStartupLocation="CenterScreen" 
-	    ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+	    ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" Unloaded="Window_Unloaded">
     <Window.Resources>
         <Storyboard Completed="ShowStoryBoard_Completed" x:Key="ShowStoryBoard">
             <ThicknessAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Margin)" Storyboard.TargetName="txtLoading">

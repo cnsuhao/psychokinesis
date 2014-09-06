@@ -14,27 +14,38 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.Threading;
 using System.Windows.Threading;
+using Psychokinesis.Main.Control;
+using Psychokinesis.Interface;
 
 namespace Psychokinesis.Main
 {
     /// <summary>
     /// SplashWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class SplashWindow : Window
+    public partial class SplashWindow : Window, IObserver<Message>
     {
         // 声明委托
         delegate void ShowDelegate(string txt);
         delegate void HideDelegate();
         delegate void ErrorExitDelegate(string txt);
 
-        // 程序初始化线程
-        Thread initializingThread;
-
         // 用于在线程中更新界面的委托
         ShowDelegate showDelegate;
         HideDelegate hideDelegate;
         ErrorExitDelegate errorExitDelegate;
 
+        IDisposable messagerObserver;
+
+        static Dictionary<MessengerState, String> stateMsg = new Dictionary<MessengerState, string>()
+        {
+            {MessengerState.Active, "获取登录信息......"},
+            {MessengerState.GetLoginInformation, "登录中......"}
+        };
+        static Dictionary<MessengerState, String> stateErrorMsg = new Dictionary<MessengerState, string>()
+        {
+            {MessengerState.Active, "无法从服务器获取登录信息，请稍后再试！"},       // 错误是发生在当前状态转到下一个状态的过程中
+            {MessengerState.GetLoginInformation, "登录失败，请稍后再试！"}
+        };
 
         public SplashWindow()
         {
@@ -47,31 +58,42 @@ namespace Psychokinesis.Main
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            initializingThread = new Thread(Initializing);
-            initializingThread.Start();
+            messagerObserver = Messenger.Instance.Subscribe(this);
+            Messenger.Instance.Login();
         }
 
-
-        private void Initializing()
+        private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
-            this.Dispatcher.Invoke(showDelegate, "连接网络......");
-            Thread.Sleep(1500);                    // 等待提示信息显示动画
-
-            if (Connecting() == false)
-                this.Dispatcher.Invoke(errorExitDelegate, "无法连接服务器，请稍后再试！");
-
-            this.Dispatcher.Invoke(hideDelegate);
-            Thread.Sleep(500);                     // 等待提示信息消失动画
-
-            // 初始化结束，关闭窗口
-            this.Dispatcher.Invoke(DispatcherPriority.Normal, (Action)delegate() { Close(); });
+            messagerObserver.Dispose();
         }
 
-        private bool Connecting()
+
+        public virtual void OnCompleted()
         {
-            return false;
+            MessengerState state = Messenger.Instance.State;
+
+            if (state > MessengerState.Active)
+            {
+                this.Dispatcher.Invoke(hideDelegate);
+                Thread.Sleep(500);                    // 等待提示信息消失动画
+            }
+
+            if (state == MessengerState.Online)
+                this.Dispatcher.Invoke(DispatcherPriority.Normal, (Action)delegate() { Close(); });
+            else
+            {
+                this.Dispatcher.Invoke(showDelegate, stateMsg[Messenger.Instance.State]);
+                Thread.Sleep(1500);                    // 等待提示信息显示动画
+            }
         }
 
+        public virtual void OnError(Exception e)
+        {
+            this.Dispatcher.BeginInvoke(errorExitDelegate, stateErrorMsg[Messenger.Instance.State]);
+        }
+
+        public virtual void OnNext(Message value)
+        {}
 
         private void ShowPrompt(string txt)
         {
@@ -98,6 +120,7 @@ namespace Psychokinesis.Main
 
         private void ErrorExit(string err)
         {
+            Messenger.Instance.Logout();
             MessageBox.Show(err, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             Application.Current.Shutdown();
         }
