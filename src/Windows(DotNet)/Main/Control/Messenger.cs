@@ -9,8 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Psychokinesis.Interface;
 using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Psychokinesis.Interface;
+using Psychokinesis.Main.Util;
 
 
 namespace Psychokinesis.Main.Control
@@ -66,9 +69,44 @@ namespace Psychokinesis.Main.Control
 
                 do
                 {
-                    // TODO 获取登录信息
-                    // NotifyError(new Exception());
-                    // break;
+                    // 获取登录信息
+                    string account, password;
+                    try
+                    {
+                        string serialNumber = Crypto.Instance.MD5String(
+                            string.Join("", SystemInfo.Instance.ProcessorIds.ToArray()) +
+                            string.Join("", SystemInfo.Instance.PhysicalMediaSerialNumbers.ToArray()) +
+                            string.Join("", SystemInfo.Instance.NetworkAdapterMacs.ToArray())
+                            ).Substring(8, 16);
+
+                        var postForm = new Dictionary<string, string>()
+                        {
+                            {"serialnumber", serialNumber}
+                        };
+                        string accountInfo = HttpClient.Post("http://psychokinesis.me/nodejs/access-communication",
+                                                             postForm);
+
+                        JObject o = (JObject)JsonConvert.DeserializeObject(accountInfo);
+                        account = (string)o["account"];
+                        password = (string)o["password"];
+                        if (account == null || password == null)
+                        {
+                            string errorDesc = (string)o["desc"];
+
+                            Exception e;
+                            if (errorDesc != null)
+                                e = new Exception(errorDesc);
+                            else
+                                e = new Exception();
+                            NotifyError(e);
+                            break;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        NotifyError(e);
+                        break;
+                    }
 
                     state = MessengerState.GetLoginInformation;
                     NotifyCompleted();
@@ -78,7 +116,7 @@ namespace Psychokinesis.Main.Control
                     state = MessengerState.Online;
                     NotifyCompleted();
 
-                    // TODO 接收消息
+                    // TODO 发送心跳包
                 }while(false);
 
                 if (state == MessengerState.Online)
