@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,16 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel.Composition;
+using System.Drawing;
+using System.Drawing.Imaging;
 using FirstFloor.ModernUI.Windows.Navigation;
+using Gma.QrCodeNet.Encoding;
+using Gma.QrCodeNet.Encoding.Windows.Render;
 using Psychokinesis.Interface;
+using Psychokinesis.Main.Control;
 
 namespace Psychokinesis
 {
@@ -23,13 +28,21 @@ namespace Psychokinesis
         /// WelcomeWindow.xaml 的交互逻辑
         /// </summary>
         [Export(typeof(IPlugin))]
-        [ExportMetadata("DisplayName", "Welcome")]
+        [ExportMetadata("DisplayName", "欢迎使用")]
         [ExportMetadata("MuiUri", "/Welcome")]
         public partial class WelcomeWindow : UserControl, IPlugin
         {
             public WelcomeWindow()
             {
                 InitializeComponent();
+
+                QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.H);
+                QrCode qrCode = qrEncoder.Encode(Messenger.Instance.SerialNumber);
+                GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(5, QuietZoneModules.Two), Brushes.Black, Brushes.White);
+                MemoryStream stream = new MemoryStream();
+                renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, stream);
+                PngBitmapDecoder decoder = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                qrCodeImg.Source = decoder.Frames[0];
             }
 
             // Mui IContent接口

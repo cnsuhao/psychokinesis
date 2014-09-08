@@ -2,8 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mui="http://firstfloorsoftware.com/ModernUI"
-        Title="Psychokinesis" Height="350" Width="525"
-        ContentSource="/Welcome">
+        
+        Title="Psychokinesis" Height="350" Width="525" WindowStartupLocation="CenterScreen"
+        ContentSource="/Welcome" Closing="ModernWindow_Closing" Closed="ModernWindow_Closed" Loaded="ModernWindow_Loaded" Unloaded="ModernWindow_Unloaded">
     <mui:ModernWindow.MenuLinkGroups>
         <mui:LinkGroup DisplayName="欢迎使用">
             <mui:LinkGroup.Links>

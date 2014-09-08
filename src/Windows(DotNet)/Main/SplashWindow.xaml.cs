@@ -44,7 +44,8 @@ namespace Psychokinesis.Main
         static Dictionary<MessengerState, String> stateErrorMsg = new Dictionary<MessengerState, string>()
         {
             {MessengerState.Active, "无法从服务器获取登录信息，请稍后再试！"},       // 错误是发生在当前状态转到下一个状态的过程中
-            {MessengerState.GetLoginInformation, "登录失败，请稍后再试！"}
+            {MessengerState.GetLoginInformation, "登录失败，请稍后再试！"},
+            {MessengerState.ConnectionError, "登录失败，请稍后再试！"}
         };
 
         public SplashWindow()

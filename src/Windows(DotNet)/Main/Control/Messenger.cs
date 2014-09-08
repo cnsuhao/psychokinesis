@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Psychokinesis.Interface;
 using Psychokinesis.Main.Util;
+using agsXMPP;
+using agsXMPP.protocol.extensions.ping;
 
 
 namespace Psychokinesis.Main.Control
@@ -22,11 +24,18 @@ namespace Psychokinesis.Main.Control
     {
         private Thread workThread;
         private bool isRunning = false;
-        private Semaphore workSemaphore = new Semaphore(0, 1);
+        private Semaphore workSemaphore = new Semaphore(0, 2);        // 界面和xmpp响应事件可能同时触发
         private MessengerState state = MessengerState.NotActive;      // 仅允许在workThread中修改
-        public MessengerState State { get { return state; } }
+
+        private XmppClientConnection xmppClient = new XmppClientConnection("chat.psychokinesis.me", 5222);
+        private string serialNumber;
 
         private List<IObserver<Message>> observers;
+
+        public MessengerState State { get { return state; } }
+        public String SerialNumber { get { return serialNumber; } }
+        public String Account { get { return xmppClient.Username; } }
+        public String Password { get { return xmppClient.Password; } }
 
         public void Login()
         {
@@ -49,7 +58,9 @@ namespace Psychokinesis.Main.Control
             {
                 isRunning = false;
 
-                if (State == MessengerState.NotActive)
+                if (State == MessengerState.NotActive ||
+                    State == MessengerState.GetLoginInformation ||
+                    State == MessengerState.Online)
                     workSemaphore.Release();
 
                 workThread.Join();
@@ -69,59 +80,89 @@ namespace Psychokinesis.Main.Control
 
                 do
                 {
-                    // 获取登录信息
-                    string account, password;
-                    try
+                    // 程序启动时获取一次登录信息
+                    if (xmppClient.Username == "")
                     {
-                        string serialNumber = Crypto.Instance.MD5String(
-                            string.Join("", SystemInfo.Instance.ProcessorIds.ToArray()) +
-                            string.Join("", SystemInfo.Instance.PhysicalMediaSerialNumbers.ToArray()) +
-                            string.Join("", SystemInfo.Instance.NetworkAdapterMacs.ToArray())
-                            ).Substring(8, 16);
-
-                        var postForm = new Dictionary<string, string>()
+                        try
                         {
-                            {"serialnumber", serialNumber}
-                        };
-                        string accountInfo = HttpClient.Post("http://psychokinesis.me/nodejs/access-communication",
-                                                             postForm);
+                            serialNumber = Crypto.Instance.MD5String(
+                                string.Join("", SystemInfo.Instance.ProcessorIds.ToArray()) +
+                                string.Join("", SystemInfo.Instance.PhysicalMediaSerialNumbers.ToArray()) +
+                                string.Join("", SystemInfo.Instance.NetworkAdapterMacs.ToArray())
+                                ).Substring(8, 16);
 
-                        JObject o = (JObject)JsonConvert.DeserializeObject(accountInfo);
-                        account = (string)o["account"];
-                        password = (string)o["password"];
-                        if (account == null || password == null)
+                            var postForm = new Dictionary<string, string>()
+                            {
+                                {"serialnumber", serialNumber}
+                            };
+                            string accountInfo = HttpClient.Post("http://psychokinesis.me/nodejs/access-communication",
+                                                                 postForm);
+
+                            JObject o = (JObject)JsonConvert.DeserializeObject(accountInfo);
+                            string account = (string)o["account"];
+                            string password = (string)o["password"];
+                            if (account == null || password == null)
+                            {
+                                string errorDesc = (string)o["desc"];
+
+                                Exception e;
+                                if (errorDesc != null)
+                                    e = new Exception(errorDesc);
+                                else
+                                    e = new Exception();
+                                NotifyError(e);
+                                break;
+                            }
+
+                            xmppClient.Username = account;
+                            xmppClient.Password = password;
+                        }
+                        catch (Exception e)
                         {
-                            string errorDesc = (string)o["desc"];
-
-                            Exception e;
-                            if (errorDesc != null)
-                                e = new Exception(errorDesc);
-                            else
-                                e = new Exception();
                             NotifyError(e);
                             break;
                         }
+
+                        state = MessengerState.GetLoginInformation;
+                        NotifyCompleted();
                     }
-                    catch (Exception e)
+
+                    // 登录
+                    xmppClient.Resource = "psychokinesis-pc";
+                    xmppClient.Open();
+
+                    workSemaphore.WaitOne();
+                    if (isRunning == false)
+                        break;
+
+                    if (state != MessengerState.Online)
                     {
-                        NotifyError(e);
+                        NotifyError(new Exception());
                         break;
                     }
 
-                    state = MessengerState.GetLoginInformation;
                     NotifyCompleted();
 
-                    // TODO 登录
+                    // 发送心跳包
+                    while (isRunning &&
+                            state == MessengerState.Online)
+                    {
+                        PingIq p = new PingIq(xmppClient.Server, xmppClient.MyJID);
+                        p.Type = agsXMPP.protocol.client.IqType.get;
+                        xmppClient.Send(p);
 
-                    state = MessengerState.Online;
-                    NotifyCompleted();
+                        workSemaphore.WaitOne(30000);       // 30s
+                    }
 
-                    // TODO 发送心跳包
+                    if (isRunning)
+                    {
+                        NotifyError(new Exception());
+                    }
                 }while(false);
 
                 if (state == MessengerState.Online)
                 {
-                    // TODO 关闭与服务器的连接
+                    xmppClient.Close();
                 }
 
                 state = MessengerState.NotActive;
@@ -145,6 +186,46 @@ namespace Psychokinesis.Main.Control
             workThread = new Thread(Run);
 
             observers = new List<IObserver<Message>>();
+
+            xmppClient.AutoResolveConnectServer = false;
+            xmppClient.OnLogin += xmppClient_OnLogin;
+            xmppClient.OnClose += xmppClient_OnClose;
+            xmppClient.OnError += xmppClient_OnError;
+            xmppClient.OnAuthError += xmppClient_OnAuthError;
+            xmppClient.OnSocketError += xmppClient_OnSocketError;
+        }
+
+        private void xmppClient_OnSocketError(object sender, Exception ex)
+        {
+            state = MessengerState.ConnectionError;
+            workSemaphore.Release();
+        }
+
+        private void xmppClient_OnAuthError(object sender, agsXMPP.Xml.Dom.Element e)
+        {
+            state = MessengerState.ConnectionError;
+            workSemaphore.Release();
+        }
+
+        private void xmppClient_OnError(object sender, Exception ex)
+        {
+            state = MessengerState.ConnectionError;
+            workSemaphore.Release();
+        }
+
+        private void xmppClient_OnClose(object sender)
+        {
+            if (isRunning)
+            {
+                state = MessengerState.ConnectionError;          // 经测试连接异常中断会触发此事件
+                workSemaphore.Release();
+            }
+        }
+
+        private void xmppClient_OnLogin(object sender)
+        {
+            state = MessengerState.Online;
+            workSemaphore.Release();
         }
 
         // 实现观察者模式
@@ -219,6 +300,7 @@ namespace Psychokinesis.Main.Control
         NotActive,                // 工作线程未启动至获得信号量之前
         Active,                   // 获得信号量之后到获取登录信息之前
         GetLoginInformation,
-        Online
+        Online,
+        ConnectionError
     }
 }
