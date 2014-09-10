@@ -28,7 +28,7 @@ namespace Psychokinesis.Main.Control
         private MessengerState state = MessengerState.NotActive;      // 仅允许在workThread中修改
 
         private XmppClientConnection xmppClient = new XmppClientConnection("chat.psychokinesis.me", 5222);
-        private string serialNumber;
+        private string serialNumber = "";
 
         private List<IObserver<Message>> observers;
 

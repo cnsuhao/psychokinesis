@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Media.Animation;
 using FirstFloor.ModernUI.Windows.Navigation;
 using Gma.QrCodeNet.Encoding;
 using Gma.QrCodeNet.Encoding.Windows.Render;
@@ -35,6 +36,11 @@ namespace Psychokinesis
             public WelcomeWindow()
             {
                 InitializeComponent();
+
+                // 移动终端加入时的动画效果
+                // 使用方法：
+                // phoneImg.Visibility = System.Windows.Visibility.Visible;
+                phoneImg.IsVisibleChanged += phoneImg_IsVisibleChanged;
 
                 QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.H);
                 QrCode qrCode = qrEncoder.Encode(Messenger.Instance.SerialNumber);
@@ -85,6 +91,22 @@ namespace Psychokinesis
             // 其他终端下线
             public void DeviceOffline(Device dev)
             {
+            }
+
+            void phoneImg_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+            {
+                if (phoneImg.IsVisible)
+                {
+                    Storyboard Showboard = this.Resources["PhoneComingStoryboard"] as Storyboard;
+                    Showboard.Begin();
+                }
+            }
+
+            private void PhoneComingStoryBoard_Completed(object sender, EventArgs e)
+            {
+                phoneImg.Visibility = System.Windows.Visibility.Hidden;
+
+                // TODO “终端管理”闪动提示用户
             }
         }
     }

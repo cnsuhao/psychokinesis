@@ -5,6 +5,10 @@
         
         Title="Psychokinesis" Height="350" Width="525" WindowStartupLocation="CenterScreen"
         ContentSource="/Welcome" Closing="ModernWindow_Closing" Closed="ModernWindow_Closed" Loaded="ModernWindow_Loaded" Unloaded="ModernWindow_Unloaded">
+    <mui:ModernWindow.TitleLinks>
+        <mui:Link DisplayName="终端管理" Source="" />
+    </mui:ModernWindow.TitleLinks>
+    
     <mui:ModernWindow.MenuLinkGroups>
         <mui:LinkGroup DisplayName="欢迎使用">
             <mui:LinkGroup.Links>
