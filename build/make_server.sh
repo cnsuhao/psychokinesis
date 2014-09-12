@@ -126,7 +126,7 @@ if [ "${INSTALL_NODEJS_FROM_SOURCE}" = "yes" ]; then
 	cd -
 	
 	# 安装npm
-	sudo aptitude install -y curl
+	sudo ${INSTALLER} install -y curl
 	if [ $? -ne 0 ]; then
 		red_echo "Install curl failed. Npm's installation need it."
 		exit 2

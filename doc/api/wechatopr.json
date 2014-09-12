@@ -1,0 +1,18 @@
+
+{
+	"opr": "getqrcode",
+	"account": "test1",
+	"password": "1"
+}
+
+{
+    "success": true,
+    "account": "test1",
+    "codeurl": "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQFQ8DoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL0ZVUDYxZGpseUpPeHZlZmJxMjBYAAIEKEQSVAMEhAMAAA=="
+}
+
+{
+    "success": false,
+    "msg": "unknown opr"
+}
+

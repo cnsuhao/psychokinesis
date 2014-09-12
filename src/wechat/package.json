@@ -1,0 +1,20 @@
+{
+  "name": "weixin-psis",
+  "version": "1.0.0",
+  "description": "psychokinesis wechat client",
+  "author": "jhc <end.elimit@gmail.com> ",
+  "dependencies": {
+    "connect": "*",
+    "express": "*",
+    "body-parser": "*",
+    "mongoose": "*",
+    "wechat": "*"
+  },
+  "engines": {
+    "node" : ">=0.6.0",
+    "npm" : ">=1.1.6"
+  },
+  "scripts": {
+  	"start": "node app.js"
+  }
+}
