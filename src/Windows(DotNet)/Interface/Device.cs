@@ -29,6 +29,10 @@ namespace Psychokinesis
             /// 终端名称
             [DataMember]
             public string DeviceNickName { get; set; }
+
+            /// 终端接入时间
+            [DataMember]
+            public DateTime JoinTime { get; set; }
         }
     }
     

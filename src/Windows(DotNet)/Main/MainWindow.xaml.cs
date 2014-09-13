@@ -38,7 +38,7 @@ namespace Psychokinesis
                 this.LogoData = logo;
 
                 // 根据插件初始化界面
-                foreach (var pc in App.pluginCatalog)
+                foreach (var pc in App.PluginsCatalog)
                 {
                     foreach (var p in pc.ExportDefinitions)
                     {
@@ -49,7 +49,7 @@ namespace Psychokinesis
                 }
 
                 // 插件目录有变化事件
-                App.pluginCatalog.Changed += pluginCatalog_Changed;
+                App.PluginsCatalog.Changed += pluginCatalog_Changed;
 
                 // 耗时的初始化操作过渡界面
                 new SplashWindow().ShowDialog();

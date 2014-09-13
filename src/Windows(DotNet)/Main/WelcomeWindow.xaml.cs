@@ -33,20 +33,16 @@ namespace Psychokinesis
         [ExportMetadata("MuiUri", "/Welcome")]
         public partial class WelcomeWindow : UserControl, IPlugin
         {
+            private bool isWindowActive = false;
+
             public WelcomeWindow()
             {
                 InitializeComponent();
 
                 // 移动终端加入时的动画效果
-                // 使用方法：
-                // phoneImg.Visibility = System.Windows.Visibility.Visible;
                 phoneImg.IsVisibleChanged += phoneImg_IsVisibleChanged;
 
-                QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.H);
-                QrCode qrCode = qrEncoder.Encode(Messenger.Instance.SerialNumber);
-                GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(5, QuietZoneModules.Two), Brushes.Black, Brushes.White);
-                MemoryStream stream = new MemoryStream();
-                renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, stream);
+                Stream stream = CreateQrCodeImage("http://psychokinesis.me/nodejs/access-communication?serialnumber=" + Messenger.Instance.SerialNumber);
                 PngBitmapDecoder decoder = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
                 qrCodeImg.Source = decoder.Frames[0];
             }
@@ -55,11 +51,13 @@ namespace Psychokinesis
             // The content is no longer the active content.
             public void OnNavigatedFrom(NavigationEventArgs e)
             {
+                isWindowActive = false;
             }
 
             // The content becomes the active content in a frame. This is a good time to initialize your content.
             public void OnNavigatedTo(NavigationEventArgs e)
             {
+                isWindowActive = true;
             }
 
             // You navigate to a link uri containing a fragment
@@ -86,6 +84,8 @@ namespace Psychokinesis
             // 其他终端上线
             public void DeviceOnline(Device dev)
             {
+                if (isWindowActive)
+                    phoneImg.Visibility = System.Windows.Visibility.Visible;
             }
 
             // 其他终端下线
@@ -107,6 +107,16 @@ namespace Psychokinesis
                 phoneImg.Visibility = System.Windows.Visibility.Hidden;
 
                 // TODO “终端管理”闪动提示用户
+            }
+
+            private Stream CreateQrCodeImage(String str)
+            {
+                QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.H);
+                QrCode qrCode = qrEncoder.Encode(str);
+                GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(5, QuietZoneModules.Two), Brushes.Black, Brushes.White);
+                MemoryStream stream = new MemoryStream();
+                renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, stream);
+                return stream;
             }
         }
     }

@@ -10,6 +10,7 @@ using System.Reflection;
 using System.ComponentModel.Composition;           // 构成托管扩展框架 (MEF) 的核心的类，相关特性的定义
 using System.ComponentModel.Composition.Hosting;   // 构成托管扩展框架 (MEF) 的核心的类，相关容器、目录的定义
 using FirstFloor.ModernUI.Windows;
+using Psychokinesis.Main.Control;
 
 namespace Psychokinesis
 {
@@ -20,8 +21,9 @@ namespace Psychokinesis
         /// </summary>
         public partial class App : Application
         {
-            public static DirectoryCatalog pluginCatalog;                                                               // 目录索引容器
-            public static CompositionContainer pluginContainer;                                                         // 插件容器
+            public static DirectoryCatalog PluginsCatalog;                                                               // 目录索引容器
+            public static CompositionContainer PluginsContainer;                                                         // 插件容器
+            public static PluginManager PluginsManager;                                                                  // 插件管理器
 
 
             protected override void OnStartup(StartupEventArgs e)
@@ -42,16 +44,16 @@ namespace Psychokinesis
                 // AggregateCatalog可以组合多个目录一块儿导入
                 var catalog = new AggregateCatalog();
                 catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));      // 导入程序自身导出的接口
-                pluginCatalog = new DirectoryCatalog(pluginPath);                                // 导入指定目录里的接口
-                catalog.Catalogs.Add(pluginCatalog);
+                PluginsCatalog = new DirectoryCatalog(pluginPath);                                // 导入指定目录里的接口
+                catalog.Catalogs.Add(PluginsCatalog);
 
                 // 创建一个包含指定目录集合里插件的容器
-                pluginContainer = new CompositionContainer(catalog);
+                PluginsContainer = new CompositionContainer(catalog);
 
                 // retrieve the MefContentLoader export and assign to global resources (so {DynamicResource MefContentLoader} can be resolved)
-                var pluginLoader = pluginContainer.GetExport<PluginManager>().Value;
+                PluginsManager = PluginsContainer.GetExport<PluginManager>().Value;
 
-                this.Resources.Add("PluginContentLoader", pluginLoader);
+                this.Resources.Add("PluginContentLoader", PluginsManager);
             }
         }
     }

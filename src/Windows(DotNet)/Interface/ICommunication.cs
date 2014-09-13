@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace Psychokinesis
 {
@@ -25,7 +26,7 @@ namespace Psychokinesis
              *
              * 返回在线终端列表
              */
-            Device[] GetOnlineDevices();
+            ObservableCollection<Device> GetOnlineDevices();
 
             /** 向其他终端发送消息
              *

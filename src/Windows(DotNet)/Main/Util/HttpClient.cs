@@ -14,6 +14,15 @@ namespace Psychokinesis.Main.Util
 {
     class HttpClient
     {
+        public static string Get(string url)
+        {
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+            var response = client.GetAsync(url);
+            response.Result.EnsureSuccessStatusCode();
+
+            return response.Result.Content.ReadAsStringAsync().Result;
+        }
+
         public static string Post(string url, IEnumerable<KeyValuePair<string, string>> form)
         {
             System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();

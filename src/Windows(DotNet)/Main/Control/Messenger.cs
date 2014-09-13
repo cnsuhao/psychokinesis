@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Psychokinesis.Interface;
@@ -31,6 +32,8 @@ namespace Psychokinesis.Main.Control
         private string serialNumber = "";
 
         private List<IObserver<Message>> observers;
+
+        private ObservableCollection<Device> devices = new ObservableCollection<Device>();
 
         public MessengerState State { get { return state; } }
         public String SerialNumber { get { return serialNumber; } }
@@ -91,12 +94,7 @@ namespace Psychokinesis.Main.Control
                                 string.Join("", SystemInfo.Instance.NetworkAdapterMacs.ToArray())
                                 ).Substring(8, 16);
 
-                            var postForm = new Dictionary<string, string>()
-                            {
-                                {"serialnumber", serialNumber}
-                            };
-                            string accountInfo = HttpClient.Post("http://psychokinesis.me/nodejs/access-communication",
-                                                                 postForm);
+                            string accountInfo = HttpClient.Get("http://psychokinesis.me/nodejs/access-communication?serialnumber=" + serialNumber);
 
                             JObject o = (JObject)JsonConvert.DeserializeObject(accountInfo);
                             string account = (string)o["account"];
@@ -170,9 +168,9 @@ namespace Psychokinesis.Main.Control
         }
 
 
-        public Device[] GetOnlineDevices()
+        public ObservableCollection<Device> GetOnlineDevices()
         {
-            throw new NotImplementedException();
+            return devices;
         }
 
         public bool SendMessage(Message msg)
@@ -180,6 +178,32 @@ namespace Psychokinesis.Main.Control
             throw new NotImplementedException();
         }
 
+
+        private void xmppClient_OnPresence(object sender, agsXMPP.protocol.client.Presence pres)
+        {
+            if (pres.From.ToString() != xmppClient.MyJID.ToString())
+            {
+                Device d = new Device { DeviceName = pres.From.Resource, DeviceNickName = pres.From.Resource, JoinTime = DateTime.Now };
+                if (pres.Type == agsXMPP.protocol.client.PresenceType.available)
+                {
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)delegate()
+                    {
+                        devices.Add(d);
+                        App.PluginsManager.DeviceOnline(d);
+                    });
+                }
+                else if (pres.Type == agsXMPP.protocol.client.PresenceType.unavailable)
+                {
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)delegate()
+                    {
+                        devices.Remove(
+                            devices.Where(x => x.DeviceName == d.DeviceName).FirstOrDefault()
+                        );
+                        App.PluginsManager.DeviceOffline(d);
+                    });
+                }
+            }
+        }
 
         private Messenger() 
         {
@@ -193,6 +217,7 @@ namespace Psychokinesis.Main.Control
             xmppClient.OnError += xmppClient_OnError;
             xmppClient.OnAuthError += xmppClient_OnAuthError;
             xmppClient.OnSocketError += xmppClient_OnSocketError;
+            xmppClient.OnPresence += xmppClient_OnPresence;
         }
 
         private void xmppClient_OnSocketError(object sender, Exception ex)

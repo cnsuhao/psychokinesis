@@ -6,13 +6,18 @@
         Title="Psychokinesis" Height="350" Width="525" WindowStartupLocation="CenterScreen"
         ContentSource="/Welcome" Closing="ModernWindow_Closing" Closed="ModernWindow_Closed" Loaded="ModernWindow_Loaded" Unloaded="ModernWindow_Unloaded">
     <mui:ModernWindow.TitleLinks>
-        <mui:Link DisplayName="终端管理" Source="" />
+        <mui:Link DisplayName="终端管理" Source="/DeviceManager" />
     </mui:ModernWindow.TitleLinks>
     
     <mui:ModernWindow.MenuLinkGroups>
         <mui:LinkGroup DisplayName="欢迎使用">
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="" Source="/Welcome" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+        <mui:LinkGroup DisplayName="终端管理" GroupKey="settings">
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="" Source="/DeviceManager" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
     </mui:ModernWindow.MenuLinkGroups>
