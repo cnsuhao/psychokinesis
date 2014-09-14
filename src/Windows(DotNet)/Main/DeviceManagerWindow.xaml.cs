@@ -24,7 +24,7 @@ namespace Psychokinesis.Main
     /// DeviceManager.xaml 的交互逻辑
     /// </summary>
     [Export(typeof(IPlugin))]
-    [ExportMetadata("DisplayName", "终端管理")]
+    [ExportMetadata("DisplayName", "我的终端")]
     [ExportMetadata("MuiUri", "/DeviceManager")]
     public partial class DeviceManagerWindow : UserControl, IPlugin
     {

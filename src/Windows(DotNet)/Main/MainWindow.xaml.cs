@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 using FirstFloor.ModernUI.Windows.Controls;
 using FirstFloor.ModernUI.Presentation;
 using System.Windows.Threading;
@@ -51,8 +52,28 @@ namespace Psychokinesis
                 // 插件目录有变化事件
                 App.PluginsCatalog.Changed += pluginCatalog_Changed;
 
+                Messenger.Instance.GetOnlineDevices().CollectionChanged += OnlineDevices_CollectionChanged;
+
                 // 耗时的初始化操作过渡界面
                 new SplashWindow().ShowDialog();
+            }
+
+            private void OnlineDevices_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            {
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add ||
+                    e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+                {
+                    int devnum = Messenger.Instance.GetOnlineDevices().Count;
+                    if (devnum > 0)
+                        DeviceManagerTitle.DisplayName = "我的终端（" + devnum + ")";
+                    else
+                        DeviceManagerTitle.DisplayName = "我的终端";
+                }
+            }
+
+            void MainWindow_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            {
+                throw new NotImplementedException();
             }
 
             private void ModernWindow_Loaded(object sender, RoutedEventArgs e)

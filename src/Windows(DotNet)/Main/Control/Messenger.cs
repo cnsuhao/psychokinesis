@@ -29,7 +29,7 @@ namespace Psychokinesis.Main.Control
         private MessengerState state = MessengerState.NotActive;      // 仅允许在workThread中修改
 
         private XmppClientConnection xmppClient = new XmppClientConnection("chat.psychokinesis.me", 5222);
-        private string serialNumber = "";
+        private string serialNumber = Properties.Settings.Default.SerialNumber;
 
         private List<IObserver<Message>> observers;
 
@@ -88,11 +88,17 @@ namespace Psychokinesis.Main.Control
                     {
                         try
                         {
-                            serialNumber = Crypto.Instance.MD5String(
-                                string.Join("", SystemInfo.Instance.ProcessorIds.ToArray()) +
-                                string.Join("", SystemInfo.Instance.PhysicalMediaSerialNumbers.ToArray()) +
-                                string.Join("", SystemInfo.Instance.NetworkAdapterMacs.ToArray())
-                                ).Substring(8, 16);
+                            if (serialNumber == "")
+                            {
+                                serialNumber = Crypto.Instance.MD5String(
+                                    string.Join("", SystemInfo.Instance.ProcessorIds.ToArray()) +
+                                    string.Join("", SystemInfo.Instance.PhysicalMediaSerialNumbers.ToArray()) +
+                                    string.Join("", SystemInfo.Instance.NetworkAdapterMacs.ToArray())
+                                    ).Substring(8, 16);
+
+                                Properties.Settings.Default.SerialNumber = serialNumber;
+                                Properties.Settings.Default.Save();
+                            }
 
                             string accountInfo = HttpClient.Get("http://psychokinesis.me/nodejs/access-communication?serialnumber=" + serialNumber);
 

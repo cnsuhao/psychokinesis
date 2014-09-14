@@ -22,5 +22,17 @@ namespace Psychokinesis.Main.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SerialNumber {
+            get {
+                return ((string)(this["SerialNumber"]));
+            }
+            set {
+                this["SerialNumber"] = value;
+            }
+        }
     }
 }
