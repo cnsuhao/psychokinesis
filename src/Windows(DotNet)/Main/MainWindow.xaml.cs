@@ -26,7 +26,7 @@ namespace Psychokinesis
         /// <summary>
         /// MainWindow.xaml 的交互逻辑
         /// </summary>
-        public partial class MainWindow : ModernWindow, IObserver<Message>
+        public partial class MainWindow : ModernWindow, IMessage
         {
             private IDisposable messagerObserver;
             private Geometry logo = Geometry.Parse("F1 M 53,49C 55.2091,49 57,50.7909 57,53C 57,55.2091 55.2091,57 53,57C 50.7909,57 49,55.2091 49,53C 49,50.7909 50.7909,49 53,49 Z M 57,24C 38.7746,24 24,38.7746 24,57L 19,57C 19,36.0132 36.0132,19 57,19L 57,24 Z M 57,34C 44.2974,34 34,44.2975 34,57L 29,57C 29,41.536 41.536,29 57,29L 57,34 Z M 57,44C 49.8203,44 44,49.8203 44,57L 39,57C 39,47.0589 47.0589,39 57,39L 57,44 Z");
@@ -130,6 +130,10 @@ namespace Psychokinesis
             public virtual void OnNext(Message value)
             { }
 
+            public virtual String GetIdentification()
+            {
+                return "MainPanel";
+            }
 
             private void reconnectTimer_Tick(object sender, EventArgs e)
             {

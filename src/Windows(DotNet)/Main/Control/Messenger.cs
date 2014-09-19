@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -31,7 +32,7 @@ namespace Psychokinesis.Main.Control
         private XmppClientConnection xmppClient = new XmppClientConnection("chat.psychokinesis.me", 5222);
         private string serialNumber = Properties.Settings.Default.SerialNumber;
 
-        private List<IObserver<Message>> observers;
+        private Hashtable observers = new Hashtable();
 
         private ObservableCollection<Device> devices = new ObservableCollection<Device>();
 
@@ -211,11 +212,38 @@ namespace Psychokinesis.Main.Control
             }
         }
 
+        private void xmppClient_OnMessage(object sender, agsXMPP.protocol.client.Message msg)
+        {
+            string identification;
+            Message mm = new Message { SourceName = msg.From.Resource, DestinationName = msg.To.Resource };
+
+            try
+            {
+                JObject m = (JObject)JsonConvert.DeserializeObject(msg.Body);
+                identification = (string)m["identification"];
+                mm.Content = m["content"];
+                if (identification == null ||
+                    mm.Content == null)
+                    return;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            lock (observers)
+            {
+                if (observers.Contains(identification))
+                {
+                    ((IMessage)observers[identification]).OnNext(mm);
+                }
+            }
+        }
+
+
         private Messenger() 
         {
             workThread = new Thread(Run);
-
-            observers = new List<IObserver<Message>>();
 
             xmppClient.AutoResolveConnectServer = false;
             xmppClient.OnLogin += xmppClient_OnLogin;
@@ -224,6 +252,7 @@ namespace Psychokinesis.Main.Control
             xmppClient.OnAuthError += xmppClient_OnAuthError;
             xmppClient.OnSocketError += xmppClient_OnSocketError;
             xmppClient.OnPresence += xmppClient_OnPresence;
+            xmppClient.OnMessage += xmppClient_OnMessage;
         }
 
         private void xmppClient_OnSocketError(object sender, Exception ex)
@@ -262,20 +291,24 @@ namespace Psychokinesis.Main.Control
         // 实现观察者模式
         public IDisposable Subscribe(IObserver<Message> observer)
         {
+            IMessage m = observer as IMessage;
+            if (m == null)
+                throw new EntryPointNotFoundException("observer isn't IMessage");
+
             lock (observers)
             {
-                if (!observers.Contains(observer))
-                    observers.Add(observer);
+                if (!observers.Contains(m.GetIdentification()))
+                    observers.Add(m.GetIdentification(), m);
             }
-            return new Unsubscriber(observers, observer);
+            return new Unsubscriber(observers, m);
         }
 
         private class Unsubscriber : IDisposable
         {
-            private List<IObserver<Message>> _observers;
-            private IObserver<Message> _observer;
+            private Hashtable _observers;
+            private IMessage _observer;
 
-            public Unsubscriber(List<IObserver<Message>> observers, IObserver<Message> observer)
+            public Unsubscriber(Hashtable observers, IMessage observer)
             {
                 this._observers = observers;
                 this._observer = observer;
@@ -285,8 +318,8 @@ namespace Psychokinesis.Main.Control
             {
                 lock (_observer)
                 {
-                    if (_observers.Contains(_observer))
-                        _observers.Remove(_observer);
+                    if (_observers.Contains(_observer.GetIdentification()))
+                        _observers.Remove(_observer.GetIdentification());
                 }
             }
         }
@@ -295,8 +328,8 @@ namespace Psychokinesis.Main.Control
         {
             lock (observers)
             {
-                foreach (var observer in observers)
-                    observer.OnCompleted();
+                foreach (DictionaryEntry observer in observers)
+                    ((IMessage)observer.Value).OnCompleted();
             }
         }
 
@@ -304,19 +337,11 @@ namespace Psychokinesis.Main.Control
         {
             lock (observers)
             {
-                foreach (var observer in observers)
-                    observer.OnError(error);
+                foreach (DictionaryEntry observer in observers)
+                    ((IMessage)observer.Value).OnError(error);
             }
         }
 
-        private void NotifyNext(Message msg)
-        {
-            lock (observers)
-            {
-                foreach (var observer in observers)
-                    observer.OnNext(msg);
-            }
-        }
 
         // 实现单例模式
         private static readonly Messenger instance = new Messenger();

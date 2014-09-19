@@ -32,7 +32,7 @@ namespace Psychokinesis
 
             /// 消息内容
             [DataMember]
-            public string Content { get; set; }
+            public object Content { get; set; }
         }
     }
     

@@ -22,7 +22,7 @@ namespace Psychokinesis.Main
     /// <summary>
     /// SplashWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class SplashWindow : Window, IObserver<Message>
+    public partial class SplashWindow : Window, IMessage
     {
         // 声明委托
         delegate void ShowDelegate(string txt);
@@ -95,6 +95,11 @@ namespace Psychokinesis.Main
 
         public virtual void OnNext(Message value)
         {}
+
+        public virtual String GetIdentification()
+        {
+            return "";       // 此窗口不会接收任何消息
+        }
 
         private void ShowPrompt(string txt)
         {
