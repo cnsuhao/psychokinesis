@@ -2,6 +2,8 @@ src/Windows(DotNet)/Interface/bin/
 src/Windows(DotNet)/Interface/obj/
 src/Windows(DotNet)/Main/bin/
 src/Windows(DotNet)/Main/obj/
+src/Windows(DotNet)/Plugins/Chat/bin/
+src/Windows(DotNet)/Plugins/Chat/obj/
 *.aps
 *.user
 *.ilk

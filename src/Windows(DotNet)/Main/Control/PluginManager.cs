@@ -40,6 +40,22 @@ namespace Psychokinesis
                 return content;
             }
 
+            public void NetworkAvailable(ICommunication cc)
+            {
+                foreach (var p in plugins)
+                {
+                    p.Value.NetworkAvailable(cc);
+                }
+            }
+
+            public void NetworkUnavailable()
+            {
+                foreach (var p in plugins)
+                {
+                    p.Value.NetworkUnavailable();
+                }
+            }
+
             public void DeviceOnline(Device d)
             {
                 foreach (var p in plugins)

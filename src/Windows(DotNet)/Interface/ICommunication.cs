@@ -30,16 +30,10 @@ namespace Psychokinesis
 
             /** 向其他终端发送消息
              *
-             * 同步调用，如有异步需要请使用SendMessageDelegate委托。
+             * 需要指定通信实体。
              */
-            bool SendMessage(Message msg);
+            void SendMessage(String identification, Message msg);
         }
-
-        /** 发送消息的委托
-         *
-         * 异步发送消息
-         */
-        public delegate bool SendMessageDelegate(Message msg);
     }
     
 }

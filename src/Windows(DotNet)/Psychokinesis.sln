@@ -5,6 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interface", "Interface\Inte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Main", "Main\Main.csproj", "{5F3724FF-F8E4-4555-9DF3-2E0F5FB8D1FB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{C7AFD9FF-4E32-493E-AAAB-0B8F08EB6604}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "Plugins\Chat\Chat.csproj", "{8FE31B26-192C-4458-B919-0F40A177CF8E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{97E67121-B9B7-483D-9D51-B7F28E2FE081} = {97E67121-B9B7-483D-9D51-B7F28E2FE081}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,8 +26,15 @@ Global
 		{5F3724FF-F8E4-4555-9DF3-2E0F5FB8D1FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F3724FF-F8E4-4555-9DF3-2E0F5FB8D1FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F3724FF-F8E4-4555-9DF3-2E0F5FB8D1FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE31B26-192C-4458-B919-0F40A177CF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE31B26-192C-4458-B919-0F40A177CF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE31B26-192C-4458-B919-0F40A177CF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE31B26-192C-4458-B919-0F40A177CF8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8FE31B26-192C-4458-B919-0F40A177CF8E} = {C7AFD9FF-4E32-493E-AAAB-0B8F08EB6604}
 	EndGlobalSection
 EndGlobal

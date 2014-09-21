@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace Psychokinesis
 {
@@ -32,7 +33,7 @@ namespace Psychokinesis
 
             /// 消息内容
             [DataMember]
-            public object Content { get; set; }
+            public JObject Content { get; set; }
         }
     }
     

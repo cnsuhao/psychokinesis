@@ -148,6 +148,17 @@ namespace Psychokinesis.Main.Control
 
                     NotifyCompleted();
 
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)delegate()
+                    {
+                        try
+                        {
+                            App.PluginsManager.NetworkAvailable(this);
+                        }
+                        catch (Exception)
+                        { }
+
+                    });
+
                     // 发送心跳包
                     while (isRunning &&
                             state == MessengerState.Online)
@@ -162,6 +173,17 @@ namespace Psychokinesis.Main.Control
                     if (isRunning)
                     {
                         NotifyError(new Exception());
+
+                        System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)delegate()
+                        {
+                            try
+                            {
+                                App.PluginsManager.NetworkUnavailable();
+                            }
+                            catch (Exception)
+                            { }
+
+                        });
                     }
                 }while(false);
 
@@ -180,9 +202,18 @@ namespace Psychokinesis.Main.Control
             return devices;
         }
 
-        public bool SendMessage(Message msg)
+        public void SendMessage(String identification, Message msg)
         {
-            throw new NotImplementedException();
+            JObject m = new JObject();
+            m["identification"] = identification;
+            m["content"] = msg.Content;
+            string str_m = JsonConvert.SerializeObject(m);
+
+            if (this.Password.Length >= 8)
+                str_m = Crypto.Instance.DESEncryptString(this.Password.Substring(0, 8), str_m);
+
+            agsXMPP.protocol.client.Message mm = new agsXMPP.protocol.client.Message(xmppClient.MyJID.Bare + '/' + msg.DestinationName, str_m);
+            xmppClient.Send(mm);
         }
 
 
@@ -190,7 +221,10 @@ namespace Psychokinesis.Main.Control
         {
             if (pres.From.ToString() != xmppClient.MyJID.ToString())
             {
-                Device d = new Device { DeviceName = pres.From.Resource, DeviceNickName = pres.From.Resource, JoinTime = DateTime.Now };
+                int pos = pres.From.Resource.IndexOf("-");
+                string nick = pos == -1 ? pres.From.Resource : pres.From.Resource.Substring(pos + 1);
+
+                Device d = new Device { DeviceName = pres.From.Resource, DeviceNickName = nick, JoinTime = DateTime.Now };
                 if (pres.Type == agsXMPP.protocol.client.PresenceType.available)
                 {
                     System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)delegate()
@@ -215,13 +249,17 @@ namespace Psychokinesis.Main.Control
         private void xmppClient_OnMessage(object sender, agsXMPP.protocol.client.Message msg)
         {
             string identification;
-            Message mm = new Message { SourceName = msg.From.Resource, DestinationName = msg.To.Resource };
+            Message mm = new Message { SourceName = msg.From.Resource };
 
             try
             {
-                JObject m = (JObject)JsonConvert.DeserializeObject(msg.Body);
+                string str_m = msg.Body;
+                if (this.Password.Length >= 8)
+                    str_m = Crypto.Instance.DESDecryptString(this.Password.Substring(0, 8), msg.Body);
+
+                JObject m = (JObject)JsonConvert.DeserializeObject(str_m);
                 identification = (string)m["identification"];
-                mm.Content = m["content"];
+                mm.Content = m["content"] as JObject;
                 if (identification == null ||
                     mm.Content == null)
                     return;
@@ -235,7 +273,15 @@ namespace Psychokinesis.Main.Control
             {
                 if (observers.Contains(identification))
                 {
-                    ((IMessage)observers[identification]).OnNext(mm);
+                    System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)delegate()
+                        {
+                            try
+                            {
+                                ((IMessage)observers[identification]).OnNext(mm);
+                            }
+                            catch (Exception)
+                            { }
+                    });
                 }
             }
         }
