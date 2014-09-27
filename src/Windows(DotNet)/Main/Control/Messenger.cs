@@ -212,7 +212,7 @@ namespace Psychokinesis.Main.Control
             if (this.Password.Length >= 8)
                 str_m = Crypto.Instance.DESEncryptString(this.Password.Substring(0, 8), str_m);
 
-            agsXMPP.protocol.client.Message mm = new agsXMPP.protocol.client.Message(xmppClient.MyJID.Bare + '/' + msg.DestinationName, str_m);
+            agsXMPP.protocol.client.Message mm = new agsXMPP.protocol.client.Message(xmppClient.MyJID.Bare + '/' + msg.DestinationName, agsXMPP.protocol.client.MessageType.chat, str_m);
             xmppClient.Send(mm);
         }
 
