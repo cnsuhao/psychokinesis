@@ -1,6 +1,5 @@
-var BOSH_DOMAIN = 'chat.psychokinesis.me';
-var BOSH_PORT = 5280;
-var BOSH_RESOURCE = 'psychokinesis-mobile';
+var XMPP_DOMAIN = 'chat.psychokinesis.me';
+var XMPP_PORT = 5288;
 var BOSH_SERVICE = '/http-bind';
 
 var Communication = {
@@ -18,7 +17,13 @@ var Communication = {
 		var xmpp_connect = function (account, password, resource, on_connect)
 		{
 			if (communication.xmpp_connection == null)
-					communication.xmpp_connection = new Strophe.Connection('http://' + BOSH_DOMAIN + ':' + BOSH_PORT + BOSH_SERVICE);
+			{
+				if (window.WebSocket)
+					communication.xmpp_connection = new Strophe.Connection('ws://' + XMPP_DOMAIN + ':' + XMPP_PORT,
+																		   {protocol: 'ws'});
+				else
+					communication.xmpp_connection = new Strophe.Connection('http://' + XMPP_DOMAIN + ':' + XMPP_PORT + BOSH_SERVICE);
+			}
 	
 			var connect_listener = function (status)
 			{
@@ -32,8 +37,8 @@ var Communication = {
 			}
 			
 			communication.xmpp_account = account;
-			communication.xmpp_jid = account + '@' + BOSH_DOMAIN + '/' + resource;
-			communication.xmpp_bare_jid = account + '@' + BOSH_DOMAIN;
+			communication.xmpp_jid = account + '@' + XMPP_DOMAIN + '/' + resource;
+			communication.xmpp_bare_jid = account + '@' + XMPP_DOMAIN;
 			communication.xmpp_password = password;
 			communication.xmpp_resource = resource;
 	
@@ -64,7 +69,7 @@ var Communication = {
 						{
 							// 使用获取到的账号登录
 							var res = CryptoJS.MD5(Math.random().toString()).toString().substr(8, 16);
-							xmpp_connect(data.account, data.password, BOSH_RESOURCE + '-' + res, on_connect);
+							xmpp_connect(data.account, data.password, 'psychokinesis-webapp-' + res, on_connect);
 						}
 						else
 						{
@@ -164,12 +169,12 @@ var Communication = {
 		
 		communication.ping = function ()
 		{
-			communication.xmpp_connection.ping.ping(BOSH_DOMAIN, null, null, 30*1000);
+			communication.xmpp_connection.ping.ping(XMPP_DOMAIN, null, null, 30*1000);
 		}
 		
 		communication.send_message = function (message)
 		{
-			var m_msg = $msg({to: communication.xmpp_account + '@' + BOSH_DOMAIN,
+			var m_msg = $msg({to: communication.xmpp_account + '@' + XMPP_DOMAIN,
 							  from: communication.xmpp_jid, 
 							  type: 'chat'})
        					.c('body', null, message);
