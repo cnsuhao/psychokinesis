@@ -76,7 +76,7 @@ do
 	if [ "${INSTALLER}" = "aptitude" ]; then
 		cat /etc/issue | grep -q "Debian"
 		if [ $? -eq 0 ]; then
-			# nodejs和npm在Debian库中还没有，需要从官网直接下载
+			# nodejs和npm需要执行添加源脚本后再安装
 			if [ "${soft}" = "npm" ] || [ "${soft}" = "nodejs" ]; then
 				INSTALL_NODEJS_FROM_SOURCE="yes"
 				continue
@@ -97,44 +97,30 @@ do
 done
 
 if [ "${INSTALL_NODEJS_FROM_SOURCE}" = "yes" ]; then
-	# 从官网直接下载安装nodejs
-	src=$(mktemp -d) && cd $src
-	uname -a | grep -q x86_64
-	if [ $? -eq 0 ]; then
-		NODEJS_URL=http://nodejs.org/dist/v0.10.29/node-v0.10.29-linux-x64.tar.gz
-	else
-		NODEJS_URL=http://nodejs.org/dist/v0.10.29/node-v0.10.29-linux-x86.tar.gz
-	fi
-	
-	wget -N ${NODEJS_URL}
-	if [ $? -ne 0 ]; then
-		red_echo "Download nodejs failed."
-		exit 2
-	fi
-	
-	tar xzf node-v* && cd node-v*
-	if [ $? -ne 0 ]; then
-		red_echo "Uncompress nodejs failed."
-		exit 2
-	fi
-	
-	sudo cp -ru bin /usr
-	sudo cp -ru lib /usr
-	sudo cp -ru share /usr
-	sudo cp -ru include /usr
-	
-	cd -
-	
-	# 安装npm
-	sudo aptitude install -y curl
+	# 使用添加源的方式安装
+	sudo ${INSTALLER} install -y curl
 	if [ $? -ne 0 ]; then
 		red_echo "Install curl failed. Npm's installation need it."
 		exit 2
 	fi
 	
-	curl https://www.npmjs.org/install.sh | sudo sh
+	RET=2
+	if [ "${INSTALLER}" = "yum" ]; then
+		curl -sL https://rpm.nodesource.com/setup | sudo bash -
+		RET=$?
+	elif [ "${INSTALLER}" = "aptitude" ]; then
+		curl -sL https://deb.nodesource.com/setup | sudo bash -
+		RET=$?
+	fi
+	
+	if [ ${RET} -ne 0 ]; then
+		red_echo "Add package source failed."
+		exit 2
+	fi
+	
+	sudo ${INSTALLER} install -y nodejs
 	if [ $? -ne 0 ]; then
-		red_echo "Install npm failed."
+		red_echo "Install nodejs failed."
 		exit 2
 	fi
 fi
