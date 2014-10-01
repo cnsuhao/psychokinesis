@@ -1,155 +1,101 @@
 #!/bin/bash
-# 编译ejabberd，目前只支持debian类的Linux系统
+# 构建Psychokinesis用于通信的服务器
+# 目前只支持debian类的Linux系统
+# 软件列表：
+# 即时通讯服务器：ejabberd
+# 支持BOSH和WebSocket：node-xmpp-bosh
 
-function red_echo()
-{
-	echo -e "\033[0;31;1m${1}\033[0m"
-}
+. ./common.sh
 
-# check the caller is root
-if [ $HOME != "/root" ]; then
-	red_echo "ERROR: please run the script by root!"
-	exit 100
-fi
+SERVER_SOURCE_PATH=../src/server
 
 # check the necessary command
-NECESSARY_COMMANDS=(apt-get gcc make git)
+NECESSARY_COMMANDS=(apt-get sudo)
 for command in ${NECESSARY_COMMANDS[@]};
 do
 	type ${command} >/dev/null 2>&1 || { red_echo "ERROR: the ${command} can't be found."; exit 200; }
 done
 
-# set up the source codes pathname
-SOURCE_PREFIX=`pwd`
-EXPAT_PATH=${SOURCE_PREFIX}/expat-2.1.0
-YAML_PATH=${SOURCE_PREFIX}/yaml-0.1.5
-EJABBERD_PATH=${SOURCE_PREFIX}/ejabberd-14.05
-
-# check all the source package, then clear all the original source codes path
-SOURCE_PATHS=("${EXPAT_PATH}" "${YAML_PATH}" "${EJABBERD_PATH}")
-PACKAGE_PATHS=("${EXPAT_PATH}.tar.gz" "${YAML_PATH}.tar.gz" "${EJABBERD_PATH}.tgz")
-
-for path in ${PACKAGE_PATHS[@]};
-do
-	if [ ! -f "${path}" ]; then
-		red_echo "ERROR: ${path} does't exist!"
-		exit 1
-	fi
-done
-
-for path in ${SOURCE_PATHS[@]};
-do
-	if [ -d "${path}" ]; then
-		red_echo "delete the directory: ${path}"
-		rm -rf ${path}
-	fi
-done
-
-# git clone some libraries
-# 提前下载一些依赖库，经测试国内使用https速度更快些
-# if [ -d deps ]; then
-# 	echo "delete the directory: deps"
-# 	rm -rf deps
-# fi
-# mkdir deps
-# cd deps
-# git clone https://github.com/processone/cache_tab.git p1_cache_tab || exit 2
-# git clone https://github.com/processone/tls.git p1_tls || exit 2
-# git clone https://github.com/processone/stringprep.git p1_stringprep || exit 2
-# git clone https://github.com/processone/xml.git p1_xml || exit 2
-# git clone https://github.com/processone/p1_yaml.git || exit 2
-# git clone https://github.com/rds13/xmlrpc.git || exit 2
-# git clone https://github.com/processone/zlib.git || exit 2
-# git clone https://github.com/basho/lager.git || exit 2
-# git clone https://github.com/processone/eiconv.git || exit 2
-
-# git clone https://github.com/DeadZen/goldrush.git || exit 2
-# cd goldrush
-# git checkout 0.1.6 || exit 2
-# cd ..
-
-# cd ..
 
 # 添加erlang最新源
 grep -q erlang-solutions /etc/apt/sources.list
 if [ $? -ne 0 ]; then
 	cat /etc/issue | grep -q "Debian GNU/Linux 7"
 	if [ $? -ne 0 ]; then
-		echo "deb http://packages.erlang-solutions.com/debian squeeze contrib" >> /etc/apt/sources.list
+		sudo echo "deb http://packages.erlang-solutions.com/debian squeeze contrib" >> /etc/apt/sources.list
 	else
-		echo "deb http://packages.erlang-solutions.com/debian wheezy contrib" >> /etc/apt/sources.list
+		sudo echo "deb http://packages.erlang-solutions.com/debian wheezy contrib" >> /etc/apt/sources.list
 	fi
 	
 	wget http://packages.erlang-solutions.com/debian/erlang_solutions.asc
-	apt-key add erlang_solutions.asc
-	rm -f add erlang_solutions.asc
-	apt-get update
+	sudo apt-key add erlang_solutions.asc
+	rm -f erlang_solutions.asc
+	sudo apt-get update
 fi
 
-apt-get install -y --force-yes erlang
+sudo apt-get install -y --force-yes erlang
 if [ $? -ne 0 ]; then
 	red_echo "apt-get erlang failed."
 	exit 2
 fi
 
-apt-get install -y --force-yes libcurl4-openssl-dev
+
+# 需要安装最新版本的ejabberd
+sudo apt-get -t unstable install -y --force-yes ejabberd ejabberd-contrib
 if [ $? -ne 0 ]; then
-	red_echo "apt-get openssl failed."
+	red_echo "apt-get ejabberd for unstable failed."
 	exit 2
 fi
 
-
-# start compiling
-red_echo "compiling expat..."
-tar zxf ${EXPAT_PATH}.tar.gz
-cd ${EXPAT_PATH}
-./configure
-make;make install
+# 编译安装Psychokinesis的ejabberd插件
+cd ${SERVER_SOURCE_PATH}/mod_admin_extra
+sudo ./build.sh
 if [ $? -ne 0 ]; then
-	red_echo "compile expat failed."
-	exit 2
+	red_echo "build mod_admin_extra failed."
+	exit 3
 fi
+cd ..
 
-cd -
-rm -rf ${EXPAT_PATH}
-
-red_echo "compiling YAML..."
-tar zxf ${YAML_PATH}.tar.gz
-cd ${YAML_PATH}
-./configure
-make;make install
+cd ${SERVER_SOURCE_PATH}/mod_filter
+sudo ./build.sh
 if [ $? -ne 0 ]; then
-	red_echo "compile YAML failed."
-	exit 2
+	red_echo "build mod_filter failed."
+	exit 3
 fi
+cd ..
 
-cd -
-rm -rf ${YAML_PATH}
-
-red_echo "compiling ejabberd..."
-tar zxf ${EJABBERD_PATH}.tgz
-cd ${EJABBERD_PATH}
-./configure
+cd ${SERVER_SOURCE_PATH}/mod_restful
+sudo make install
 if [ $? -ne 0 ]; then
-	red_echo "configure ejabberd failed."
-	exit 2
+	red_echo "build mod_restful failed."
+	exit 3
 fi
+cd ..
 
-# 将提前下好的库移到指定目录
-if [ -d ../deps ]; then
-	mv ../deps .
-fi
-
-make;make install
+cd ${SERVER_SOURCE_PATH}/mod_add_myself
+sudo ./build.sh
 if [ $? -ne 0 ]; then
-	red_echo "make ejabberd failed."
-	exit 2
+	red_echo "build mod_add_myself failed."
+	exit 3
+fi
+cd ..
+
+
+# 安装nodejs
+type node >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+	install_node apt-get
+	if [ $? -ne 0 ]; then
+		red_echo "build nodejs failed."
+		exit 4
+	fi
 fi
 
-cd -
-rm -rf ${EJABBERD_PATH}
-
-# 避免运行时可能出现找不到依赖库的情况
-ldconfig
+# 安装node-xmpp-bosh
+sudo npm -g install node-xmpp-bosh
+if [ $? -ne 0 ]; then
+	red_echo "build node-xmpp-bosh failed."
+	exit 4
+fi
 
 red_echo "Finish!"
