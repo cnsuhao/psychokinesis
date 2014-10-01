@@ -69,6 +69,11 @@
 		<script>
 			$.ui.splitview = false;
 			$.ui.autoLaunch = false;
+			
+			if (navigator.userAgent.match(/IEMobile/) ||
+				navigator.userAgent.match(/Trident/))
+				$.ui.useOSThemes = false;
+			
 			$.ui.ready(ui_ready);
 		</script>
     </head>
