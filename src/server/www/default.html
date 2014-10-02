@@ -7,14 +7,22 @@
 	<div id="right-panel">
 		<div class="children-panel">
 			<fieldset>
-				<legend>下载</legend>
+				<legend>即刻体验</legend>
+				<h4>网页端：</h4>
+				<div id="webapp-link">
+					<a ng-click="enter_app();" class="image-button bg-lightRed fg-white image-left large">
+						<i class="icon-cloud bg-red" style="padding:10px"></i>
+						点此进入
+					</a>
+				</div>
+				<br/><br/><br/>
 				<h4>PC端：</h4>
 				<div id="desktop-download-link">
 					<a ng-click="download('windows');" class="image-button bg-darkGreen fg-white image-left large">
 						<i class="icon-windows bg-green fg-white" style="padding:10px"></i>
 						Windows版
 					</a>
-				</div><br/><br/><br/><br/>
+				</div><br/><br/><br/>
 				<h4>移动端：</h4>
 				<div id="mobile-download-link">
 					<a ng-click="download('android');" class="image-button bg-lightBlue fg-white image-left large">

@@ -1,5 +1,6 @@
 var APP_PATH = '/app/index.html';
 var communication = null;
+var current_status = null;
 
 $(document).ready(function(){
 	// 从URL参数获取序列号，失败则自动生成一个序列号
@@ -73,9 +74,14 @@ function on_connect(status)
 			status == Strophe.Status.DISCONNECTED ||
 			status == 998 || status == 999)
 	{
-		alert("An error occurred(" + status + "). Auto Refresh will happen after 20 seconds.");
-		setTimeout("refresh_app()", 15000);      // 15秒后再尝试
+		if (current_status == Strophe.Status.CONNECTED)
+		{
+			alert("An error occurred(" + status + "). Auto Refresh will happen after 20 seconds.");
+			setTimeout("refresh_app()", 15000);      // 15秒后再尝试
+		}
 	}
+	
+	current_status = status;
 }
 
 function on_presence(status, account, res)

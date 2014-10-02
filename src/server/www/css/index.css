@@ -84,6 +84,16 @@ body {
 	margin-bottom: 5px;
 }
 
+#webapp-link {
+	float: left;
+}
+
+#webapp-link a {
+	display: block;
+	width: 200px;
+	margin-bottom: 5px;
+}
+
 #register-panel span {
 	font-size: small;
 	color: red;
@@ -175,7 +185,7 @@ body {
 
 #foot-bar-right {
 	float:right;
-	margin-right:30px;
+	margin-right:50px;
 }
 
 #foot-bar-right img {
@@ -184,5 +194,10 @@ body {
 }
 
 #foot-bar-right span {
-	font-size:11pt;
+	vertical-align: middle;
+	font:14pt "microsoft yahei";
+}
+
+#foot-bar-right a:hover {
+	opacity: 0.8;
 }

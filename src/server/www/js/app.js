@@ -1,6 +1,10 @@
 angular.module('psychokinesis', ['ngRoute'])
 		.controller('DefaultController', function($scope, $route, $routeParams, $location) {
 			$scope.download = download_app;
+			
+			$scope.enter_app = function() {
+				window.open('/app/', '_blank');
+			};
 		})
 		.controller('SuggestController', function($scope, $route, $routeParams, $location) {
 			$scope.isUnchanged = function(suggestion) {
