@@ -4,7 +4,12 @@ var communication = null;
 $(document).ready(function(){
 	// 从URL参数获取序列号，失败则自动生成一个序列号
 	if (url_params.hasOwnProperty("serial_number"))
+	{
 		var serial_number = url_params["serial_number"];
+		
+		// 切换页面后会带有#参数，需要去除
+		serial_number = serial_number.split("#")[0];
+	}
 	else
 		var serial_number = CryptoJS.MD5(Math.random().toString()).toString().substr(8, 16);
 	
@@ -69,7 +74,7 @@ function on_connect(status)
 			status == 998 || status == 999)
 	{
 		alert("An error occurred(" + status + "). Auto Refresh will happen after 20 seconds.");
-		setTimeout("refresh_app()", 20000);      // 20秒后再尝试
+		setTimeout("refresh_app()", 15000);      // 15秒后再尝试
 	}
 }
 
