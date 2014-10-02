@@ -3,28 +3,27 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>下载Psychokinesis</title>
+<script src="js/util.js"></script>
 <script type="text/javascript">
-	var isMobile = {
-		Android: function() {
-			return navigator.userAgent.match(/Android/i);
-		},
-		iOS: function() {
-			return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-		},
-		Windows: function() {
-			return navigator.userAgent.match(/IEMobile/i);
-		}
+	window.onload = function() {
+		var show_unknown_type = function(know) {
+			if (!know) {
+				document.getElementById("unknown_type").style.display = "inline";
+			}
+		};
+		
+		if (isMobile.Android())
+			download_app('android', show_unknown_type);
+		else if (isMobile.iOS())
+			download_app('ios', show_unknown_type);
+		else if (isMobile.Windows())
+			download_app('wp', show_unknown_type);
+		else if (navigator.userAgent.match(/Windows/i))
+			download_app('windows', show_unknown_type);
 	};
-	
-	if (isMobile.Android()) {
-		window.location.href = "Psychokinesis.apk";
-	} else if (isMobile.iOS()) {
-		window.location.href = "index.html";
-	} else if (isMobile.Windows()) {
-		window.location.href = "http://www.windowsphone.com/s?appid=00acc51c-ff96-419a-b0da-1736fd378f1b";
-	} else {
-		window.location.href = "index.html";
-	}
 </script>
 </head>
+<body>
+	<h1 id="unknown_type" style="display:none">适合您设备的Psychokinesis正在开发中，谢谢关注！</h1>
+</body>
 </html>

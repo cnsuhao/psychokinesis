@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--HTML5 doctype-->
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		
+		<link rel="stylesheet" type="text/css" href="appframework/css/icons.css" />    
+		<link rel="stylesheet" type="text/css" href="appframework/css/main.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/appframework.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/lists.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/forms.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/buttons.css"  />        
+		<link rel="stylesheet" type="text/css" href="appframework/css/badges.css"  />        
+		<link rel="stylesheet" type="text/css" href="appframework/css/grid.css"  />
+		
+		<link rel="stylesheet" type="text/css" href="appframework/css/android.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/win8.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/bb.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/ios.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/ios7.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/css/tizen.css"  />
+			
+		<link rel="stylesheet" type="text/css" href="appframework/plugins/css/af.actionsheet.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/plugins/css/af.popup.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/plugins/css/af.scroller.css"  />
+		<link rel="stylesheet" type="text/css" href="appframework/plugins/css/af.selectBox.css"  />
+		
+		<script type="text/javascript" charset="utf-8" src="jquery.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/jq.appframework.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/appframework.min.js"></script>
+		
+		<!-- include af.desktopBrowsers.js on desktop browsers only -->
+		<script>
+			  if (!((window.DocumentTouch && document instanceof DocumentTouch) || 'ontouchstart' in window)) {
+				  var script = document.createElement("script");
+				  script.src = "appframework/plugins/af.desktopBrowsers.js";
+				  var tag = $("head").append(script);
+			  }
+		</script>        
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.actionsheet.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.css3animate.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.passwordBox.js"></script>          
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.scroller.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.selectBox.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.touchEvents.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.touchLayer.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.popup.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/appframework.ui.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/transitions/fade.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/transitions/flip.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/transitions/pop.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/transitions/slide.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/transitions/slideDown.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/ui/transitions/slideUp.js"></script>
+		<script type="text/javascript" charset="utf-8" src="appframework/plugins/af.slidemenu.js"></script>
+		<script type="text/javascript" charset="utf-8" src="crypto/rollups/md5.js"></script>
+		<script type="text/javascript" charset="utf-8" src="crypto/rollups/tripledes.js"></script>
+		<script src="communication/strophe.js" type="text/javascript"></script>
+		<script src="communication/strophe.ping.js" type="text/javascript"></script>
+		<script src="communication/communication.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8" src="qrcode.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="util.js"></script>
+		<script type="text/javascript" charset="utf-8" src="index.js"></script>
+		<script>
+			$.ui.splitview = false;
+			$.ui.autoLaunch = false;
+			
+			if (navigator.userAgent.match(/IEMobile/) ||
+				navigator.userAgent.match(/Trident/))
+				$.ui.useOSThemes = false;
+			
+			$.ui.ready(ui_ready);
+		</script>
+    </head>
+    <body>
+        <div id="afui">
+			<div id="splashscreen" class='ui-loader'>
+				<img src="icon.png">
+				<br><br>
+				<span class='ui-icon ui-icon-loading spin'></span><h1 >Starting app</h1>
+			</div>
+
+			<div id="header">
+				<a id='menubadge' onclick='af.ui.toggleSideMenu()' class='menuButton'></a>
+			</div>
+					  
+			<div id="content">
+				<div class="panel" title="Add Device" id="page_add" selected="selected" data-appbuilder-object="page" data-footer="none">
+					<div class="container" style="width: 100%; text-align: center;margin-top: 20px;" data-appbuilder-object="container" data-position="static">
+						<div id="qr_code" style="margin: 0 auto;width: 200px;text-align: center;"></div>
+						<div id="promot" class="text_item" data-appbuilder-object="text" style="margin-top: 20px;">
+							Loading...
+						</div>
+					</div>
+				</div>
+				<div class="panel" title="Synchronization" id="page_synchronization" data-appbuilder-object="page" data-footer="synchronization_footer">
+					<div class="formGroupHead">Contents</div>
+					<form>
+						<textarea id="synchronize_text" rows="6" placeholder="The text to be synchronized."></textarea>
+						<label>Auto Synchronize</label>
+						<input id="auto_synchronize" type="checkbox" name="auto_synchronize" value="1" class="toggle" />
+						<label id="auto_synchronize_label" for="auto_synchronize" data-on="On" data-off="Off">
+							<span></span>
+						</label>
+					</form>
+				</div>
+			</div>
+			<div id="navbar">
+			</div>
+			
+			<footer id='synchronization_footer'>
+                <a id='synchronization_btn' class="icon cloud">Synchronize</a>
+            </footer>
+			<nav>
+				<ul class="list">
+					<li>
+						<a href="#page_add">Add Device</a>
+					</li>
+					<li>
+						<a href="#page_synchronization">Synchronize</a>
+					</li>
+				</ul>
+			</nav>
+        </div>
+    </body>
+</html>

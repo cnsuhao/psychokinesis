@@ -4,6 +4,7 @@
 %%% Purpose : make roster with myself after registered
 %%% Created : 19 July 2014 by wuyingfengsui <wuyingfengsui@gmail.com>
 %%% Updated : 
+%%% Notes   : depends mod_restful
 %%%----------------------------------------------------------------------
 
 -module(mod_add_myself).
@@ -27,7 +28,6 @@
 -include("ejabberd.hrl").
 -include("logger.hrl").        %% INFO_MSG需要
 -include("jlib.hrl").
--include("../../mod_restful/include/mod_restful.hrl").
 
 
 start(_Host, _Opts) ->

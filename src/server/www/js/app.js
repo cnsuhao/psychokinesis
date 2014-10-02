@@ -1,5 +1,6 @@
 angular.module('psychokinesis', ['ngRoute'])
 		.controller('DefaultController', function($scope, $route, $routeParams, $location) {
+			$scope.download = download_app;
 		})
 		.controller('SuggestController', function($scope, $route, $routeParams, $location) {
 			$scope.isUnchanged = function(suggestion) {

@@ -1,12 +1,13 @@
 #!/bin/sh
 
-rm -rf ebin
+EJABBERD_PATH=/usr/lib/x86_64-linux-gnu/ejabberd
+
+if [ -d ebin ]; then
+	rm -rf ebin
+fi
+
 mkdir ebin
 
-erl -pa /lib/ejabberd/ebin -pz ebin -make || exit 1
+erl -pa ${EJABBERD_PATH}/ebin -pz ebin -make || exit 1
 
-# 以下仅是中间文件
-rm -f ebin/lager_transform.beam
-rm -f ebin/lager_util.beam
-rm -f ebin/gen_restful_api.beam
-rm -f ebin/gen_mod.beam
+cp -f ebin/* ${EJABBERD_PATH}/ebin

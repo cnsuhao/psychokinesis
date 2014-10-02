@@ -9,8 +9,8 @@
 							"url": "http://www.onlinedown.net/"
 						},
 						{
-							"name": "多特软件",
-							"url": "http://www.duote.com/"
+							"name": "天极下载",
+							"url": "http://mydown.yesky.com/"
 						}
 					]
 				},
@@ -20,10 +20,6 @@
 						{
 							"name": "新浪游戏",
 							"url": "http://games.sina.com.cn/download/"
-						},
-						{
-							"name": "游迅网",
-							"url": "http://www.yxdown.com/"
 						}
 					]
 				},
@@ -35,8 +31,8 @@
 							"url": "http://www.yyets.com/"
 						},
 						{
-							"name": "磁力搜索",
-							"url": "http://cili.so/"
+							"name": "torrentkitty",
+							"url": "http://www.torrentkitty.org/search/"
 						}
 					]
 				}

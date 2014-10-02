@@ -1,11 +1,11 @@
-PREFIX=
+PREFIX=/usr/lib/x86_64-linux-gnu/ejabberd
 
 EJABBERD_PATH=../ejabberd/
 EJABBERD_SRC_PATH=$(EJABBERD_PATH)src
 
 BEH_BEAMS=gen_restful_api.beam
 
-INCLUDE=-I ./include -I $(PREFIX)/lib/ejabberd/include -pa $(PREFIX)/lib/ejabberd/ebin
+INCLUDE=-I ./include -I $(PREFIX)/include -pa $(PREFIX)/ebin
 
 BEAMS=mod_restful.beam \
       mod_restful_admin.beam \
@@ -40,7 +40,7 @@ $(TEST_DIST): test_ebin/%.beam : src/%.erl
 	erlc -Dtest -pa ./test_ebin $(INCLUDE) -o ./test_ebin $<
 
 install: all
-	cp ebin/*.beam $(PREFIX)/lib/ejabberd/ebin
+	cp ebin/*.beam $(PREFIX)/ebin
 
 build_tests: $(TEST_DIST) $(TEST_BEAMS)
 
