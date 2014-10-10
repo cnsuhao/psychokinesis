@@ -44,11 +44,21 @@ body {
 	margin:0 auto;
 }
 
+#head-bar {
+	top:0px;
+	position:fixed;
+	display:block;
+	height: 45px;
+	width: 100%;
+	z-index:9;
+}
+
 #navigation-bar-right {
 	float:right;
 }
 
 #main-panel {
+	padding-top:45px;
 	padding-bottom:40px;
 }
 
@@ -56,13 +66,43 @@ body {
 	height:550px;
 }
 
-#left-panel {
-	float:left;
+.ms-fullscreen {
+	position:absolute;
+	top:33%;
+	width:200%;
+	vertical-align:middle;
+	text-align:center;
+	z-index:1;
 }
 
-#right-panel {
+.ms-left-item {
+	margin-left:20%;
+	top:33%;
+}
+
+.ms-right-item {
+	height:100%;
+	margin-right:20%;
+	background-repeat:no-repeat;
+	background-position:center;
+	background-size:contain;
+}
+
+#share-resource-section {
+	background-image:url(../images/share_rs.png);
+}
+
+#remote-management-section {
+	background-image:url(../images/remote_management.png);
+}
+
+#multi-device-support-section {
+	background-image:url(../images/multi_device.png);
+}
+
+#download-section {
+	margin-left:10%;
 	width:400px;
-	float:right;
 }
 
 #desktop-download-link {

@@ -7,6 +7,7 @@
 <link rel="shortcut icon" href="/psychokinesis.ico" mce_href="/psychokinesis.ico" type="image/x-icon">
 <link rel="stylesheet" href="css/metro-bootstrap.min.css">
 <link rel="stylesheet" href="css/iconFont.min.css">
+<link rel="stylesheet" href="css/jquery.multiscroll.min.css" />
 <link rel="stylesheet" href="css/index.min.css">
 <script src="js/angular/angular.min.js"></script>
 <script type="text/javascript">
@@ -15,7 +16,7 @@
 </head>
 <body ng-app="psychokinesis" class="metro">
 	<div id="wapper">
-	<nav class="navigation-bar light">
+	<div id="head-bar" class="navigation-bar light">
         <div class="navigation-bar-content">
 			<div id="navigation-bar-left">
 				<a class="element" href="/">
@@ -28,7 +29,7 @@
 				<a class="element" href="join">加入我们</a>
 			</div>
         </div>
-    </nav>
+    </div>
 	<div id="main-panel">
     	<div ng-view></div>
 		<div id="foot-bar">
@@ -45,6 +46,8 @@
 	</div>
 	<script src="js/jquery/jquery.min.js"></script>
 	<script src="js/jquery/jquery.widget.min.js"></script>
+	<script src="js/jquery/vendors/jquery.easings.min.js"></script>
+	<script src="js/jquery/jquery.multiscroll.min.js"></script>
 	<script src="js/metro/metro.min.js"></script>
 	<script src="js/angular/angular-route.min.js"></script>
 	<script src="js/util.min.js"></script>

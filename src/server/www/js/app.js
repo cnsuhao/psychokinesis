@@ -5,6 +5,31 @@ angular.module('psychokinesis', ['ngRoute'])
 			$scope.enter_app = function() {
 				window.open('/app/', '_blank');
 			};
+			
+			$scope.goto_download_section = function() {
+				$.fn.multiscroll.moveTo(5);
+			};
+			
+			angular.element(document).ready(function () {
+				$('#default-panel').show();
+				
+				$('#introduction-scroll').multiscroll({
+					sectionsColor: ['#5ad0ff', '#1BBC9B', '#A9A9F5', '#F5A9E1', '#F7819F'],
+					navigation: true
+				});
+			});
+			
+			$scope.$on("$locationChangeStart", function(event) { 
+				// 由default页面切换到其他页面
+				
+				// 为避免将来重新载入default页面时发生错误，需要将一些事物移除
+				if ($('#multiscroll-nav').length > 0) {
+					$('#multiscroll-nav').remove();                       // 移除右侧快捷按钮
+					$.fn.multiscroll.setMouseWheelScrolling(false);       // 移除滑鼠监听事件
+				}
+				
+				$('#default-panel').hide();
+			});
 		})
 		.controller('SuggestController', function($scope, $route, $routeParams, $location) {
 			$scope.isUnchanged = function(suggestion) {

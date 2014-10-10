@@ -1,45 +1,101 @@
-<div id="default-panel" class="content-panel">
-	<div id="left-panel" class="children-panel">
-		<h3>Psychokinesis</h3>
-		<h4>帮助您使用手机控制其他智能设备：</h4><br/><br/>
-		<img src="images/introduction.png" />
-	</div>
-	<div id="right-panel">
-		<div class="children-panel">
-			<fieldset>
-				<legend>即刻体验</legend>
-				<h4>网页端：</h4>
-				<div id="webapp-link">
-					<a ng-click="enter_app();" class="image-button bg-lightRed fg-white image-left large">
-						<i class="icon-cloud bg-red" style="padding:10px"></i>
-						点此进入
-					</a>
+<div id="default-panel" class="content-panel" style="display:none">
+	<div id="introduction-scroll">
+		<div class="ms-left">
+			<div class="ms-section">
+				<div class="ms-tableCell">
+					<div class="ms-fullscreen">
+						<img src="images/logo_big.png" /><br/><br/>
+						<h1>Psychokinesis</h1>
+						<h2>终端资源共享助手</h2><br/><br/>
+						<a ng-click="goto_download_section();" class="button large bg-cyan fg-white">即刻体验</a>
+					</div>
 				</div>
-				<br/><br/><br/>
-				<h4>PC端：</h4>
-				<div id="desktop-download-link">
-					<a ng-click="download('windows');" class="image-button bg-darkGreen fg-white image-left large">
-						<i class="icon-windows bg-green fg-white" style="padding:10px"></i>
-						Windows版
-					</a>
-				</div><br/><br/><br/>
-				<h4>移动端：</h4>
-				<div id="mobile-download-link">
-					<a ng-click="download('android');" class="image-button bg-lightBlue fg-white image-left large">
-						<i class="icon-android bg-blue" style="padding:10px"></i>
-						Android版
-					</a>
-					<a ng-click="download('ios');" class="image-button bg-cyan fg-white image-left large">
-						<i class="icon-apple bg-lightTeal" style="padding:10px"></i>
-						iOS版
-					</a>
-					<a ng-click="download('wp');" class="image-button bg-darkGreen fg-white image-left large">
-						<i class="icon-windows bg-green fg-white" style="padding:10px"></i>
-						Windows Phone版
-					</a>
+			</div>
+
+			<div class="ms-section">
+				<div class="ms-left-item">
+					<h1>自由分享</h1>
+					<h2>随时随地在各终端设备间共享文字、图片、视频</h2>
 				</div>
-				<img style="padding-left:20px" src="images/qr_code.png" />
-			</fieldset>
+			</div>
+
+			<div class="ms-section">
+				<div class="ms-left-item">
+					<h1>远程控制</h1>
+					<h2>在外也能控制家里的各种智能设备</h2>
+				</div>
+			</div>
+			
+			<div class="ms-section">
+				<div class="ms-left-item">
+					<h1>多平台支持</h1>
+					<h2>支持Android、iOS、Windows Phone和Windows各系列的手机、平板、电脑</h2>
+				</div>
+			</div>
+			
+			<div class="ms-section">
+				<div class="ms-left-item">
+					<h1>即刻体验</h1>
+					<h2>请选择对应平台的客户端</h2>
+				</div>
+			</div>
 		</div>
+		
+		<div class="ms-right">
+			<div class="ms-section">
+			</div>
+
+			<div class="ms-section">
+				<div id="share-resource-section" class="ms-right-item"></div>
+			</div>
+
+			<div class="ms-section">
+				<div id="remote-management-section" class="ms-right-item"></div>
+			</div>
+			
+			<div class="ms-section">
+				<div id="multi-device-support-section" class="ms-right-item"></div>
+			</div>
+			
+			<div class="ms-section">
+				<div id="download-section">
+					<div class="children-panel">
+						<fieldset>
+							<h4>网页端：</h4>
+							<div id="webapp-link">
+								<a ng-click="enter_app();" class="image-button bg-lightRed fg-white image-left large">
+									<i class="icon-cloud bg-red" style="padding:10px"></i>
+									点此进入
+								</a>
+							</div>
+							<br/><br/><br/>
+							<h4>PC端：</h4>
+							<div id="desktop-download-link">
+								<a ng-click="download('windows');" class="image-button bg-darkGreen fg-white image-left large">
+									<i class="icon-windows bg-green fg-white" style="padding:10px"></i>
+									Windows版
+								</a>
+							</div><br/><br/><br/>
+							<h4>移动端：</h4>
+							<div id="mobile-download-link">
+								<a ng-click="download('android');" class="image-button bg-lightBlue fg-white image-left large">
+									<i class="icon-android bg-blue" style="padding:10px"></i>
+									Android版
+								</a>
+								<a ng-click="download('ios');" class="image-button bg-cyan fg-white image-left large">
+									<i class="icon-apple bg-lightTeal" style="padding:10px"></i>
+									iOS版
+								</a>
+								<a ng-click="download('wp');" class="image-button bg-darkGreen fg-white image-left large">
+									<i class="icon-windows bg-green fg-white" style="padding:10px"></i>
+									Windows Phone版
+								</a>
+							</div>
+							<img style="padding-left:20px" src="images/qr_code.png" />
+						</fieldset>
+					</div>
+				</div>
+			</div>
+		</div>	
 	</div>
 </div>
