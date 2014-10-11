@@ -66,13 +66,20 @@ body {
 	height:550px;
 }
 
-.ms-fullscreen {
+.graduated, .ms-fullscreen {
 	position:absolute;
 	top:33%;
 	width:200%;
 	vertical-align:middle;
 	text-align:center;
 	z-index:1;
+}
+
+.graduated {
+	background-image:url(../images/graduated.png);
+	background-size:100% 100%;
+	top:0;
+	bottom:70px;
 }
 
 .ms-left-item {
@@ -111,7 +118,7 @@ body {
 
 #desktop-download-link a {
 	display: block;
-	width: 200px;
+	width: 220px;
 }
 
 #mobile-download-link {
@@ -120,7 +127,7 @@ body {
 
 #mobile-download-link a {
 	display: block;
-	width: 200px;
+	width: 220px;
 	margin-bottom: 5px;
 }
 
@@ -130,7 +137,7 @@ body {
 
 #webapp-link a {
 	display: block;
-	width: 200px;
+	width: 220px;
 	margin-bottom: 5px;
 }
 
