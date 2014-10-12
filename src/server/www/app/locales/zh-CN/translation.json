@@ -1,0 +1,22 @@
+{
+  "splashscreen": {
+    "title": "正在初始化"
+  },
+  "content": {
+    "promot": "载入中......",
+	"scan_promot": "扫描上方的二维码开始同步",
+    "title": "内容",
+    "auto_synchronize_label": "自动同步",
+	"synchronize_text": "需要同步的文本"
+  },
+  "synchronization_footer": {
+    "synchronization_btn": "同步"
+  },
+  "nav": {
+    "page_add": "添加设备",
+    "page_synchronization": "同步"
+  },
+  "error": {
+    "connect_failed": "连接发生错误(__errorStatus__)，15秒后将自动重新连接。"
+  }
+}

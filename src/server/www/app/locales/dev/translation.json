@@ -1,0 +1,22 @@
+{
+  "splashscreen": {
+    "title": "Starting app"
+  },
+  "content": {
+    "promot": "Loading...",
+	"scan_promot": "Scan the qr code with the device that you want to be synchronized.",
+    "title": "Contents",
+    "auto_synchronize_label": "Auto Synchronize",
+	"synchronize_text": "The text to be synchronized."
+  },
+  "synchronization_footer": {
+    "synchronization_btn": "Synchronize"
+  },
+  "nav": {
+    "page_add": "Add Device",
+    "page_synchronization": "Synchronize"
+  },
+  "error": {
+    "connect_failed": "An error occurred(__errorStatus__). Auto Refresh will happen after 15 seconds."
+  }
+}

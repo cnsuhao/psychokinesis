@@ -29,7 +29,7 @@ function ui_ready()
 	});
 	
 	qrcode.makeCode(url);
-	$("#promot").text("Scan the qr code with the device that you want to be synchronized.");
+	$("#promot").text(i18n.t("content.scan_promot"));
 	
 	$("#synchronize_text").bind("input propertychange", function(){
 		if (document.getElementById("auto_synchronize").checked)
@@ -76,7 +76,7 @@ function on_connect(status)
 	{
 		if (current_status == Strophe.Status.CONNECTED)
 		{
-			alert("An error occurred(" + status + "). Auto Refresh will happen after 20 seconds.");
+			alert(i18n.t("error.connect_failed", {errorStatus: status}));
 			setTimeout("refresh_app()", 15000);      // 15秒后再尝试
 		}
 	}
