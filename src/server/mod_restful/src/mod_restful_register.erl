@@ -47,12 +47,14 @@ process2(#rest_req{path = Path, http_request = #request{method = 'POST'}} = Requ
     case Path of
         [_, <<"register">>] ->
             post_register(Request);
-        [_, <<"unregister">>] ->
-            post_unregister(Request);
-        [_, <<"change_password">>] ->
-            post_change_password(Request);
-        [_, <<"force_change_password">>] ->
-            post_force_change_password(Request);
+        %[_, <<"unregister">>] ->
+        %    post_unregister(Request);
+        %[_, <<"change_password">>] ->
+        %    post_change_password(Request);
+        %[_, <<"force_change_password">>] ->
+        %    post_force_change_password(Request);
+		[_, <<"access_communication">>] ->
+            post_access_communication(Request);
         _ ->
             {error, not_found}
     end;
@@ -98,63 +100,88 @@ try_register(Username, Host, Password) ->
             {error, not_allowed}
     end.
 
-post_unregister(Request) ->
-    case username_host_password(Request) of
-        [Username, Host, Password] ->
-            case ejabberd_auth:remove_user(Username, Host, Password) of
-                ok ->
-                    {simple, ok};
-                E when (E == not_exists) or
-                       (E == not_allowed) or
-                       (E == bad_request) ->
-                    {error, E};
-                error -> 
-                    {error, bad_request}
-            end;
-        {error, Error} ->
-            {error, Error}
-    end.
+% post_unregister(Request) ->
+    % case username_host_password(Request) of
+        % [Username, Host, Password] ->
+            % case ejabberd_auth:remove_user(Username, Host, Password) of
+                % ok ->
+                    % {simple, ok};
+                % E when (E == not_exists) or
+                       % (E == not_allowed) or
+                       % (E == bad_request) ->
+                    % {error, E};
+                % error -> 
+                    % {error, bad_request}
+            % end;
+        % {error, Error} ->
+            % {error, Error}
+    % end.
 
-post_change_password(Request) ->
-    case gen_restful_api:params([username, host, old_password, new_password],
-                                Request) of
-        [Username, Host, OldPassword, NewPassword] ->
-            case gen_restful_api:host_allowed(Host) of
+% post_change_password(Request) ->
+    % case gen_restful_api:params([username, host, old_password, new_password],
+                                % Request) of
+        % [Username, Host, OldPassword, NewPassword] ->
+            % case gen_restful_api:host_allowed(Host) of
+                % true ->
+                    % case ejabberd_auth:check_password(Username, Host,
+                                                      % OldPassword) of
+                        % true ->
+                            % case ejabberd_auth:set_password(Username, Host,
+                                                            % NewPassword) of
+                                % ok ->
+                                    % {simple, ok};
+                                % _ ->
+                                    % {error, error}
+                            % end;
+                        % _ ->
+                            % {error, not_allowed}
+                    % end;
+                % _ ->
+                    % {error, not_allowed}
+            % end;
+        % Error ->
+            % Error
+    % end.
+
+% post_force_change_password(Request) ->
+    % case gen_restful_api:params([username, host, new_password], Request) of
+        % [Username, Host, NewPassword] ->
+            % case gen_restful_api:host_allowed(Host) of
+                % true ->
+                    % case ejabberd_auth:set_password(Username, Host,
+                                                    % NewPassword) of
+                        % ok -> {simple, ok};
+                        % _  -> {error, error}
+                    % end;
+                % _ ->
+                    % {error, not_allowed}
+            % end;
+        % Error ->
+            % Error
+    % end.
+	
+post_access_communication(Request) ->
+	case gen_restful_api:params([serialnumber, host], Request) of
+		[SerialNumber, Host] ->
+			case gen_restful_api:host_allowed(Host) of
                 true ->
-                    case ejabberd_auth:check_password(Username, Host,
-                                                      OldPassword) of
-                        true ->
-                            case ejabberd_auth:set_password(Username, Host,
-                                                            NewPassword) of
-                                ok ->
-                                    {simple, ok};
-                                _ ->
-                                    {error, error}
-                            end;
-                        _ ->
-                            {error, not_allowed}
+                    case ejabberd_auth:get_password(SerialNumber, Host) of
+                        false  ->
+							random:seed(erlang:now()),
+							Password = integer_to_binary(random:uniform(99999999)),
+							case try_register(SerialNumber, Host, Password) of
+								ok ->
+									{simple, {[{host, Host}, {username, SerialNumber}, {password, Password}]}};
+								Error ->
+									Error
+							end;
+						Password ->
+							{simple, {[{host, Host}, {username, SerialNumber}, {password, Password}]}}
                     end;
                 _ ->
                     {error, not_allowed}
             end;
-        Error ->
-            Error
-    end.
-
-post_force_change_password(Request) ->
-    case gen_restful_api:params([username, host, new_password], Request) of
-        [Username, Host, NewPassword] ->
-            case gen_restful_api:host_allowed(Host) of
-                true ->
-                    case ejabberd_auth:set_password(Username, Host,
-                                                    NewPassword) of
-                        ok -> {simple, ok};
-                        _  -> {error, error}
-                    end;
-                _ ->
-                    {error, not_allowed}
-            end;
-        Error ->
+		Error ->
             Error
     end.
 

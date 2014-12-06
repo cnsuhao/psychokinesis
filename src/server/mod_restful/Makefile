@@ -1,4 +1,4 @@
-PREFIX=/usr/lib/x86_64-linux-gnu/ejabberd
+PREFIX=/lib/ejabberd
 
 EJABBERD_PATH=../ejabberd/
 EJABBERD_SRC_PATH=$(EJABBERD_PATH)src
