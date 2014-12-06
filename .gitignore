@@ -4,6 +4,7 @@ src/Windows(DotNet)/Main/bin/
 src/Windows(DotNet)/Main/obj/
 src/Windows(DotNet)/Plugins/Chat/bin/
 src/Windows(DotNet)/Plugins/Chat/obj/
+src/Windows(DotNet)/packages/
 *.aps
 *.user
 *.ilk

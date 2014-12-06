@@ -35,13 +35,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="agsXMPP">
-      <HintPath>..\..\..\..\..\Lib\agsxmpp\trunk\agsxmpp\bin\Net35\Debug\agsXMPP.dll</HintPath>
+      <HintPath>D:\Lib\C#\agsxmpp\trunk\agsxmpp\bin\Net2\Release\agsXMPP.dll</HintPath>
     </Reference>
     <Reference Include="FirstFloor.ModernUI">
       <HintPath>..\packages\ModernUI.WPF.1.0.6\lib\net45\FirstFloor.ModernUI.dll</HintPath>
     </Reference>
-    <Reference Include="Gma.QrCodeNet.Encoding.Net45">
-      <HintPath>..\..\..\..\..\Lib\QrCode.Net 0.4 Pre-Release\Gma.QrCodeNet.Encoding.Net45\Gma.QrCodeNet.Encoding.Net45.dll</HintPath>
+    <Reference Include="Gma.QrCodeNet.Encoding">
+      <HintPath>..\packages\QrCode.Net.0.4.0.0\lib\net45\Gma.QrCodeNet.Encoding.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>

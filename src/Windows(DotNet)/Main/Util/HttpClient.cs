@@ -8,7 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Psychokinesis.Main.Util
 {
@@ -29,6 +32,18 @@ namespace Psychokinesis.Main.Util
             var postData = new System.Net.Http.FormUrlEncodedContent(form);
 
             var response = client.PostAsync(url, postData);
+            response.Result.EnsureSuccessStatusCode();
+
+            return response.Result.Content.ReadAsStringAsync().Result;
+        }
+
+        public static string PostJson(string url, JObject json)
+        {
+            System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string postBody = JsonConvert.SerializeObject(json);
+
+            var response = client.PostAsync(url, new StringContent(postBody, Encoding.UTF8, "application/json"));
             response.Result.EnsureSuccessStatusCode();
 
             return response.Result.Content.ReadAsStringAsync().Result;

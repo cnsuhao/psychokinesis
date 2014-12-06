@@ -101,10 +101,15 @@ namespace Psychokinesis.Main.Control
                                 Properties.Settings.Default.Save();
                             }
 
-                            string accountInfo = HttpClient.Get("http://psychokinesis.me/nodejs/access-communication?serialnumber=" + serialNumber);
+                            JObject m = new JObject();
+                            m["key"] = "secret";
+                            m["serialnumber"] = serialNumber;
+                            m["host"] = "chat.psychokinesis.me";
+
+                            string accountInfo = HttpClient.PostJson("http://chat.psychokinesis.me:5280/api/register/access_communication", m);
 
                             JObject o = (JObject)JsonConvert.DeserializeObject(accountInfo);
-                            string account = (string)o["account"];
+                            string account = (string)o["username"];
                             string password = (string)o["password"];
                             if (account == null || password == null)
                             {
