@@ -352,10 +352,10 @@ get_content_type(#request{headers = Headers}) ->
 
 -spec parse_http_data(string(), #request{}) ->
     {error, bad_request} | {ok, json, term()}.
-parse_http_data(<<"application/json">>, #request{data = Data}) ->
+parse_http_data(<<"application/json", _/binary>>, #request{data = Data}) ->
     JSON = mod_restful_mochijson2:decode(Data),
     {ok, json, JSON};
-parse_http_data(<<"application/xml">>, _Request) ->
+parse_http_data(<<"application/xml", _/binary>>, _Request) ->
     % FIXME not implemented yet
     error_logger:warning_msg("XML support not implemented yet~n"),
     {error, bad_request};
