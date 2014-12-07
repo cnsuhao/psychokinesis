@@ -32,16 +32,11 @@ function ui_ready()
 	$("#promot").text(i18n.t("content.scan_promot"));
 	
 	$("#synchronize_text").bind("input propertychange", function(){
-		if (document.getElementById("auto_synchronize").checked)
-		{
-			var enc = encrypt(document.getElementById("synchronize_text").value, communication.xmpp_password);
-			communication.send_message(enc);
-		}
+		send_message(document.getElementById("synchronize_text").value);
 	});
 	
 	$("#synchronization_btn").bind("tap", function(){
-		var enc = encrypt(document.getElementById("synchronize_text").value, communication.xmpp_password);
-		communication.send_message(enc);
+		send_message(document.getElementById("synchronize_text").value);
 	});
 	
 	if (url_params.hasOwnProperty("serial_number"))
@@ -97,11 +92,22 @@ function on_message(from, message)
 	try
 	{
 		var dmsg = decrypt(message, communication.xmpp_password);
+		var msgobj = jQuery.parseJSON(dmsg);
 	}
 	catch(err)
 	{
 		// alert(err.message);
 	}
 	
-	document.getElementById("synchronize_text").value = dmsg;
+	document.getElementById("synchronize_text").value = msgobj.content.message;
+}
+
+function send_message(message) {
+	var msg = JSON.stringify({
+		identification: 'Chat', 
+		content:{message: message}
+	});
+		
+	var enc = encrypt(msg, communication.xmpp_password);
+	communication.send_message(enc);
 }
