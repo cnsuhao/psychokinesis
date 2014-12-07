@@ -42,7 +42,7 @@ namespace Psychokinesis
                 // 移动终端加入时的动画效果
                 phoneImg.IsVisibleChanged += phoneImg_IsVisibleChanged;
 
-                Stream stream = CreateQrCodeImage("http://psychokinesis.me/nodejs/access-communication?serialnumber=" + Messenger.Instance.SerialNumber);
+                Stream stream = CreateQrCodeImage("http://psychokinesis.me/app/?serial_number=" + Messenger.Instance.SerialNumber);
                 PngBitmapDecoder decoder = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
                 qrCodeImg.Source = decoder.Frames[0];
             }

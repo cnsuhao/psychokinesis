@@ -11,8 +11,7 @@
             <TextBlock DockPanel.Dock="Top" Text="接入的终端" Style="{StaticResource Heading2}" Margin="0,0,0,8" />
             <DataGrid Name="DeviceListGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" IsReadOnly="True" >
                 <DataGrid.Columns>
-                    <mui:DataGridTextColumn Header="终端ID"  Binding="{Binding DeviceName}"/>
-                    <mui:DataGridTextColumn Header="终端名称"  Binding="{Binding DeviceNickName}"/>
+                    <mui:DataGridTextColumn Header="终端名称"  Binding="{Binding DeviceName}"/>
                     <mui:DataGridTextColumn Header="接入时间" Binding="{Binding JoinTime}" />
                 </DataGrid.Columns>
             </DataGrid>

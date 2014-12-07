@@ -26,7 +26,7 @@ namespace Psychokinesis
             /// UserControl1.xaml 的交互逻辑
             /// </summary>
             [Export(typeof(IPlugin))]
-            [ExportMetadata("DisplayName", "快传")]
+            [ExportMetadata("DisplayName", "文本")]
             [ExportMetadata("MuiUri", "/Chat")]
             public partial class ChatWindow : UserControl, IPlugin, IMessage
             {
